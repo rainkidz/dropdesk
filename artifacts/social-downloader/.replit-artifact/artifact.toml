@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Social Downloader"
+description = "Aplikasi web untuk mengunduh media publik dari YouTube, Instagram, Threads, dan TikTok dengan pengenalan URL, pilihan kualitas, serta status proses yang jelas."
+version = "1.0.0"
+id = "artifacts/social-downloader"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23785
+
+[services.development]
+run = "pnpm --filter @workspace/social-downloader run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/social-downloader", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/social-downloader/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23785"
+BASE_PATH = "/"

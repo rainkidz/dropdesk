@@ -1,0 +1,1 @@
+- [OpenAPI codegen compatibility](openapi-codegen-compatibility.md) — keep generated Zod schemas on the workspace's supported primitive APIs.

@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: downloads
+    description: Public media download operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,119 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /downloads/inspect:
+    post:
+      operationId: inspectDownload
+      tags: [downloads]
+      summary: Inspect a social media URL
+      description: Detects the supported platform and returns basic media metadata and available formats.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InspectDownloadInput"
+      responses:
+        "200":
+          description: URL inspection result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadInspection"
+        "400":
+          description: Invalid or unsupported URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /downloads:
+    post:
+      operationId: createDownload
+      tags: [downloads]
+      summary: Start a media download
+      description: Starts a server-side download for a previously inspected public URL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDownloadInput"
+      responses:
+        "202":
+          description: Download job accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadJob"
+        "400":
+          description: Invalid download request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /downloads/recent:
+    get:
+      operationId: listRecentDownloads
+      tags: [downloads]
+      summary: List recent download jobs
+      responses:
+        "200":
+          description: Recent download jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DownloadJob"
+  /downloads/{id}:
+    get:
+      operationId: getDownload
+      tags: [downloads]
+      summary: Get download job status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Download job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DownloadJob"
+        "404":
+          description: Download job not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /downloads/{id}/file:
+    get:
+      operationId: downloadFile
+      tags: [downloads]
+      summary: Download the completed file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Downloaded media file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found or job is not complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +148,125 @@ components:
           type: string
       required:
         - status
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    InspectDownloadInput:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          minLength: 8
+    CreateDownloadInput:
+      type: object
+      required:
+        - url
+        - formatId
+      properties:
+        url:
+          type: string
+          minLength: 8
+        formatId:
+          type: string
+          minLength: 1
+        mediaType:
+          type: string
+          enum: [video, audio]
+          default: video
+    DownloadPlatform:
+      type: string
+      enum: [youtube, instagram, threads, tiktok, unknown]
+    DownloadFormat:
+      type: object
+      required:
+        - id
+        - label
+        - extension
+        - kind
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        extension:
+          type: string
+        kind:
+          type: string
+          enum: [video, audio]
+        sizeLabel:
+          type: ["string", "null"]
+    DownloadInspection:
+      type: object
+      required:
+        - url
+        - platform
+        - isSupported
+        - title
+        - thumbnailUrl
+        - durationSeconds
+        - formats
+      properties:
+        url:
+          type: string
+        platform:
+          $ref: "#/components/schemas/DownloadPlatform"
+        isSupported:
+          type: boolean
+        title:
+          type: ["string", "null"]
+        thumbnailUrl:
+          type: ["string", "null"]
+        durationSeconds:
+          type: ["number", "null"]
+        formats:
+          type: array
+          items:
+            $ref: "#/components/schemas/DownloadFormat"
+    DownloadJob:
+      type: object
+      required:
+        - id
+        - url
+        - platform
+        - title
+        - status
+        - progress
+        - mediaType
+        - filename
+        - createdAt
+        - downloadUrl
+        - error
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        platform:
+          $ref: "#/components/schemas/DownloadPlatform"
+        title:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [queued, downloading, completed, failed]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        mediaType:
+          type: string
+          enum: [video, audio]
+        filename:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        downloadUrl:
+          type: ["string", "null"]
+        error:
+          type: ["string", "null"]
 
