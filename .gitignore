@@ -53,3 +53,7 @@ Thumbs.db
 android/app/build/
 android/.gradle/
 android/build/
+
+# Signing
+*.keystore
+*.jks
