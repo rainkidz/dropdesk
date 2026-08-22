@@ -24,6 +24,7 @@ export type CreateDownloadInputMediaType = typeof CreateDownloadInputMediaType[k
 export const CreateDownloadInputMediaType = {
   video: 'video',
   audio: 'audio',
+  premium: 'premium',
 } as const;
 
 export interface CreateDownloadInput {
@@ -32,6 +33,7 @@ export interface CreateDownloadInput {
   /** @minLength 1 */
   formatId: string;
   mediaType?: CreateDownloadInputMediaType;
+  title?: string | null;
 }
 
 export type DownloadPlatform = typeof DownloadPlatform[keyof typeof DownloadPlatform];
@@ -42,6 +44,7 @@ export const DownloadPlatform = {
   instagram: 'instagram',
   threads: 'threads',
   tiktok: 'tiktok',
+  facebook: 'facebook',
   unknown: 'unknown',
 } as const;
 
@@ -51,6 +54,7 @@ export type DownloadFormatKind = typeof DownloadFormatKind[keyof typeof Download
 export const DownloadFormatKind = {
   video: 'video',
   audio: 'audio',
+  premium: 'premium',
 } as const;
 
 export interface DownloadFormat {
@@ -91,6 +95,7 @@ export type DownloadJobMediaType = typeof DownloadJobMediaType[keyof typeof Down
 export const DownloadJobMediaType = {
   video: 'video',
   audio: 'audio',
+  premium: 'premium',
 } as const;
 
 export interface DownloadJob {

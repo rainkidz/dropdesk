@@ -12,4 +12,5 @@ export type DownloadFormatKind = typeof DownloadFormatKind[keyof typeof Download
 export const DownloadFormatKind = {
   video: 'video',
   audio: 'audio',
+  premium: 'premium',
 } as const;

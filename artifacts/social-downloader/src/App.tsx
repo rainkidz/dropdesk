@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   CircleHelp,
   Clock3,
+  Crown,
   Download,
   FileAudio,
   FileVideo,
@@ -22,10 +23,18 @@ import {
   Radio,
   RotateCcw,
   ScanLine,
+  Settings,
   ShieldCheck,
   Sparkles,
   Youtube,
+  type LucideIcon,
 } from 'lucide-react';
+
+function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+  );
+}
 import {
   getDownloadFileQueryKey,
   getGetDownloadQueryKey,
@@ -50,6 +59,7 @@ const queryClient = new QueryClient();
 const platformMeta = {
   youtube: { label: 'YouTube', Icon: Youtube, tone: 'text-red-600 bg-red-50' },
   instagram: { label: 'Instagram', Icon: Instagram, tone: 'text-pink-700 bg-pink-50' },
+  facebook: { label: 'Facebook', Icon: FacebookIcon as unknown as LucideIcon, tone: 'text-blue-700 bg-blue-50' },
   threads: { label: 'Threads', Icon: MessageCircle, tone: 'text-slate-700 bg-slate-100' },
   tiktok: { label: 'TikTok', Icon: Music2, tone: 'text-cyan-800 bg-cyan-50' },
   unknown: { label: 'Unknown source', Icon: Link2, tone: 'text-slate-600 bg-slate-100' },
@@ -87,6 +97,18 @@ function shortenUrl(url: string) {
   }
 }
 
+function apiErrorMessage(error: unknown, fallback: string) {
+  if (error && typeof error === 'object') {
+    const data = (error as { data?: unknown }).data;
+    if (data && typeof data === 'object' && typeof (data as { error?: unknown }).error === 'string') {
+      return (data as { error: string }).error;
+    }
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string' && message.length > 0) return message;
+  }
+  return fallback;
+}
+
 function StatusPill({ status }: { status: DownloadJob['status'] }) {
   const config = {
     queued: { label: 'Queued', icon: Clock3, className: 'bg-amber-100 text-amber-800' },
@@ -121,6 +143,12 @@ function BrandMark() {
 function Shell({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showSettings, setShowSettings] = useState(() => {
+    if (isNativeApp()) {
+      return !localStorage.getItem('dropdesk_server_url');
+    }
+    return false;
+  });
   const health = useHealthCheck();
   const navItems = [
     { href: '/', label: 'Download desk', icon: ScanLine },
@@ -129,6 +157,7 @@ function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="grain min-h-[100dvh] bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+      {showSettings && <ServerSettings />}
       <aside className={`fixed inset-y-0 left-0 z-30 flex w-[258px] flex-col bg-[hsl(var(--sidebar))] px-5 py-6 text-[hsl(var(--sidebar-foreground))] transition-transform duration-300 md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="mb-12 flex items-center justify-between">
           <BrandMark />
@@ -152,6 +181,12 @@ function Shell({ children }: { children: ReactNode }) {
             </Link>
           ))}
         </nav>
+        {isNativeApp() && (
+          <button onClick={() => setShowSettings(true)} className="mb-3 flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-semibold text-white/50 hover:bg-white/5 hover:text-white">
+            <Settings className="size-4" />
+            Server settings
+          </button>
+        )}
         <div className="mt-auto rounded-xl border border-white/10 bg-white/[0.04] p-4">
           <div className="mb-3 flex items-center gap-2 text-xs font-bold text-white/80">
             <span className={`size-2 rounded-full ${health.isError ? 'bg-red-400' : 'bg-emerald-400'}`} />
@@ -259,6 +294,7 @@ function InspectionCard({ inspection, selectedFormat, setSelectedFormat, onDownl
 }) {
   const meta = platformDetails(inspection.platform);
   const Icon = meta.Icon;
+  const premiumFormats = inspection.formats.filter((format) => format.kind === 'premium');
   const videoFormats = inspection.formats.filter((format) => format.kind === 'video');
   const audioFormats = inspection.formats.filter((format) => format.kind === 'audio');
   return (
@@ -291,12 +327,26 @@ function InspectionCard({ inspection, selectedFormat, setSelectedFormat, onDownl
           ) : (
             <>
               <div className="space-y-2">
-                {videoFormats.length > 0 && <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[hsl(var(--muted-foreground))]"><FileVideo className="size-3.5" /> Video</div>}
-                {videoFormats.map((format) => <FormatChoice key={format.id} format={format} selected={selectedFormat?.id === format.id} onSelect={() => setSelectedFormat(format)} />)}
-                {audioFormats.length > 0 && <div className="mb-2 mt-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[hsl(var(--muted-foreground))]"><FileAudio className="size-3.5" /> Audio only</div>}
-                {audioFormats.map((format) => <FormatChoice key={format.id} format={format} selected={selectedFormat?.id === format.id} onSelect={() => setSelectedFormat(format)} />)}
+                {premiumFormats.length > 0 && (
+                  <>
+                    <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-600"><Crown className="size-3.5" /> Premium · Video + Audio</div>
+                    {premiumFormats.map((format) => <FormatChoice key={format.id} format={format} selected={selectedFormat?.id === format.id} onSelect={() => setSelectedFormat(format)} premium />)}
+                  </>
+                )}
+                {videoFormats.length > 0 && (
+                  <>
+                    <div className="mb-2 mt-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[hsl(var(--muted-foreground))]"><FileVideo className="size-3.5" /> Video only</div>
+                    {videoFormats.map((format) => <FormatChoice key={format.id} format={format} selected={selectedFormat?.id === format.id} onSelect={() => setSelectedFormat(format)} />)}
+                  </>
+                )}
+                {audioFormats.length > 0 && (
+                  <>
+                    <div className="mb-2 mt-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[hsl(var(--muted-foreground))]"><FileAudio className="size-3.5" /> Audio only</div>
+                    {audioFormats.map((format) => <FormatChoice key={format.id} format={format} selected={selectedFormat?.id === format.id} onSelect={() => setSelectedFormat(format)} />)}
+                  </>
+                )}
               </div>
-              {error && <p data-testid="error-create-download" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{String((error as { message?: string })?.message || 'Could not start this download.')}</p>}
+              {error && <p data-testid="error-create-download" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{apiErrorMessage(error, 'Could not start this download.')}</p>}
               <button data-testid="button-start-download" disabled={!selectedFormat || isPending} onClick={onDownload} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[hsl(var(--primary))] px-4 py-3.5 text-sm font-bold text-[hsl(var(--primary-foreground))] shadow-[4px_4px_0_hsl(var(--accent))] transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60">
                 {isPending ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowDownToLine className="size-4" />}
                 {isPending ? 'Starting your save…' : 'Start download'}
@@ -309,14 +359,136 @@ function InspectionCard({ inspection, selectedFormat, setSelectedFormat, onDownl
   );
 }
 
-function FormatChoice({ format, selected, onSelect }: { format: DownloadFormat; selected: boolean; onSelect: () => void }) {
+function FormatChoice({ format, selected, onSelect, premium }: { format: DownloadFormat; selected: boolean; onSelect: () => void; premium?: boolean }) {
   return (
-    <button type="button" data-testid={`button-format-${format.id}`} onClick={onSelect} className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors ${selected ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/.14)]' : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted)/.7)]'}`}>
-      <span className={`flex size-7 items-center justify-center rounded-full border ${selected ? 'border-[hsl(var(--accent))] bg-[hsl(var(--accent))] text-[hsl(var(--primary))]' : 'border-[hsl(var(--border))] text-transparent'}`}><Check className="size-3.5" /></span>
+    <button type="button" data-testid={`button-format-${format.id}`} onClick={onSelect} className={`flex w-full items-center gap-3 rounded-xl border px-3.5 py-3 text-left transition-colors ${selected ? (premium ? 'border-amber-400 bg-amber-50' : 'border-[hsl(var(--accent))] bg-[hsl(var(--accent)/.14)]') : 'border-[hsl(var(--border))] hover:bg-[hsl(var(--muted)/.7)]'}`}>
+      <span className={`flex size-7 items-center justify-center rounded-full border ${selected ? (premium ? 'border-amber-400 bg-amber-400 text-white' : 'border-[hsl(var(--accent))] bg-[hsl(var(--accent))] text-[hsl(var(--primary))]') : 'border-[hsl(var(--border))] text-transparent'}`}><Check className="size-3.5" /></span>
       <span className="min-w-0 flex-1"><span className="block text-sm font-bold">{format.label}</span><span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[hsl(var(--muted-foreground))]">.{format.extension}</span></span>
       {format.sizeLabel && <span className="font-mono text-[10px] text-[hsl(var(--muted-foreground))]">{format.sizeLabel}</span>}
     </button>
   );
+}
+
+function InstagramCookiesSetup() {
+  const [cookies, setCookies] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  const handleSave = async () => {
+    if (!cookies.trim()) return;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/instagram/cookies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cookies: cookies.trim() }),
+      });
+      if (res.ok) setSaved(true);
+    } catch {}
+    setSaving(false);
+  };
+
+  return (
+    <div className="mt-4 rounded-xl border border-pink-200 bg-pink-50 p-4">
+      <div className="mb-2 flex items-center gap-2">
+        <Instagram className="size-4 text-pink-600" />
+        <span className="text-xs font-bold text-pink-800">Instagram Cookies Required</span>
+      </div>
+      <p className="mb-3 text-[11px] text-pink-700/80">Instagram membutuhkan login untuk download. Masukkan cookies dari browser Anda.</p>
+      {saved ? (
+        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700"><CheckCircle2 className="size-4" /> Cookies tersimpan! Coba lagi inspect link Instagram.</div>
+      ) : (
+      <>
+        <button onClick={() => setShowHelp(!showHelp)} className="mb-2 text-[10px] font-bold text-pink-600 underline">{showHelp ? 'Sembunyikan' : 'Cara ambil cookies?'}</button>
+        {showHelp && (
+          <ol className="mb-3 list-decimal pl-4 text-[11px] text-pink-700/80 space-y-1">
+            <li>Login Instagram di browser Chrome/Edge</li>
+            <li>Buka DevTools (F12) → Application → Cookies → instagram.com</li>
+            <li>Cari cookie <code className="bg-pink-100 px-1 rounded">session_id</code> dan <code className="bg-pink-100 px-1 rounded">ds_user_id</code></li>
+            <li>Atau: install ekstensi <a href="https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc" target="_blank" className="underline">Get cookies.txt</a>, klik ikonnya di halaman Instagram, copy semua isi</li>
+          </ol>
+        )}
+        <textarea value={cookies} onChange={(e) => setCookies(e.target.value)} placeholder="# Netscape HTTP Cookie File
+.instagram.com	TRUE	/	TRUE	...	sessionid	..." className="w-full rounded-lg border border-pink-200 bg-white p-2 font-mono text-[10px] text-pink-900 placeholder:text-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-300" rows={4} />
+        <button onClick={handleSave} disabled={!cookies.trim() || saving} className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-pink-600 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-pink-700 disabled:opacity-50">
+          {saving ? <LoaderCircle className="size-3 animate-spin" /> : null}
+          {saving ? 'Menyimpan…' : 'Simpan Cookies'}
+        </button>
+      </>
+      )}
+    </div>
+  );
+}
+
+function ServerSettings() {
+  const [serverUrl, setServerUrl] = useState(() => localStorage.getItem('dropdesk_server_url') || '');
+  const [saved, setSaved] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testError, setTestError] = useState('');
+
+  const handleSave = async () => {
+    if (!serverUrl.trim()) return;
+    setTesting(true);
+    setTestError('');
+    try {
+      const res = await fetch(`${serverUrl.replace(/\/+$/, '')}/api/healthz`, { signal: AbortSignal.timeout(5000) });
+      const data = await res.json();
+      if (data.status === 'ok') {
+        localStorage.setItem('dropdesk_server_url', serverUrl.trim());
+        window.location.reload();
+      } else {
+        setTestError('Server responded but is not healthy');
+      }
+    } catch (err) {
+      setTestError('Cannot connect to server. Check the URL and make sure the server is running.');
+    }
+    setTesting(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[hsl(var(--background))] p-5">
+      <div className="w-full max-w-md rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-6 shadow-2xl">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-[hsl(var(--accent))]">
+            <Radio className="size-5 text-[hsl(var(--primary))]" />
+          </div>
+          <div>
+            <h2 className="text-lg font-extrabold">Connect to Server</h2>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">Enter the address of your Dropdesk server</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className="mb-1 block font-mono text-[10px] uppercase tracking-[0.14em] text-[hsl(var(--muted-foreground))]">Server URL</label>
+            <input
+              type="url"
+              value={serverUrl}
+              onChange={(e) => setServerUrl(e.target.value)}
+              placeholder="http://192.168.1.100:5000"
+              className="w-full rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-[hsl(var(--accent))]"
+            />
+          </div>
+          <p className="text-[11px] text-[hsl(var(--muted-foreground))]">
+            Start the server on your computer:
+          </p>
+          <pre className="rounded-lg bg-[hsl(var(--primary))] p-3 font-mono text-[10px] text-[hsl(var(--primary-foreground))]">
+{`PORT=5000 node --enable-source-maps artifacts/api-server/dist/index.mjs`}
+          </pre>
+          {testError && <div className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{testError}</div>}
+          <button onClick={handleSave} disabled={!serverUrl.trim() || testing} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[hsl(var(--primary))] px-4 py-3 text-sm font-bold text-[hsl(var(--primary-foreground))] shadow-[3px_3px_0_hsl(var(--accent))] hover:-translate-y-0.5 disabled:opacity-50">
+            {testing ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+            {testing ? 'Connecting…' : 'Connect & Start'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function isNativeApp() {
+  return window.location.protocol === 'capacitor:' ||
+    (window.location.hostname === 'localhost' && window.location.pathname.includes('index.html'));
 }
 
 function Home() {
@@ -367,7 +539,7 @@ function Home() {
 
   const handleCreate = () => {
     if (!inspection || !selectedFormat) return;
-    create.mutate({ data: { url: inspection.url, formatId: selectedFormat.id, mediaType: selectedFormat.kind } }, {
+    create.mutate({ data: { url: inspection.url, formatId: selectedFormat.id, mediaType: selectedFormat.kind, title: inspection.title } }, {
       onSuccess: (job) => {
         setActiveJobId(job.id);
         queryClient.invalidateQueries({ queryKey: getListRecentDownloadsQueryKey() });
@@ -408,9 +580,10 @@ function Home() {
           <div className="rise-in delay-4 mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 px-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
             <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-emerald-300" /> Public links only</span>
             <span className="hidden size-1 rounded-full bg-white/25 sm:block" />
-            <span>YouTube · Instagram · Threads · TikTok</span>
+            <span>YouTube · Instagram · Facebook · Threads · TikTok</span>
           </div>
-          {inspect.isError && <div data-testid="error-inspect-url" className="mt-4 flex items-start gap-2 rounded-xl border border-red-300/30 bg-red-400/10 px-4 py-3 text-xs font-semibold text-red-100"><AlertTriangle className="mt-0.5 size-4 shrink-0" />{String((inspect.error as { message?: string })?.message || 'We could not inspect that link. Check the URL and try again.')}</div>}
+          {inspect.isError && <div data-testid="error-inspect-url" className="mt-4 flex items-start gap-2 rounded-xl border border-red-300/30 bg-red-400/10 px-4 py-3 text-xs font-semibold text-red-100"><AlertTriangle className="mt-0.5 size-4 shrink-0" />{apiErrorMessage(inspect.error, 'We could not inspect that link. Check the URL and try again.')}</div>}
+          {inspect.isError && apiErrorMessage(inspect.error, '').includes('cookies') && <InstagramCookiesSetup />}
         </div>
       </section>
 

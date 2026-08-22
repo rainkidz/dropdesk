@@ -177,8 +177,10 @@ components:
           minLength: 1
         mediaType:
           type: string
-          enum: [video, audio]
+          enum: [video, audio, premium]
           default: video
+        title:
+          type: ["string", "null"]
     DownloadPlatform:
       type: string
       enum: [youtube, instagram, threads, tiktok, unknown]
@@ -198,7 +200,7 @@ components:
           type: string
         kind:
           type: string
-          enum: [video, audio]
+          enum: [video, audio, premium]
         sizeLabel:
           type: ["string", "null"]
     DownloadInspection:
@@ -260,7 +262,7 @@ components:
           maximum: 100
         mediaType:
           type: string
-          enum: [video, audio]
+          enum: [video, audio, premium]
         filename:
           type: ["string", "null"]
         createdAt:

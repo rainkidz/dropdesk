@@ -31,7 +31,7 @@ export const InspectDownloadBody = zod.object({
 
 export const InspectDownloadResponse = zod.object({
   "url": zod.string(),
-  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'unknown']),
+  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'facebook', 'unknown']),
   "isSupported": zod.boolean(),
   "title": zod.string().nullable(),
   "thumbnailUrl": zod.string().nullable(),
@@ -40,7 +40,7 @@ export const InspectDownloadResponse = zod.object({
   "id": zod.string(),
   "label": zod.string(),
   "extension": zod.string(),
-  "kind": zod.enum(['video', 'audio']),
+  "kind": zod.enum(['video', 'audio', 'premium']),
   "sizeLabel": zod.string().nullish()
 }))
 })
@@ -58,7 +58,8 @@ export const createDownloadBodyMediaTypeDefault = `video`;
 export const CreateDownloadBody = zod.object({
   "url": zod.string().min(createDownloadBodyUrlMin),
   "formatId": zod.string().min(1),
-  "mediaType": zod.enum(['video', 'audio']).default(createDownloadBodyMediaTypeDefault)
+  "mediaType": zod.enum(['video', 'audio', 'premium']).default(createDownloadBodyMediaTypeDefault),
+  "title": zod.string().nullable().optional()
 })
 
 export const createDownloadResponseProgressMin = 0;
@@ -69,11 +70,11 @@ export const createDownloadResponseProgressMax = 100;
 export const CreateDownloadResponse = zod.object({
   "id": zod.string(),
   "url": zod.string(),
-  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'unknown']),
+  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'facebook', 'unknown']),
   "title": zod.string().nullable(),
   "status": zod.enum(['queued', 'downloading', 'completed', 'failed']),
   "progress": zod.number().min(createDownloadResponseProgressMin).max(createDownloadResponseProgressMax),
-  "mediaType": zod.enum(['video', 'audio']),
+  "mediaType": zod.enum(['video', 'audio', 'premium']),
   "filename": zod.string().nullable(),
   "createdAt": zod.string(),
   "downloadUrl": zod.string().nullable(),
@@ -92,11 +93,11 @@ export const listRecentDownloadsResponseProgressMax = 100;
 export const ListRecentDownloadsResponseItem = zod.object({
   "id": zod.string(),
   "url": zod.string(),
-  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'unknown']),
+  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'facebook', 'unknown']),
   "title": zod.string().nullable(),
   "status": zod.enum(['queued', 'downloading', 'completed', 'failed']),
   "progress": zod.number().min(listRecentDownloadsResponseProgressMin).max(listRecentDownloadsResponseProgressMax),
-  "mediaType": zod.enum(['video', 'audio']),
+  "mediaType": zod.enum(['video', 'audio', 'premium']),
   "filename": zod.string().nullable(),
   "createdAt": zod.string(),
   "downloadUrl": zod.string().nullable(),
@@ -120,11 +121,11 @@ export const getDownloadResponseProgressMax = 100;
 export const GetDownloadResponse = zod.object({
   "id": zod.string(),
   "url": zod.string(),
-  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'unknown']),
+  "platform": zod.enum(['youtube', 'instagram', 'threads', 'tiktok', 'facebook', 'unknown']),
   "title": zod.string().nullable(),
   "status": zod.enum(['queued', 'downloading', 'completed', 'failed']),
   "progress": zod.number().min(getDownloadResponseProgressMin).max(getDownloadResponseProgressMax),
-  "mediaType": zod.enum(['video', 'audio']),
+  "mediaType": zod.enum(['video', 'audio', 'premium']),
   "filename": zod.string().nullable(),
   "createdAt": zod.string(),
   "downloadUrl": zod.string().nullable(),

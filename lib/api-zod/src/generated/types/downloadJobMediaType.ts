@@ -12,4 +12,5 @@ export type DownloadJobMediaType = typeof DownloadJobMediaType[keyof typeof Down
 export const DownloadJobMediaType = {
   video: 'video',
   audio: 'audio',
+  premium: 'premium',
 } as const;
