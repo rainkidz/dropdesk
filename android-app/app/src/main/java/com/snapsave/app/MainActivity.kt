@@ -1,16 +1,12 @@
 package com.snapsave.app
 
-import android.content.ContentValues
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -21,23 +17,17 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.*
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var serverCard: MaterialCardView
-    private lateinit var serverUrlInput: TextInputEditText
-    private lateinit var connectButton: MaterialButton
     private lateinit var urlCard: MaterialCardView
     private lateinit var urlInput: TextInputEditText
     private lateinit var inspectButton: MaterialButton
@@ -61,48 +51,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var downloadStatus: TextView
     private lateinit var completeCard: MaterialCardView
     private lateinit var completeFileName: TextView
-    private lateinit var saveButton: MaterialButton
     private lateinit var newDownloadButton: MaterialButton
-    private lateinit var historyHeader: TextView
-    private lateinit var historyList: LinearLayout
 
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private var currentInspect: InspectResponse? = null
-    private var selectedFormatId: String? = null
-    private var selectedType: String = "video" // "video" or "audio"
-    private var lastJobId: String? = null
-    private var lastDownloadUrl: String? = null
-    private var lastFilename: String? = null
-    private var lastContentType: String? = null
-
-    // ── Platform colors ──────────────────────────────────────
-    private val platformColors = mapOf(
-        "youtube" to 0xFFFF0000.toInt(),
-        "tiktok" to 0xFFEE1D52.toInt(),
-        "facebook" to 0xFF1877F2.toInt(),
-        "instagram" to 0xFFE4405F.toInt(),
-        "threads" to 0xFF000000.toInt(),
-        "unknown" to 0xFF757575.toInt()
-    )
+    private var currentInfo: PlatformInfo? = null
+    private var selectedType: String = "video"
+    private var downloadManager: DownloadManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        downloadManager = DownloadManager(this)
         bindViews()
         setupListeners()
-
-        // Load saved server URL
-        val savedUrl = getServerUrl()
-        if (savedUrl != null) {
-            showMainUI()
-            ApiClient.configure(savedUrl)
-            serverUrlInput.setText(savedUrl)
-        } else {
-            showServerSetup()
-        }
-
-        // Handle shared intent (URL from other apps)
+        checkPermissions()
         handleShareIntent(intent)
     }
 
@@ -116,25 +79,30 @@ class MainActivity : AppCompatActivity() {
             val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
             if (sharedText != null && isUrl(sharedText)) {
                 urlInput.setText(sharedText.trim())
-                // Auto-inspect if server is connected
-                if (ApiClient.getBaseUrl().isNotEmpty()) {
-                    doInspect(sharedText.trim())
-                }
+                doInspect(sharedText.trim())
             }
         }
     }
 
     private fun isUrl(text: String): Boolean {
-        return text.contains("youtube.com") || text.contains("youtu.be") ||
-                text.contains("tiktok.com") || text.contains("facebook.com") ||
-                text.contains("instagram.com") || text.contains("threads.net") ||
-                text.startsWith("http://") || text.startsWith("https://")
+        val lower = text.lowercase()
+        return lower.contains("youtube.com") || lower.contains("youtu.be") ||
+                lower.contains("tiktok.com") || lower.contains("vm.tiktok.com") ||
+                lower.contains("facebook.com") || lower.contains("fb.watch") ||
+                lower.contains("instagram.com") || lower.contains("threads.net")
+    }
+
+    private fun checkPermissions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+            }
+        }
     }
 
     private fun bindViews() {
-        serverCard = findViewById(R.id.serverCard)
-        serverUrlInput = findViewById(R.id.serverUrlInput)
-        connectButton = findViewById(R.id.connectButton)
         urlCard = findViewById(R.id.urlCard)
         urlInput = findViewById(R.id.urlInput)
         inspectButton = findViewById(R.id.inspectButton)
@@ -158,43 +126,10 @@ class MainActivity : AppCompatActivity() {
         downloadStatus = findViewById(R.id.downloadStatus)
         completeCard = findViewById(R.id.completeCard)
         completeFileName = findViewById(R.id.completeFileName)
-        saveButton = findViewById(R.id.saveButton)
         newDownloadButton = findViewById(R.id.newDownloadButton)
-        historyHeader = findViewById(R.id.historyHeader)
-        historyList = findViewById(R.id.historyList)
     }
 
     private fun setupListeners() {
-        // Server connect
-        connectButton.setOnClickListener {
-            val url = serverUrlInput.text.toString().trim()
-            if (url.isEmpty()) {
-                serverUrlInput.error = "Enter server URL"
-                return@setOnClickListener
-            }
-            connectButton.isEnabled = false
-            connectButton.text = "Connecting..."
-
-            mainScope.launch {
-                try {
-                    ApiClient.configure(url)
-                    val health = ApiClient.getApi().healthCheck()
-                    if (health["status"] == "ok") {
-                        saveServerUrl(url)
-                        showMainUI()
-                        Toast.makeText(this@MainActivity, "Connected!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        showError("Server returned unexpected response")
-                    }
-                } catch (e: Exception) {
-                    showError("Cannot connect to server: ${e.message}")
-                } finally {
-                    connectButton.isEnabled = true
-                    connectButton.text = "Connect & Start"
-                }
-            }
-        }
-
         // Inspect button
         inspectButton.setOnClickListener {
             val url = urlInput.text.toString().trim()
@@ -219,24 +154,9 @@ class MainActivity : AppCompatActivity() {
 
         // Download button
         downloadButton.setOnClickListener {
-            val formatId = selectedFormatId
             val url = urlInput.text.toString().trim()
-            if (formatId == null) {
-                Toast.makeText(this, "Select a format", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            doDownload(url, formatId)
-        }
-
-        // Save button
-        saveButton.setOnClickListener {
-            lastDownloadUrl?.let { url ->
-                lastFilename?.let { name ->
-                    lastContentType?.let { ct ->
-                        saveToDevice(url, name, ct)
-                    }
-                }
-            }
+            if (url.isEmpty()) return@setOnClickListener
+            doDownload(url, selectedType)
         }
 
         // New download
@@ -253,11 +173,16 @@ class MainActivity : AppCompatActivity() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(urlInput.windowToken, 0)
 
+        val platform = PlatformDetector.detect(url)
+
         mainScope.launch {
             try {
-                val result = ApiClient.getApi().inspect(InspectRequest(url))
-                currentInspect = result
-                showResult(result)
+                when (platform) {
+                    Platform.YOUTUBE -> inspectYouTube(url)
+                    Platform.TIKTOK -> inspectTikTok(url)
+                    Platform.FACEBOOK -> inspectFacebook(url)
+                    else -> showError("Platform not supported: ${platform.displayName}")
+                }
             } catch (e: Exception) {
                 showError(e.message ?: "Unknown error occurred")
             } finally {
@@ -267,78 +192,163 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showResult(result: InspectResponse) {
+    private suspend fun inspectYouTube(url: String) {
+        loadingText.text = "Fetching YouTube video info..."
+        val videoId = PlatformDetector.extractVideoId(url)
+            ?: throw Exception("Cannot extract video ID from URL")
+
+        val info = YouTubeExtractor.extract(videoId).getOrThrow()
+
+        val formats = mutableListOf<FormatChoice>()
+
+        // Add video formats
+        info.formats.filter { !it.isAudioOnly }.sortedByDescending { it.height ?: 0 }.forEach { fmt ->
+            formats.add(FormatChoice(
+                id = "video_${fmt.itag}",
+                label = "${fmt.qualityLabel ?: fmt.height?.toString() ?: "Video"} — ${getExtFromMime(fmt.mimeType)}",
+                type = "video",
+                ext = getExtFromMime(fmt.mimeType),
+                quality = fmt.qualityLabel,
+                sizeBytes = fmt.contentLength
+            ))
+        }
+
+        // Add audio formats
+        info.formats.filter { it.isAudioOnly }.sortedByDescending { it.bitrate ?: 0 }.forEach { fmt ->
+            val bitrate = fmt.bitrate?.let { "${it / 1000}kbps" } ?: ""
+            formats.add(FormatChoice(
+                id = "audio_${fmt.itag}",
+                label = "Audio — $bitrate — ${getExtFromMime(fmt.mimeType)}",
+                type = "audio",
+                ext = getExtFromMime(fmt.mimeType),
+                quality = bitrate,
+                sizeBytes = fmt.contentLength
+            ))
+        }
+
+        currentInfo = PlatformInfo(
+            platform = Platform.YOUTUBE,
+            title = info.title,
+            duration = info.duration,
+            thumbnail = info.thumbnail,
+            formats = formats
+        )
+
+        showResult(currentInfo!!)
+    }
+
+    private suspend fun inspectTikTok(url: String) {
+        loadingText.text = "Fetching TikTok video info..."
+        val info = TikTokExtractor.extract(url).getOrThrow()
+
+        val formats = mutableListOf<FormatChoice>()
+
+        // Video format
+        formats.add(FormatChoice(
+            id = "tiktok_video",
+            label = "Video (No Watermark)",
+            type = "video",
+            ext = "mp4",
+            quality = null,
+            sizeBytes = null
+        ))
+
+        // Audio format
+        if (info.audioUrl != null) {
+            formats.add(FormatChoice(
+                id = "tiktok_audio",
+                label = "Audio / Music",
+                type = "audio",
+                ext = "mp3",
+                quality = null,
+                sizeBytes = null
+            ))
+        }
+
+        currentInfo = PlatformInfo(
+            platform = Platform.TIKTOK,
+            title = info.title,
+            duration = info.duration,
+            thumbnail = info.coverUrl,
+            formats = formats
+        )
+
+        showResult(currentInfo!!)
+    }
+
+    private suspend fun inspectFacebook(url: String) {
+        loadingText.text = "Fetching Facebook video info..."
+        val info = FacebookExtractor.extract(url).getOrThrow()
+
+        val formats = mutableListOf<FormatChoice>()
+        formats.add(FormatChoice(
+            id = "facebook_video",
+            label = "Video (MP4)",
+            type = "video",
+            ext = "mp4",
+            quality = null,
+            sizeBytes = null
+        ))
+
+        currentInfo = PlatformInfo(
+            platform = Platform.FACEBOOK,
+            title = info.title,
+            duration = info.duration,
+            thumbnail = info.thumbnail,
+            formats = formats
+        )
+
+        showResult(currentInfo!!)
+    }
+
+    private fun showResult(info: PlatformInfo) {
         hideAll()
 
         // Platform chip
-        val platform = result.platform.lowercase()
-        val color = platformColors[platform] ?: platformColors["unknown"]!!
-        platformChip.text = platform.replaceFirstChar { it.uppercase() }
-        platformChip.chipBackgroundColor = android.content.res.ColorStateList.valueOf(color)
+        platformChip.text = info.platform.displayName
+        platformChip.chipBackgroundColor = android.content.res.ColorStateList.valueOf(info.platform.color)
         platformChip.setTextColor(Color.WHITE)
 
         // Title & duration
-        videoTitle.text = result.title ?: "Unknown title"
-        videoDuration.text = formatDuration(result.duration)
-
+        videoTitle.text = info.title ?: "Unknown title"
+        videoDuration.text = formatDuration(info.duration)
         videoInfoCard.visibility = View.VISIBLE
 
-        // Check if platform needs cookies
-        if (result.formats.isEmpty()) {
-            showError("No downloadable formats found. This platform may require login (cookies).")
+        // Check formats
+        if (info.formats.isEmpty()) {
+            showError("No downloadable formats found.")
             return
         }
 
-        // Show download type selection
-        val hasVideoFormats = result.formats.any { it.formatId.startsWith("video_") || it.formatId == "bestvideo" }
-        val hasAudioFormats = result.formats.any { it.formatId.startsWith("audio_") || it.formatId == "bestaudio" }
+        // Show type selection
+        val hasVideo = info.formats.any { it.type == "video" }
+        val hasAudio = info.formats.any { it.type == "audio" }
 
-        if (hasVideoFormats && hasAudioFormats) {
+        if (hasVideo && hasAudio) {
             downloadTypeCard.visibility = View.VISIBLE
             selectType("video")
-        } else if (hasVideoFormats) {
+        } else if (hasVideo) {
             selectType("video")
-        } else if (hasAudioFormats) {
+        } else if (hasAudio) {
             selectType("audio")
-        } else {
-            // TikTok format - show all
-            downloadTypeCard.visibility = View.VISIBLE
-            selectType("video")
         }
     }
 
     private fun selectType(type: String) {
         selectedType = type
-        val result = currentInspect ?: return
+        val info = currentInfo ?: return
 
-        // Highlight selected button
         videoOnlyButton.strokeWidth = if (type == "video") 3 else 1
         audioOnlyButton.strokeWidth = if (type == "audio") 3 else 1
 
-        // Filter formats
-        val filtered = when (type) {
-            "video" -> result.formats.filter {
-                it.formatId.startsWith("video_") || it.formatId == "bestvideo" ||
-                it.formatId == "sd" || it.formatId == "hd" ||
-                (it.label.lowercase().contains("video") && !it.label.lowercase().contains("audio"))
-            }
-            "audio" -> result.formats.filter {
-                it.formatId.startsWith("audio_") || it.formatId == "bestaudio" ||
-                it.formatId == "mp3" || it.formatId.contains("audio") ||
-                it.label.lowercase().contains("audio")
-            }
-            else -> result.formats
-        }
-
-        val formats = if (filtered.isEmpty()) result.formats else filtered
-        showFormats(formats, type)
+        val filtered = info.formats.filter { it.type == type }
+        showFormats(filtered)
     }
 
-    private fun showFormats(formats: List<FormatOption>, type: String) {
+    private fun showFormats(formats: List<FormatChoice>) {
         formatRadioGroup.removeAllViews()
-        selectedFormatId = null
 
-        val typeLabel = if (type == "audio") "Audio formats" else "Video formats"
+        val typeLabel = if (selectedType == "audio") "Audio formats" else "Video formats"
         formatTypeLabel.text = typeLabel
 
         formats.forEachIndexed { index, format ->
@@ -346,181 +356,59 @@ class MainActivity : AppCompatActivity() {
                 id = View.generateViewId()
                 text = buildString {
                     append(format.label)
-                    format.filesizeBytes?.let {
+                    format.sizeBytes?.let {
                         append(" • ")
                         append(formatFileSize(it))
                     }
-                    if (format.requiresPremium) append(" ⭐")
                 }
                 textSize = 14f
                 setPadding(0, 12, 0, 12)
-                tag = format.formatId
+                tag = format.id
             }
             formatRadioGroup.addView(radioButton)
 
-            // Select first by default
             if (index == 0) {
                 radioButton.isChecked = true
-                selectedFormatId = format.formatId
-            }
-
-            radioButton.setOnClickListener {
-                selectedFormatId = format.formatId as String
             }
         }
 
         formatCard.visibility = View.VISIBLE
     }
 
-    private fun doDownload(url: String, formatId: String) {
-        val platform = currentInspect?.platform?.lowercase() ?: "youtube"
+    private fun doDownload(url: String, type: String) {
+        val info = currentInfo
+        val platform = info?.platform ?: PlatformDetector.detect(url)
 
         hideAll()
         progressCard.visibility = View.VISIBLE
         downloadProgress.progress = 0
-        downloadStatus.text = "Starting download..."
+        downloadProgress.isIndeterminate = true
+        downloadStatus.text = "Preparing download..."
         downloadButton.isEnabled = false
 
-        mainScope.launch {
-            try {
-                val response = ApiClient.getApi().startDownload(
-                    DownloadRequest(url = url, formatId = formatId, platform = platform)
-                )
-                lastJobId = response.jobId
-                pollDownload(response.jobId)
-            } catch (e: Exception) {
-                showError("Download failed: ${e.message}")
-                progressCard.visibility = View.GONE
-                downloadButton.isEnabled = true
-            }
-        }
-    }
-
-    private fun pollDownload(jobId: String) {
-        mainScope.launch {
-            var attempts = 0
-            val maxAttempts = 120 // 2 minutes max
-
-            while (attempts < maxAttempts) {
-                try {
-                    val status = ApiClient.getApi().getDownloadStatus(jobId)
-                    val progressPct = ((status.progress ?: 0.0) * 100).toInt()
-
-                    downloadProgress.progress = progressPct
-                    downloadStatus.text = when (status.status) {
-                        "pending" -> "Queued..."
-                        "running" -> if (progressPct > 0) "Downloading... $progressPct%" else "Downloading..."
-                        "completed" -> "Download complete!"
-                        "failed" -> "Failed: ${status.error}"
-                        else -> status.status
-                    }
-
-                    when (status.status) {
-                        "completed" -> {
-                            lastDownloadUrl = status.downloadUrl
-                            lastFilename = status.filename
-                            lastContentType = status.contentType
-                            showComplete(status)
-                            return@launch
-                        }
-                        "failed" -> {
-                            showError(status.error ?: "Download failed")
-                            progressCard.visibility = View.GONE
-                            return@launch
-                        }
-                    }
-
-                    delay(1000)
-                    attempts++
-                } catch (e: Exception) {
-                    delay(2000)
-                    attempts++
-                }
+        downloadManager?.downloadFromUrl(url, type, object : DownloadManager.DownloadCallback {
+            override fun onProgress(bytesDownloaded: Long, totalBytes: Long, percent: Int) {
+                downloadProgress.isIndeterminate = false
+                downloadProgress.progress = percent
+                val downloaded = formatFileSize(bytesDownloaded)
+                val total = if (totalBytes > 0) formatFileSize(totalBytes) else "?"
+                downloadStatus.text = "Downloading... $downloaded / $total ($percent%)"
             }
 
-            showError("Download timed out")
-            progressCard.visibility = View.GONE
-        }
-    }
-
-    private fun showComplete(status: DownloadStatus) {
-        hideAll()
-        completeCard.visibility = View.VISIBLE
-        completeFileName.text = status.filename ?: "downloaded_file"
-    }
-
-    private fun saveToDevice(downloadUrl: String, filename: String, contentType: String) {
-        saveButton.isEnabled = false
-        saveButton.text = "Saving..."
-
-        mainScope.launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    val fullUrl = if (downloadUrl.startsWith("http")) {
-                        downloadUrl
-                    } else {
-                        "${ApiClient.getBaseUrl()}$downloadUrl"
-                    }
-
-                    val url = URL(fullUrl)
-                    val connection = url.openConnection()
-                    connection.connect()
-
-                    val inputStream = connection.getInputStream()
-                    val ext = filename.substringAfterLast('.', "bin")
-                    val mimeType = contentType ?: "application/octet-stream"
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        // Android 10+ — use MediaStore
-                        val contentValues = ContentValues().apply {
-                            put(MediaStore.Downloads.DISPLAY_NAME, filename)
-                            put(MediaStore.Downloads.MIME_TYPE, mimeType)
-                            put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/SnapSave")
-                        }
-                        val resolver = contentResolver
-                        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                            ?: throw Exception("Cannot create file")
-
-                        resolver.openOutputStream(uri)?.use { outputStream ->
-                            inputStream.copyTo(outputStream)
-                        }
-                    } else {
-                        // Android 9 and below — direct file write
-                        val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "SnapSave")
-                        dir.mkdirs()
-                        val file = File(dir, filename)
-                        FileOutputStream(file).use { outputStream ->
-                            inputStream.copyTo(outputStream)
-                        }
-                    }
-
-                    inputStream.close()
-                }
-
-                Toast.makeText(this@MainActivity, "Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
-                saveButton.text = "✅ Saved!"
-            } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Save failed: ${e.message}", Toast.LENGTH_LONG).show()
-                saveButton.isEnabled = true
-                saveButton.text = "💾 Save to Downloads"
+            override fun onComplete(filePath: String, filename: String) {
+                hideAll()
+                completeCard.visibility = View.VISIBLE
+                completeFileName.text = filename
+                Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
             }
-        }
+
+            override fun onError(error: String) {
+                showError("Download failed: $error")
+            }
+        })
     }
 
     // ── UI Helpers ───────────────────────────────────────────
-
-    private fun showServerSetup() {
-        serverCard.visibility = View.VISIBLE
-        urlCard.alpha = 0.5f
-        urlCard.isEnabled = false
-    }
-
-    private fun showMainUI() {
-        serverCard.visibility = View.GONE
-        urlCard.alpha = 1.0f
-        urlCard.isEnabled = true
-        urlInput.requestFocus()
-    }
 
     private fun showError(message: String) {
         hideAll()
@@ -541,32 +429,16 @@ class MainActivity : AppCompatActivity() {
     private fun resetUI() {
         hideAll()
         urlInput.text?.clear()
-        currentInspect = null
-        selectedFormatId = null
-        lastJobId = null
-        lastDownloadUrl = null
-        lastFilename = null
-        lastContentType = null
+        currentInfo = null
+        selectedType = "video"
         downloadButton.isEnabled = true
-        saveButton.isEnabled = true
-        saveButton.text = "💾 Save to Downloads"
         urlInput.requestFocus()
-    }
-
-    // ── Persistence ──────────────────────────────────────────
-
-    private fun getServerUrl(): String? {
-        return getSharedPreferences("snapsave", MODE_PRIVATE).getString("server_url", null)
-    }
-
-    private fun saveServerUrl(url: String) {
-        getSharedPreferences("snapsave", MODE_PRIVATE).edit().putString("server_url", url).apply()
     }
 
     // ── Utilities ────────────────────────────────────────────
 
     private fun formatDuration(seconds: Double?): String {
-        if (seconds == null) return ""
+        if (seconds == null || seconds <= 0) return ""
         val totalSeconds = seconds.toInt()
         val minutes = totalSeconds / 60
         val secs = totalSeconds % 60
@@ -582,8 +454,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getExtFromMime(mimeType: String): String {
+        return when {
+            mimeType.contains("mp4") -> "mp4"
+            mimeType.contains("webm") -> "webm"
+            mimeType.contains("mp3") -> "mp3"
+            mimeType.contains("m4a") -> "m4a"
+            mimeType.contains("ogg") -> "ogg"
+            mimeType.contains("opus") -> "opus"
+            mimeType.contains("wav") -> "wav"
+            else -> "mp4"
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        downloadManager?.cancel()
         mainScope.cancel()
     }
 }

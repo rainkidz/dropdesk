@@ -8,11 +8,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.snapsave.app"
+        applicationId = "com.vidgrab.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "2.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -72,12 +72,13 @@ dependencies {
     // Material Design 3
     implementation("com.google.android.material:material:1.11.0")
 
-    // Networking - OkHttp + Retrofit
+    // Networking - OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // JSON parsing
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.json:json:20231013")
 
     // Image Loading - Coil
     implementation("io.coil-kt:coil:2.5.0")

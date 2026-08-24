@@ -1,77 +1,34 @@
 package com.snapsave.app
 
-import com.google.gson.annotations.SerializedName
+/**
+ * Standalone data models — no server dependency.
+ */
 
-// ── Inspect ──────────────────────────────────────────────────
-
-data class InspectRequest(
-    val url: String
-)
-
-data class InspectResponse(
-    val platform: String,
+// ── Platform Info ──────────────────────────────────────────
+data class PlatformInfo(
+    val platform: Platform,
     val title: String?,
     val duration: Double?,
     val thumbnail: String?,
-    val formats: List<FormatOption>
+    val formats: List<FormatChoice>
 )
 
-data class FormatOption(
-    val formatId: String,
-    val label: String,
-    val ext: String,
-    @SerializedName("download_url")
-    val downloadUrl: String? = null,
-    @SerializedName("filesize_bytes")
-    val filesizeBytes: Long? = null,
-    @SerializedName("requires_premium")
-    val requiresPremium: Boolean = false
-)
-
-// ── Download ─────────────────────────────────────────────────
-
-data class DownloadRequest(
-    val url: String,
-    @SerializedName("format_id")
-    val formatId: String,
-    val platform: String
-)
-
-data class DownloadResponse(
-    @SerializedName("job_id")
-    val jobId: String,
-    val status: String
-)
-
-data class DownloadStatus(
+// ── Format Choice ──────────────────────────────────────────
+data class FormatChoice(
     val id: String,
-    val status: String,
-    @SerializedName("download_url")
-    val downloadUrl: String? = null,
-    @SerializedName("save_url")
-    val saveUrl: String? = null,
-    val filename: String? = null,
-    @SerializedName("content_type")
-    val contentType: String? = null,
-    val error: String? = null,
-    val progress: Double? = null
-)
-
-// ── Premium Download ─────────────────────────────────────────
-
-data class PremiumFormat(
-    @SerializedName("format_id")
-    val formatId: String,
     val label: String,
+    val type: String,       // "video" or "audio"
     val ext: String,
-    @SerializedName("filesize_bytes")
-    val filesizeBytes: Long? = null
+    val quality: String?,   // e.g. "720p", "1080p", "128kbps"
+    val sizeBytes: Long?
 )
 
-data class PremiumDownloadRequest(
-    val url: String,
-    val platform: String,
-    @SerializedName("resolution")
-    val resolution: String,
-    val type: String
-)
+// ── Download State ─────────────────────────────────────────
+sealed class DownloadState {
+    object Idle : DownloadState()
+    object Inspecting : DownloadState()
+    data class Ready(val info: PlatformInfo) : DownloadState()
+    data class Downloading(val percent: Int, val bytesDownloaded: Long, val totalBytes: Long) : DownloadState()
+    data class Completed(val filename: String) : DownloadState()
+    data class Error(val message: String) : DownloadState()
+}

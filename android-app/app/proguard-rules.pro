@@ -1,4 +1,18 @@
-# Add project specific ProGuard rules here.
+# FFmpeg-kit
+-keep class com.arthenica.ffmpegkit.** { *; }
+
+# OkHttp
 -dontwarn okhttp3.**
--dontwarn retrofit2.**
+-dontwarn okio.**
+-keep class okhttp3.** { *; }
+
+# Gson
+-keepattributes Signature
+-keepattributes *Annotation*
 -keep class com.snapsave.app.** { *; }
+-keep class com.google.gson.** { *; }
+
+# Keep data classes
+-keep class com.snapsave.app.PlatformInfo { *; }
+-keep class com.snapsave.app.FormatChoice { *; }
+-keep class com.snapsave.app.DownloadState { *; }
