@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity() {
         val videoId = PlatformDetector.extractVideoId(url)
             ?: throw Exception("Cannot extract video ID from URL")
 
-        val info = YouTubeExtractor.extract(videoId).getOrThrow()
+        val info = YouTubeExtractor.extract(this@MainActivity, videoId).getOrThrow()
 
         val formats = mutableListOf<FormatChoice>()
 

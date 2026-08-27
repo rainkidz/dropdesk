@@ -149,45 +149,42 @@ class DownloadManager(private val context: Context) {
     }
 
     private suspend fun downloadYouTube(url: String, type: String, callback: DownloadCallback) {
-        val videoId = PlatformDetector.extractVideoId(url)
-            ?: throw Exception("Cannot extract video ID from URL")
-
-        val info = YouTubeExtractor.extract(videoId).getOrThrow()
-
-        if (type == "audio") {
-            // Find best audio stream
-            val audioStream = info.formats
-                .filter { it.isAudioOnly }
-                .maxByOrNull { it.bitrate ?: 0 }
-                ?: throw Exception("No audio stream found")
-
-            val ext = getExtFromMime(audioStream.mimeType)
-            val filename = "${sanitizeFilename(info.title)}.$ext"
-
-            YouTubeExtractor.downloadStream(audioStream.url, filename) { downloaded, total ->
-                val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
-                postProgress(callback, downloaded, total, percent)
-            }.getOrThrow()
-
-            postComplete(callback, filename)
+        val format = if (type == "audio") {
+            "bestaudio/best"
         } else {
-            // Find best video stream (prefer highest resolution with URL)
-            val videoStreams = info.formats
-                .filter { !it.isAudioOnly && it.url.isNotEmpty() }
-                .sortedByDescending { it.height ?: 0 }
+            "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/best"
+        }
 
-            val videoStream = videoStreams.firstOrNull()
-                ?: throw Exception("No video stream found")
+        val dir = java.io.File(context.filesDir, "downloads")
+        dir.mkdirs()
+        val outputPath = java.io.File(dir, "%(title)s.%(ext)s").absolutePath
 
-            val ext = getExtFromMime(videoStream.mimeType)
-            val filename = "${sanitizeFilename(info.title)}_${videoStream.qualityLabel ?: videoStream.height?.toString() ?: "best"}.$ext"
+        postProgress(callback, 0, 0, 0)
 
-            YouTubeExtractor.downloadStream(videoStream.url, filename) { downloaded, total ->
-                val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
-                postProgress(callback, downloaded, total, percent)
-            }.getOrThrow()
+        YouTubeExtractor.downloadStream(context, url, format, outputPath) { line ->
+            // Parse yt-dlp progress output
+            val percentMatch = Regex("\\[download\\]\\s+(\\d+\\.?\\d*)%").find(line)
+            if (percentMatch != null) {
+                val percent = percentMatch.groupValues[1].toDoubleOrNull()?.toInt() ?: -1
+                postProgress(callback, 0, 0, percent)
+            }
+            val destMatch = Regex("\\[download\\]\\s+Destination:\\s+(.+)").find(line)
+            if (destMatch != null) {
+                val filename = File(destMatch.groupValues[1]).name
+                postProgress(callback, 0, 0, 0)
+            }
+            if (line.contains("100%")) {
+                postProgress(callback, 0, 0, 100)
+            }
+        }.getOrThrow()
 
-            postComplete(callback, filename)
+        // Find the downloaded file
+        val files = dir.listFiles()?.sortedByDescending { it.lastModified() }
+        val downloadedFile = files?.firstOrNull()
+        if (downloadedFile != null && downloadedFile.exists()) {
+            postComplete(callback, downloadedFile.name)
+        } else {
+            throw Exception("Download completed but file not found")
         }
     }
 
