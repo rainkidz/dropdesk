@@ -161,17 +161,12 @@ class DownloadManager(private val context: Context) {
 
         postProgress(callback, 0, 0, 0)
 
-        YouTubeExtractor.downloadStream(context, url, format, outputPath) { line ->
+        YtDlpRunner.download(context, url, outputPath, format) { line ->
             // Parse yt-dlp progress output
-            val percentMatch = Regex("\\[download\\]\\s+(\\d+\\.?\\d*)%").find(line)
+            val percentMatch = Regex("([\\d.]+)%").find(line)
             if (percentMatch != null) {
                 val percent = percentMatch.groupValues[1].toDoubleOrNull()?.toInt() ?: -1
                 postProgress(callback, 0, 0, percent)
-            }
-            val destMatch = Regex("\\[download\\]\\s+Destination:\\s+(.+)").find(line)
-            if (destMatch != null) {
-                val filename = File(destMatch.groupValues[1]).name
-                postProgress(callback, 0, 0, 0)
             }
             if (line.contains("100%")) {
                 postProgress(callback, 0, 0, 100)
