@@ -21,7 +21,9 @@ data class FormatChoice(
     val ext: String,
     val quality: String?,   // e.g. "720p", "1080p", "128kbps"
     val sizeBytes: Long?,
-    val ytDlpFormatId: String? = null  // actual yt-dlp format ID for direct download
+    val ytDlpFormatId: String? = null,  // actual yt-dlp format ID for direct download
+    val height: Int = 0,     // video height in px for building format selector
+    val bitrate: Int = 0     // audio bitrate for building format selector
 )
 
 // ── Download State ─────────────────────────────────────────

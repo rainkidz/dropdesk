@@ -202,33 +202,48 @@ class MainActivity : AppCompatActivity() {
 
         val formats = mutableListOf<FormatChoice>()
 
-        // Add video formats
+        // Add video formats — use height-based selectors that yt-dlp resolves at download time
         info.formats.filter { !it.isAudioOnly }.sortedByDescending { it.height ?: 0 }.forEach { fmt ->
-            val fmtLabel = "${fmt.qualityLabel ?: fmt.height?.toString() ?: "Video"} — ${getExtFromMime(fmt.mimeType)}"
-            // Use the yt-dlp format_id for direct download (no merge needed)
-            // We need to find the actual format_id from YtDlpRunner
+            val ext = getExtFromMime(fmt.mimeType)
+            val h = fmt.height ?: 0
+            val fmtLabel = "${fmt.qualityLabel ?: if (h > 0) "${h}p" else "Video"} — $ext"
+            // Build a yt-dlp format selector: bestvideo[height<=H][ext=EXT]
+            val selector = if (h > 0) {
+                "bestvideo[height<=$h][ext=$ext]/bestvideo[height<=$h]"
+            } else {
+                "bestvideo[ext=$ext]/bestvideo"
+            }
             formats.add(FormatChoice(
                 id = "video_${fmt.itag}",
                 label = fmtLabel,
                 type = "video",
-                ext = getExtFromMime(fmt.mimeType),
+                ext = ext,
                 quality = fmt.qualityLabel,
                 sizeBytes = fmt.contentLength,
-                ytDlpFormatId = fmt.formatIdForDl
+                ytDlpFormatId = selector,
+                height = h
             ))
         }
 
         // Add audio formats
         info.formats.filter { it.isAudioOnly }.sortedByDescending { it.bitrate ?: 0 }.forEach { fmt ->
-            val bitrate = fmt.bitrate?.let { "${it / 1000}kbps" } ?: ""
+            val ext = getExtFromMime(fmt.mimeType)
+            val abr = (fmt.bitrate ?: 0) / 1000
+            val bitrateLabel = if (abr > 0) "${abr}kbps" else ""
+            val selector = if (abr > 0) {
+                "bestaudio[ext=$ext][abr>${abr - 50}]/bestaudio[ext=$ext]/bestaudio"
+            } else {
+                "bestaudio[ext=$ext]/bestaudio"
+            }
             formats.add(FormatChoice(
                 id = "audio_${fmt.itag}",
-                label = "Audio — $bitrate — ${getExtFromMime(fmt.mimeType)}",
+                label = "Audio — $bitrateLabel — $ext",
                 type = "audio",
-                ext = getExtFromMime(fmt.mimeType),
-                quality = bitrate,
+                ext = ext,
+                quality = bitrateLabel,
                 sizeBytes = fmt.contentLength,
-                ytDlpFormatId = fmt.formatIdForDl
+                ytDlpFormatId = selector,
+                bitrate = fmt.bitrate ?: 0
             ))
         }
 
