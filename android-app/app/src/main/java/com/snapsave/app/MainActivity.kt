@@ -28,6 +28,10 @@ import kotlinx.coroutines.*
 import android.widget.FrameLayout
 import android.view.animation.AnimationUtils
 import android.view.animation.Animation
+import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,6 +66,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginInstagramBtn: MaterialButton
     private lateinit var loginThreadsBtn: MaterialButton
     private lateinit var adContainer: android.widget.FrameLayout
+    private lateinit var bottomNavigation: BottomNavigationView
+    private lateinit var homeScrollView: androidx.core.widget.NestedScrollView
+    private lateinit var sitesScrollView: androidx.core.widget.NestedScrollView
+    private lateinit var settingsScrollView: androidx.core.widget.NestedScrollView
+    private lateinit var darkModeSwitch: SwitchMaterial
+    private lateinit var prefs: SharedPreferences
 
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val loginLauncher = registerForActivityResult(
@@ -160,6 +170,12 @@ class MainActivity : AppCompatActivity() {
         adContainer = findViewById(R.id.adContainer)
         loginInstagramBtn = findViewById(R.id.loginInstagramBtn)
         loginThreadsBtn = findViewById(R.id.loginThreadsBtn)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+        homeScrollView = findViewById(R.id.homeScrollView)
+        sitesScrollView = findViewById(R.id.sitesScrollView)
+        settingsScrollView = findViewById(R.id.settingsScrollView)
+        darkModeSwitch = findViewById(R.id.darkModeSwitch)
+        prefs = getSharedPreferences("vidgrab_prefs", MODE_PRIVATE)
     }
 
     private fun setupListeners() {
@@ -211,14 +227,76 @@ class MainActivity : AppCompatActivity() {
         }
 
         // New download
-        newDownloadButton.setOnClickListener { resetUI() }
+        newDownloadButton.setOnClickListener {
+            resetUI()
+            showHome()
+            bottomNavigation.selectedItemId = R.id.nav_home
+        }
 
         // Login buttons
         loginFacebookBtn.setOnClickListener { openLogin(CookieLoginActivity.PLATFORM_FACEBOOK) }
         loginInstagramBtn.setOnClickListener { openLogin(CookieLoginActivity.PLATFORM_INSTAGRAM) }
         loginThreadsBtn.setOnClickListener { openLogin(CookieLoginActivity.PLATFORM_THREADS) }
 
+        // Bottom Navigation
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    showHome()
+                    true
+                }
+                R.id.nav_sites -> {
+                    showSites()
+                    true
+                }
+                R.id.nav_downloads -> {
+                    startActivity(Intent(this, DownloadsActivity::class.java))
+                    false // Don't select, go to activity
+                }
+                R.id.nav_settings -> {
+                    showSettings()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // Dark Mode Toggle
+        val isDarkMode = prefs.getBoolean("dark_mode", false)
+        darkModeSwitch.isChecked = isDarkMode
+        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("dark_mode", isChecked).apply()
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
+        // Apply saved dark mode
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
+
         updateLoginStatus()
+    }
+
+    private fun showHome() {
+        homeScrollView.visibility = View.VISIBLE
+        sitesScrollView.visibility = View.GONE
+        settingsScrollView.visibility = View.GONE
+    }
+
+    private fun showSites() {
+        homeScrollView.visibility = View.GONE
+        sitesScrollView.visibility = View.VISIBLE
+        settingsScrollView.visibility = View.GONE
+    }
+
+    private fun showSettings() {
+        homeScrollView.visibility = View.GONE
+        sitesScrollView.visibility = View.GONE
+        settingsScrollView.visibility = View.VISIBLE
     }
 
     private fun openLogin(platform: String) {

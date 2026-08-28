@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Blue (Lighter for dark bg) -->
+    <color name="primary">#42A5F5</color>
+    <color name="primary_dark">#1565C0</color>
+    <color name="primary_light">#90CAF9</color>
+    
+    <!-- Accent Orange -->
+    <color name="accent">#FF9E40</color>
+    <color name="accent_light">#FFCC80</color>
+    
+    <!-- Neutral -->
+    <color name="white">#000000</color>
+    <color name="black">#FFFFFF</color>
+    <color name="surface">#121212</color>
+    <color name="surface_variant">#1E1E1E</color>
+    <color name="background">#121212</color>
+    
+    <!-- Text -->
+    <color name="text_primary">#E0E0E0</color>
+    <color name="text_secondary">#9E9E9E</color>
+    <color name="text_on_primary">#000000</color>
+    
+    <!-- Status -->
+    <color name="success">#66BB6A</color>
+    <color name="error">#EF5350</color>
+    <color name="warning">#FFD54F</color>
+    <color name="info">#42A5F5</color>
+    
+    <!-- Divider -->
+    <color name="divider">#333333</color>
+    
+    <!-- Platform Chip Backgrounds (Darker) -->
+    <color name="chip_youtube_bg">#3D1A1A</color>
+    <color name="chip_tiktok_bg">#3D1A2E</color>
+    <color name="chip_facebook_bg">#1A2A3D</color>
+    <color name="chip_instagram_bg">#2E1A3D</color>
+    <color name="chip_threads_bg">#2A2A2A</color>
+    
+    <!-- Premium Gold -->
+    <color name="premium_gold">#FFD54F</color>
+    <color name="premium_bg">#3D3520</color>
+    
+    <!-- Ad Background -->
+    <color name="ad_background">#1E1E1E</color>
+</resources>

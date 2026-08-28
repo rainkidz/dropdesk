@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base theme with Inter font -->
-    <style name="Theme.VidGrab" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- Base theme with Inter font - supports day/night -->
+    <style name="Theme.VidGrab" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary Colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
@@ -169,10 +169,12 @@
         <item name="android:activityCloseExitAnimation">@anim/slide_out_bottom</item>
     </style>
     
-    <!-- ========== CARD ANIMATIONS ========== -->
-    <style name="CardAnimation">
-        <item name="android:windowEnterTransition">@transition/card_transition</item>
-        <item name="android:windowReturnTransition">@transition/card_transition</item>
+    <!-- ========== SPLASH SCREEN THEME ========== -->
+    <style name="Theme.VidGrab.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/primary_dark</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
     
     <!-- ========== PROGRESS STYLE ========== -->
