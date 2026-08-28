@@ -153,16 +153,13 @@ class DownloadManager(private val context: Context) {
     }
 
     private suspend fun downloadYouTube(url: String, type: String, formatId: String?, callback: DownloadCallback) {
+        // Video only or audio only — single stream, no merge, no ffmpeg needed
         val format = if (!formatId.isNullOrEmpty()) {
-            // Use the specific format ID selected by user in UI
-            // This downloads a single stream — no merge/ffmpeg needed
             formatId
         } else if (type == "audio") {
-            // Audio-only: single stream, no merge needed
-            "bestaudio[ext=m4a]/bestaudio/best"
+            "bestaudio/best"
         } else {
-            // Video-only: single stream without audio, no merge needed
-            "bestvideo[ext=mp4]/best[ext=mp4]/best"
+            "bestvideo/best"
         }
 
         val dir = java.io.File(context.filesDir, "downloads")

@@ -108,10 +108,7 @@ def download_video(url, output_path, format_str, ffmpeg_location=None, progress_
         'progress_hooks': [progress_hook],
     }
 
-    # Only enable merge if ffmpeg is actually available
-    if ffmpeg_location and os.path.isdir(ffmpeg_location):
-        ydl_opts['ffmpeg_location'] = ffmpeg_location
-        ydl_opts['merge_output_format'] = 'mp4'
+    # No merge — video only or audio only, single stream
 
     try:
         _progress['phase'] = 'downloading'
