@@ -86,7 +86,8 @@ object YtDlpRunner {
         context: Context,
         url: String,
         outputPath: String,
-        format: String
+        format: String,
+        cookiesFile: String? = null
     ) {
         lastResult = null
         downloadError = null
@@ -97,26 +98,15 @@ object YtDlpRunner {
                 val py = Python.getInstance()
                 val ytUtils = py.getModule("yt_utils")
 
-                Log.d(TAG, "Downloading: $url with format $format")
+                Log.d(TAG, "Downloading: $url with format $format cookies=$cookiesFile")
 
-                val ffmpegDir = getFfmpegLocation(context)
-
-                val resultJson = if (ffmpegDir != null) {
-                    ytUtils.callAttr(
-                        "download_video",
-                        url,
-                        outputPath,
-                        format,
-                        ffmpegDir
-                    ).toString()
-                } else {
-                    ytUtils.callAttr(
-                        "download_video",
-                        url,
-                        outputPath,
-                        format
-                    ).toString()
-                }
+                val resultJson = ytUtils.callAttr(
+                    "download_video",
+                    url,
+                    outputPath,
+                    format,
+                    cookiesFile ?: ""
+                ).toString()
 
                 val json = JSONObject(resultJson)
                 if (json.has("error")) {

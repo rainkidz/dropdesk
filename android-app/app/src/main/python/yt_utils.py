@@ -70,12 +70,12 @@ def get_progress():
     return json.dumps(_progress)
 
 
-def download_video(url, output_path, format_str, ffmpeg_location=None, progress_callback=None):
+def download_video(url, output_path, format_str, cookies_file="", progress_callback=None):
     """
     Download video using yt-dlp.
     format_str: "bestvideo+bestaudio" or "bestaudio" etc.
     output_path: path template like "/path/to/%(title)s.%(ext)s"
-    ffmpeg_location: path to directory containing ffmpeg binary (from ffmpeg-kit)
+    cookies_file: path to Netscape cookies.txt file for authentication
     """
     global _progress
     _progress = {"phase": "extracting", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
@@ -108,7 +108,9 @@ def download_video(url, output_path, format_str, ffmpeg_location=None, progress_
         'progress_hooks': [progress_hook],
     }
 
-    # No merge — video only or audio only, single stream
+    # Use cookies for authenticated downloads (Facebook, Instagram, etc.)
+    if cookies_file and os.path.isfile(cookies_file):
+        ydl_opts['cookiefile'] = cookies_file
 
     try:
         _progress['phase'] = 'downloading'

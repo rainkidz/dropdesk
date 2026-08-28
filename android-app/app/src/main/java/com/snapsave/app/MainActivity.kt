@@ -52,8 +52,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var completeCard: MaterialCardView
     private lateinit var completeFileName: TextView
     private lateinit var newDownloadButton: MaterialButton
+    private lateinit var loginFacebookBtn: MaterialButton
+    private lateinit var loginInstagramBtn: MaterialButton
+    private lateinit var loginThreadsBtn: MaterialButton
 
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val loginLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val platform = result.data?.getStringExtra("platform") ?: return@registerForActivityResult
+            Toast.makeText(this, "✅ ${platform.replaceFirstChar { it.uppercase() }} login saved!", Toast.LENGTH_SHORT).show()
+            updateLoginStatus()
+        }
+    }
     private var currentInfo: PlatformInfo? = null
     private var selectedType: String = "video"
     private var selectedFormatId: String? = null
@@ -128,6 +140,9 @@ class MainActivity : AppCompatActivity() {
         completeCard = findViewById(R.id.completeCard)
         completeFileName = findViewById(R.id.completeFileName)
         newDownloadButton = findViewById(R.id.newDownloadButton)
+        loginFacebookBtn = findViewById(R.id.loginFacebookBtn)
+        loginInstagramBtn = findViewById(R.id.loginInstagramBtn)
+        loginThreadsBtn = findViewById(R.id.loginThreadsBtn)
     }
 
     private fun setupListeners() {
@@ -162,6 +177,36 @@ class MainActivity : AppCompatActivity() {
 
         // New download
         newDownloadButton.setOnClickListener { resetUI() }
+
+        // Login buttons
+        loginFacebookBtn.setOnClickListener { openLogin(CookieLoginActivity.PLATFORM_FACEBOOK) }
+        loginInstagramBtn.setOnClickListener { openLogin(CookieLoginActivity.PLATFORM_INSTAGRAM) }
+        loginThreadsBtn.setOnClickListener { openLogin(CookieLoginActivity.PLATFORM_THREADS) }
+
+        updateLoginStatus()
+    }
+
+    private fun openLogin(platform: String) {
+        val url = when (platform) {
+            CookieLoginActivity.PLATFORM_FACEBOOK -> CookieLoginActivity.PLATFORM_FACEBOOK
+            CookieLoginActivity.PLATFORM_INSTAGRAM -> CookieLoginActivity.PLATFORM_INSTAGRAM
+            CookieLoginActivity.PLATFORM_THREADS -> CookieLoginActivity.PLATFORM_THREADS
+            else -> platform
+        }
+        val intent = Intent(this, CookieLoginActivity::class.java).apply {
+            putExtra(CookieLoginActivity.EXTRA_PLATFORM, platform)
+        }
+        loginLauncher.launch(intent)
+    }
+
+    private fun updateLoginStatus() {
+        val fbHasLogin = CookieLoginActivity.hasCookies(this, "facebook")
+        val igHasLogin = CookieLoginActivity.hasCookies(this, "instagram")
+        val threadsHasLogin = CookieLoginActivity.hasCookies(this, "threads")
+
+        loginFacebookBtn.text = if (fbHasLogin) "✅ Facebook" else "Facebook"
+        loginInstagramBtn.text = if (igHasLogin) "✅ Instagram" else "Instagram"
+        loginThreadsBtn.text = if (threadsHasLogin) "✅ Threads" else "Threads"
     }
 
     private fun doInspect(url: String) {

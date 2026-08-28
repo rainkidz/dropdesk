@@ -267,7 +267,16 @@ class DownloadManager(private val context: Context) {
 
         postProgress(callback, 0, 0, 0)
 
-        YtDlpRunner.startDownload(context, url, outputPath, format)
+        // Find cookies file for this platform (if user logged in)
+        val platform = PlatformDetector.detect(url)
+        val cookiesFile = when (platform) {
+            Platform.FACEBOOK -> CookieLoginActivity.getCookiesFile(context, "facebook").let { if (it.exists()) it.absolutePath else null }
+            Platform.INSTAGRAM -> CookieLoginActivity.getCookiesFile(context, "instagram").let { if (it.exists()) it.absolutePath else null }
+            Platform.THREADS -> CookieLoginActivity.getCookiesFile(context, "threads").let { if (it.exists()) it.absolutePath else null }
+            else -> null
+        }
+
+        YtDlpRunner.startDownload(context, url, outputPath, format, cookiesFile)
 
         var lastPercent = -1
         var lastProgressTime = System.currentTimeMillis()
