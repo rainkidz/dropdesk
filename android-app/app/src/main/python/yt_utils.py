@@ -97,7 +97,9 @@ def download_video(url, output_path, format_str, cookies_file="", progress_callb
             _progress['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
             _progress['filename'] = d.get('filename', '')
         elif d['status'] == 'finished':
-            _progress['phase'] = 'finalizing'
+            # Only mark as finalizing on first finish — don't reset to downloading
+            if _progress['phase'] != 'done':
+                _progress['phase'] = 'finalizing'
             _progress['percent'] = 100.0
             _progress['filename'] = d.get('filename', '')
 

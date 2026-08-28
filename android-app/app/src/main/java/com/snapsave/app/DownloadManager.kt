@@ -163,7 +163,7 @@ class DownloadManager(private val context: Context) {
         } else if (type == "audio") {
             "bestaudio/best"
         } else {
-            "best/bestvideo"
+            "bestvideo/best"
         }
 
         val dir = java.io.File(context.filesDir, "downloads")
@@ -194,12 +194,19 @@ class DownloadManager(private val context: Context) {
             val progress = YtDlpRunner.getProgress(context)
             val currentPercent = progress.percent.toInt()
 
-            if (progress.phase == "done" || progress.phase == "error" || !YtDlpRunner.isDownloading()) {
+            if (progress.phase == "done" || progress.phase == "error") {
                 downloadDone = true
                 if (progress.phase == "done") {
                     postStatusText(callback, "Download complete!")
                     postProgress(callback, 0, 0, 100)
                 }
+                break
+            }
+            // Also break if thread finished but phase is still finalizing
+            if (!YtDlpRunner.isDownloading() && progress.phase == "finalizing") {
+                downloadDone = true
+                postStatusText(callback, "Download complete!")
+                postProgress(callback, 0, 0, 100)
                 break
             }
 

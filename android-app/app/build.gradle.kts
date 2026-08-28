@@ -12,8 +12,8 @@ android {
         applicationId = "com.vidgrab.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 7
-        versionName = "4.1.0"
+        versionCode = 8
+        versionName = "4.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

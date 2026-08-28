@@ -252,11 +252,11 @@ class MainActivity : AppCompatActivity() {
             val ext = getExtFromMime(fmt.mimeType)
             val h = fmt.height ?: 0
             val fmtLabel = "${fmt.qualityLabel ?: if (h > 0) "${h}p" else "Video"} — $ext"
-            // Build a yt-dlp format selector: best[height<=H][ext=EXT] — muxed format (no merge needed)
+            // Build a yt-dlp format selector: bestvideo[height<=H][ext=EXT] — video only, no audio
             val selector = if (h > 0) {
-                "best[height<=$h][ext=$ext]/bestvideo[height<=$h][ext=$ext]/best[height<=$h]"
+                "bestvideo[height<=$h][ext=$ext]/bestvideo[height<=$h]"
             } else {
-                "best[ext=$ext]/bestvideo[ext=$ext]/best"
+                "bestvideo[ext=$ext]/bestvideo"
             }
             formats.add(FormatChoice(
                 id = "video_${fmt.itag}",
