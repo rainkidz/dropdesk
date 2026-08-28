@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base theme with Inter font -->
     <style name="Theme.VidGrab" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary Colors -->
         <item name="colorPrimary">@color/primary</item>
@@ -18,6 +19,9 @@
         <item name="android:statusBarColor">@color/primary_dark</item>
         <item name="android:windowLightStatusBar">false</item>
         
+        <!-- Typography - Inter Font -->
+        <item name="android:fontFamily">@font/inter</item>
+        
         <!-- Text Colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
@@ -27,35 +31,152 @@
         
         <!-- Card Styles -->
         <item name="materialCardViewStyle">@style/Widget.VidGrab.CardView</item>
+        
+        <!-- Animations -->
+        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
     </style>
     
-    <!-- Button Style -->
+    <!-- ========== TYPOGRAPHY ========== -->
+    <style name="TextAppearance.VidGrab.Headline1" parent="TextAppearance.MaterialComponents.Headline1">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">32sp</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
+    </style>
+    
+    <style name="TextAppearance.VidGrab.Headline2" parent="TextAppearance.MaterialComponents.Headline2">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+    </style>
+    
+    <style name="TextAppearance.VidGrab.Headline3" parent="TextAppearance.MaterialComponents.Headline3">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+    </style>
+    
+    <style name="TextAppearance.VidGrab.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+    
+    <style name="TextAppearance.VidGrab.Body2" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+    
+    <style name="TextAppearance.VidGrab.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+    
+    <!-- ========== BUTTON STYLES ========== -->
     <style name="Widget.VidGrab.Button" parent="Widget.MaterialComponents.Button">
         <item name="cornerRadius">12dp</item>
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">12dp</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">14sp</item>
     </style>
     
-    <!-- Outlined Button Style -->
+    <style name="Widget.VidGrab.Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="backgroundTint">@color/primary</item>
+    </style>
+    
     <style name="Widget.VidGrab.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="cornerRadius">12dp</item>
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">12dp</item>
         <item name="android:textAllCaps">false</item>
         <item name="strokeColor">@color/primary</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:textSize">14sp</item>
     </style>
     
-    <!-- Card Style -->
-    <style name="Widget.VidGrab.CardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">12dp</item>
-        <item name="cardElevation">2dp</item>
-        <item name="contentPadding">16dp</item>
+    <style name="Widget.VidGrab.Button.Accent" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="backgroundTint">@color/accent</item>
+    </style>
+    
+    <style name="Widget.VidGrab.Button.Premium" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">15sp</item>
+        <item name="backgroundTint">@color/premium_gold</item>
+        <item name="android:textColor">@color/black</item>
     </style>
     
     <!-- Text Button Style -->
     <style name="Widget.VidGrab.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/primary</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+    </style>
+    
+    <!-- ========== CARD STYLE ========== -->
+    <style name="Widget.VidGrab.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+    
+    <style name="Widget.VidGrab.CardView.Elevated" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">16dp</item>
+        <item name="cardElevation">6dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+    
+    <!-- ========== INPUT STYLE ========== -->
+    <style name="Widget.VidGrab.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="android:fontFamily">@font/inter</item>
+    </style>
+    
+    <!-- ========== CHIP STYLES ========== -->
+    <style name="Widget.VidGrab.Chip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipCornerRadius">20dp</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+    </style>
+    
+    <!-- ========== WINDOW ANIMATIONS ========== -->
+    <style name="WindowAnimationTransition">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_bottom</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_top</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_top</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_bottom</item>
+    </style>
+    
+    <!-- ========== CARD ANIMATIONS ========== -->
+    <style name="CardAnimation">
+        <item name="android:windowEnterTransition">@transition/card_transition</item>
+        <item name="android:windowReturnTransition">@transition/card_transition</item>
+    </style>
+    
+    <!-- ========== PROGRESS STYLE ========== -->
+    <style name="Widget.VidGrab.ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/primary</item>
     </style>
 </resources>

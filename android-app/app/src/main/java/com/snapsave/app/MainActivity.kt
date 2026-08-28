@@ -26,6 +26,8 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.*
 import android.widget.FrameLayout
+import android.view.animation.AnimationUtils
+import android.view.animation.Animation
 
 class MainActivity : AppCompatActivity() {
 
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         downloadManager = DownloadManager(this)
         bindViews()
         setupListeners()
+        setupButtonAnimations()
         checkPermissions()
         handleShareIntent(intent)
 
@@ -412,7 +415,7 @@ class MainActivity : AppCompatActivity() {
         // Title & duration
         videoTitle.text = info.title ?: "Unknown title"
         videoDuration.text = formatDuration(info.duration)
-        videoInfoCard.visibility = View.VISIBLE
+        animateCardShow(videoInfoCard)
 
         // Show premium section (for YouTube only)
         if (info.platform == Platform.YOUTUBE) {
@@ -485,13 +488,13 @@ class MainActivity : AppCompatActivity() {
             selectedFormatId = checkedRadio?.tag as? String
         }
 
-        formatCard.visibility = View.VISIBLE
+        animateCardShow(formatCard)
         downloadButton.isEnabled = true
     }
 
     private fun doPremiumDownload(url: String, premiumType: String) {
         hideAll()
-        progressCard.visibility = View.VISIBLE
+        animateCardShow(progressCard)
         downloadProgress.progress = 0
         downloadProgress.isIndeterminate = true
         downloadStatus.text = "Preparing premium download..."
@@ -511,7 +514,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     override fun onComplete(filePath: String, filename: String) {
                         hideAll()
-                        completeCard.visibility = View.VISIBLE
+                        animateCardShow(completeCard)
                         completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
                         Toast.makeText(this@MainActivity, "✅ Premium download complete!", Toast.LENGTH_LONG).show()
                     }
@@ -532,7 +535,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     override fun onComplete(filePath: String, filename: String) {
                         hideAll()
-                        completeCard.visibility = View.VISIBLE
+                        animateCardShow(completeCard)
                         completeFileName.text = "📁 Playlist downloaded\nSaved to: Downloads/SnapSave/"
                         Toast.makeText(this@MainActivity, "✅ Playlist download complete!", Toast.LENGTH_LONG).show()
                     }
@@ -549,7 +552,7 @@ class MainActivity : AppCompatActivity() {
         val platform = info?.platform ?: PlatformDetector.detect(url)
 
         hideAll()
-        progressCard.visibility = View.VISIBLE
+        animateCardShow(progressCard)
         downloadProgress.progress = 0
         downloadProgress.isIndeterminate = true
         downloadStatus.text = "Preparing download..."
@@ -570,13 +573,13 @@ class MainActivity : AppCompatActivity() {
                 AdManager.showInterstitialAd(this@MainActivity,
                     onAdDismissed = {
                         hideAll()
-                        completeCard.visibility = View.VISIBLE
+                        animateCardShow(completeCard)
                         completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
                         Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
                     },
                     onAdFailed = {
                         hideAll()
-                        completeCard.visibility = View.VISIBLE
+                        animateCardShow(completeCard)
                         completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
                         Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
                     }
@@ -614,6 +617,58 @@ class MainActivity : AppCompatActivity() {
         selectedFormatId = null
         downloadButton.isEnabled = true
         urlInput.requestFocus()
+    }
+
+    // ── Animations ───────────────────────────────────────────
+
+    private fun animateCardShow(card: MaterialCardView) {
+        val showAnim = AnimationUtils.loadAnimation(this, R.anim.card_show)
+        card.startAnimation(showAnim)
+        card.visibility = View.VISIBLE
+    }
+
+    private fun animateCardHide(card: MaterialCardView) {
+        card.animate()
+            .alpha(0f)
+            .scaleX(0.95f)
+            .scaleY(0.95f)
+            .setDuration(200)
+            .withEndAction {
+                card.visibility = View.GONE
+                card.alpha = 1f
+                card.scaleX = 1f
+                card.scaleY = 1f
+            }
+            .start()
+    }
+
+    private fun setupButtonAnimations() {
+        // Apply subtle press animation to all MaterialButtons
+        listOf(
+            inspectButton, videoOnlyButton, audioOnlyButton,
+            downloadButton, videoAudioButton, playlistButton,
+            viewDownloadsButton, newDownloadButton
+        ).forEach { button ->
+            button.setOnTouchListener { v, event ->
+                when (event.action) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        v.animate()
+                            .scaleX(0.96f)
+                            .scaleY(0.96f)
+                            .setDuration(80)
+                            .start()
+                    }
+                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                        v.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(80)
+                            .start()
+                    }
+                }
+                false // Let click pass through
+            }
+        }
     }
 
     // ── Utilities ────────────────────────────────────────────
