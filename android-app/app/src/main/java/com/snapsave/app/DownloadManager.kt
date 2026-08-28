@@ -180,45 +180,58 @@ class DownloadManager(private val context: Context) {
         var lastProgressTime = System.currentTimeMillis()
         val timeoutMs = 60_000L  // 60 seconds no progress = timeout
 
-        while (YtDlpRunner.isDownloading()) {
+        var downloadDone = false
+        while (!downloadDone) {
             kotlinx.coroutines.delay(500)
 
             val progress = YtDlpRunner.getProgress(context)
             val currentPercent = progress.percent.toInt()
 
-            // Update progress if changed
-            if (currentPercent != lastPercent && currentPercent >= 0) {
-                lastPercent = currentPercent
-                lastProgressTime = System.currentTimeMillis()
-
-                // Format speed and ETA for display
-                val speedStr = progress.speed.ifEmpty { null }
-                val etaStr = progress.eta.ifEmpty { null }
-                val phaseStr = when (progress.phase) {
-                    "extracting" -> "Extracting video info..."
-                    "downloading" -> {
-                        val parts = mutableListOf("Downloading")
-                        if (progress.total > 0) {
-                            parts.add("${formatFileSize(progress.downloaded)} / ${formatFileSize(progress.total)}")
-                        }
-                        parts.add("$currentPercent%")
-                        if (!speedStr.isNullOrEmpty()) parts.add(speedStr)
-                        if (!etaStr.isNullOrEmpty()) parts.add("ETA $etaStr")
-                        parts.joinToString(" ")
-                    }
-                    "finalizing" -> "Finalizing..."
-                    else -> "Downloading $currentPercent%"
+            // Check if download is finished or errored
+            if (progress.phase == "done" || progress.phase == "error" || !YtDlpRunner.isDownloading()) {
+                downloadDone = true
+                // Show final status
+                if (progress.phase == "done") {
+                    postStatusText(callback, "Download complete!")
+                    postProgress(callback, 0, 0, 100)
                 }
-
-                postStatusText(callback, phaseStr)
-                postProgress(callback, progress.downloaded, progress.total, currentPercent)
+                break
             }
+
+            // Update progress display
+            val speedStr = progress.speed.ifEmpty { null }
+            val etaStr = progress.eta.ifEmpty { null }
+            val phaseStr = when (progress.phase) {
+                "extracting" -> "Extracting video info..."
+                "downloading" -> {
+                    val parts = mutableListOf("Downloading")
+                    if (progress.total > 0) {
+                        parts.add("${formatFileSize(progress.downloaded)} / ${formatFileSize(progress.total)}")
+                    }
+                    parts.add("$currentPercent%")
+                    if (!speedStr.isNullOrEmpty()) parts.add(speedStr)
+                    if (!etaStr.isNullOrEmpty()) parts.add("ETA $etaStr")
+                    parts.joinToString(" ")
+                }
+                "finalizing" -> "Finalizing..."
+                else -> "Downloading $currentPercent%"
+            }
+
+            postStatusText(callback, phaseStr)
+            postProgress(callback, progress.downloaded, progress.total, currentPercent)
+            lastProgressTime = System.currentTimeMillis()
 
             // Check for timeout — no progress for 60s
             if (System.currentTimeMillis() - lastProgressTime > timeoutMs && currentPercent < 100) {
                 YtDlpRunner.stopDownload()
                 throw Exception("Download timed out — no progress for 60 seconds. Check your internet connection.")
             }
+        }
+
+        // Check for error from progress
+        val progress = YtDlpRunner.getProgress(context)
+        if (progress.phase == "error") {
+            throw Exception(progress.error.ifEmpty { "Download failed" })
         }
 
         // Get final result
