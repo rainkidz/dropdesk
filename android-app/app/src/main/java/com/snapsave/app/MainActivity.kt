@@ -221,6 +221,7 @@ class MainActivity : AppCompatActivity() {
         loadingCard.visibility = View.VISIBLE
         loadingText.text = "Inspecting link..."
         inspectButton.isEnabled = false
+        downloadButton.isEnabled = true
 
         // Hide keyboard
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -453,6 +454,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         formatCard.visibility = View.VISIBLE
+        downloadButton.isEnabled = true
     }
 
     private fun doDownload(url: String, type: String) {
