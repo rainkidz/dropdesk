@@ -1,5 +1,8 @@
 # FFmpeg-kit
 -keep class com.arthenica.ffmpegkit.** { *; }
+-dontwarn com.arthenica.ffmpegkit.**
+-dontwarn com.arthenica.smartexception.**
+-keep class com.arthenica.smartexception.** { *; }
 
 # OkHttp
 -dontwarn okhttp3.**

@@ -21,7 +21,9 @@ android {
         }
 
         ndk {
-            abiFilters += listOf("arm64-v8a", "x86_64")
+            // arm64-v8a only: covers 99%+ of real Android devices
+            // Removing x86_64 saves ~35MB (native libs duplicated per ABI)
+            abiFilters += listOf("arm64-v8a")
         }
     }
 
