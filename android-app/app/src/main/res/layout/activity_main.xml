@@ -549,4 +549,12 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Banner Ad Container - Bottom of screen -->
+    <FrameLayout
+        android:id="@+id/adContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/white" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -25,6 +25,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.*
+import android.widget.FrameLayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginFacebookBtn: MaterialButton
     private lateinit var loginInstagramBtn: MaterialButton
     private lateinit var loginThreadsBtn: MaterialButton
+    private lateinit var adContainer: android.widget.FrameLayout
 
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val loginLauncher = registerForActivityResult(
@@ -83,6 +85,11 @@ class MainActivity : AppCompatActivity() {
         setupListeners()
         checkPermissions()
         handleShareIntent(intent)
+
+        // Initialize AdMob
+        AdManager.initialize(this)
+        AdManager.loadBannerAd(this, adContainer)
+        AdManager.loadInterstitialAd(this)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -147,6 +154,7 @@ class MainActivity : AppCompatActivity() {
         videoAudioButton = findViewById(R.id.videoAudioButton)
         playlistButton = findViewById(R.id.playlistButton)
         loginFacebookBtn = findViewById(R.id.loginFacebookBtn)
+        adContainer = findViewById(R.id.adContainer)
         loginInstagramBtn = findViewById(R.id.loginInstagramBtn)
         loginThreadsBtn = findViewById(R.id.loginThreadsBtn)
     }
@@ -552,10 +560,21 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onComplete(filePath: String, filename: String) {
-                hideAll()
-                completeCard.visibility = View.VISIBLE
-                completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
-                Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
+                // Show interstitial ad after download completes
+                AdManager.showInterstitialAd(this@MainActivity,
+                    onAdDismissed = {
+                        hideAll()
+                        completeCard.visibility = View.VISIBLE
+                        completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
+                        Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
+                    },
+                    onAdFailed = {
+                        hideAll()
+                        completeCard.visibility = View.VISIBLE
+                        completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
+                        Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
+                    }
+                )
             }
 
             override fun onError(error: String) {
@@ -628,5 +647,6 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         downloadManager?.cancel()
         mainScope.cancel()
+        AdManager.destroyBannerAd(adContainer)
     }
 }
