@@ -138,6 +138,8 @@ class DownloadManager(private val context: Context) {
                     Platform.YOUTUBE -> downloadYouTube(url, type, callback)
                     Platform.TIKTOK -> downloadTikTok(url, type, callback)
                     Platform.FACEBOOK -> downloadFacebook(url, type, callback)
+                    Platform.INSTAGRAM -> downloadInstagram(url, type, callback)
+                    Platform.THREADS -> downloadThreads(url, type, callback)
                     else -> postError(callback, "Platform not supported yet: ${platform.displayName}")
                 }
             } catch (e: CancellationException) {
@@ -222,6 +224,40 @@ class DownloadManager(private val context: Context) {
         val filename = "${sanitizeFilename(info.title)}.mp4"
 
         FacebookExtractor.downloadFile(info.videoUrl, filename) { downloaded, total ->
+            val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
+            postProgress(callback, downloaded, total, percent)
+        }.getOrThrow()
+
+        postComplete(callback, filename)
+    }
+
+    private suspend fun downloadInstagram(url: String, type: String, callback: DownloadCallback) {
+        val info = InstagramExtractor.extract(url).getOrThrow()
+
+        if (info.videoUrl.isEmpty()) {
+            throw Exception("Video URL not found. The post may be private or require login.")
+        }
+
+        val filename = "${sanitizeFilename(info.title)}.mp4"
+
+        InstagramExtractor.downloadFile(info.videoUrl, filename) { downloaded, total ->
+            val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
+            postProgress(callback, downloaded, total, percent)
+        }.getOrThrow()
+
+        postComplete(callback, filename)
+    }
+
+    private suspend fun downloadThreads(url: String, type: String, callback: DownloadCallback) {
+        val info = ThreadsExtractor.extract(url).getOrThrow()
+
+        if (info.videoUrl.isEmpty()) {
+            throw Exception("Video URL not found. The post may be private or not contain a video.")
+        }
+
+        val filename = "${sanitizeFilename(info.title)}.mp4"
+
+        ThreadsExtractor.downloadFile(info.videoUrl, filename) { downloaded, total ->
             val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
             postProgress(callback, downloaded, total, percent)
         }.getOrThrow()

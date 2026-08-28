@@ -19,3 +19,7 @@
 -keep class com.snapsave.app.PlatformInfo { *; }
 -keep class com.snapsave.app.FormatChoice { *; }
 -keep class com.snapsave.app.DownloadState { *; }
+-keep class com.snapsave.app.InstagramExtractor { *; }
+-keep class com.snapsave.app.ThreadsExtractor { *; }
+-keep class com.snapsave.app.InstagramExtractor$InstagramInfo { *; }
+-keep class com.snapsave.app.ThreadsExtractor$ThreadsInfo { *; }
