@@ -106,12 +106,12 @@ def download_video(url, output_path, format_str, ffmpeg_location=None, progress_
         'no_check_certificates': True,
         'geo_bypass': True,
         'progress_hooks': [progress_hook],
-        'merge_output_format': 'mp4',
     }
 
-    # If ffmpeg is available, enable merging for higher quality (1080p+)
+    # Only enable merge if ffmpeg is actually available
     if ffmpeg_location and os.path.isdir(ffmpeg_location):
         ydl_opts['ffmpeg_location'] = ffmpeg_location
+        ydl_opts['merge_output_format'] = 'mp4'
 
     try:
         _progress['phase'] = 'downloading'
