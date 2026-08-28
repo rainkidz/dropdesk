@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var platformChip: Chip
     private lateinit var videoTitle: TextView
     private lateinit var videoDuration: TextView
-    private lateinit var downloadTypeCard: MaterialCardView
     private lateinit var videoOnlyButton: MaterialButton
     private lateinit var audioOnlyButton: MaterialButton
     private lateinit var formatCard: MaterialCardView
@@ -56,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var newDownloadButton: MaterialButton
     private lateinit var videoAudioButton: MaterialButton
     private lateinit var playlistButton: MaterialButton
+    private lateinit var premiumSection: LinearLayout
     private lateinit var loginFacebookBtn: MaterialButton
     private lateinit var loginInstagramBtn: MaterialButton
     private lateinit var loginThreadsBtn: MaterialButton
@@ -137,7 +137,6 @@ class MainActivity : AppCompatActivity() {
         platformChip = findViewById(R.id.platformChip)
         videoTitle = findViewById(R.id.videoTitle)
         videoDuration = findViewById(R.id.videoDuration)
-        downloadTypeCard = findViewById(R.id.downloadTypeCard)
         videoOnlyButton = findViewById(R.id.videoOnlyButton)
         audioOnlyButton = findViewById(R.id.audioOnlyButton)
         formatCard = findViewById(R.id.formatCard)
@@ -153,6 +152,7 @@ class MainActivity : AppCompatActivity() {
         newDownloadButton = findViewById(R.id.newDownloadButton)
         videoAudioButton = findViewById(R.id.videoAudioButton)
         playlistButton = findViewById(R.id.playlistButton)
+        premiumSection = findViewById(R.id.premiumSection)
         loginFacebookBtn = findViewById(R.id.loginFacebookBtn)
         adContainer = findViewById(R.id.adContainer)
         loginInstagramBtn = findViewById(R.id.loginInstagramBtn)
@@ -414,6 +414,13 @@ class MainActivity : AppCompatActivity() {
         videoDuration.text = formatDuration(info.duration)
         videoInfoCard.visibility = View.VISIBLE
 
+        // Show premium section (for YouTube only)
+        if (info.platform == Platform.YOUTUBE) {
+            premiumSection.visibility = View.VISIBLE
+        } else {
+            premiumSection.visibility = View.GONE
+        }
+
         // Check formats
         if (info.formats.isEmpty()) {
             showError("No downloadable formats found.")
@@ -425,7 +432,6 @@ class MainActivity : AppCompatActivity() {
         val hasAudio = info.formats.any { it.type == "audio" }
 
         if (hasVideo && hasAudio) {
-            downloadTypeCard.visibility = View.VISIBLE
             selectType("video")
         } else if (hasVideo) {
             selectType("video")
@@ -595,7 +601,6 @@ class MainActivity : AppCompatActivity() {
         loadingCard.visibility = View.GONE
         errorCard.visibility = View.GONE
         videoInfoCard.visibility = View.GONE
-        downloadTypeCard.visibility = View.GONE
         formatCard.visibility = View.GONE
         progressCard.visibility = View.GONE
         completeCard.visibility = View.GONE

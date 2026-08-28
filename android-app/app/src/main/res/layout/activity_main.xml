@@ -25,6 +25,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingBottom="60dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -33,15 +34,16 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Login Section -->
+            <!-- Login Section (Hidden by default) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/loginCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:visibility="gone"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="2dp"
-                app:strokeColor="#FF9800"
+                app:strokeColor="@color/premium_gold"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -62,7 +64,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Login to download private/restricted videos from Facebook, Instagram, or Threads"
+                        android:text="Login to download private/restricted videos"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginBottom="12dp" />
@@ -81,8 +83,8 @@
                             android:textAllCaps="false"
                             android:textSize="12sp"
                             android:layout_marginEnd="4dp"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            app:strokeColor="#1877F2" />
+                            style="@style/Widget.VidGrab.Button.Outlined"
+                            app:strokeColor="@color/facebook_blue" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/loginInstagramBtn"
@@ -94,8 +96,8 @@
                             android:textSize="12sp"
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="4dp"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            app:strokeColor="#E4405F" />
+                            style="@style/Widget.VidGrab.Button.Outlined"
+                            app:strokeColor="@color/instagram_pink" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/loginThreadsBtn"
@@ -106,8 +108,8 @@
                             android:textAllCaps="false"
                             android:textSize="12sp"
                             android:layout_marginStart="4dp"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            app:strokeColor="#000000" />
+                            style="@style/Widget.VidGrab.Button.Outlined"
+                            app:strokeColor="@color/threads_black" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -139,7 +141,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="No server needed — works directly on your device"
+                        android:text="YouTube, TikTok, Instagram, Facebook, and more"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginBottom="12dp" />
@@ -245,7 +247,7 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Video Info Card (shown after inspect) -->
+            <!-- Video Info + Format Selection (Combined Card) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/videoInfoCard"
                 android:layout_width="match_parent"
@@ -288,34 +290,24 @@
                         android:layout_height="wrap_content"
                         android:textSize="13sp"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginBottom="12dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                        android:layout_marginBottom="16dp" />
 
-            <!-- Download Type Selection -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/downloadTypeCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/divider"
+                        android:layout_marginBottom="16dp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
+                    <!-- Download Type Selection -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Choose download type"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginBottom="8dp" />
 
                     <!-- Video Only button -->
                     <com.google.android.material.button.MaterialButton
@@ -324,8 +316,8 @@
                         android:layout_height="wrap_content"
                         android:text="🎬 Video Only"
                         android:textAllCaps="false"
-                        android:textSize="15sp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:textSize="14sp"
+                        style="@style/Widget.VidGrab.Button.Outlined"
                         app:strokeColor="@color/primary"
                         android:layout_marginBottom="8dp" />
 
@@ -336,47 +328,61 @@
                         android:layout_height="wrap_content"
                         android:text="🎵 Audio Only"
                         android:textAllCaps="false"
-                        android:textSize="15sp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:textSize="14sp"
+                        style="@style/Widget.VidGrab.Button.Outlined"
                         app:strokeColor="@color/accent"
                         android:layout_marginBottom="12dp" />
 
-                    <!-- Premium Section -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⭐ Premium Features"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#FF9800"
-                        android:layout_marginBottom="8dp" />
-
-                    <!-- Video + Audio (Premium) -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/videoAudioButton"
+                    <!-- Premium Section (Hidden by default) -->
+                    <LinearLayout
+                        android:id="@+id/premiumSection"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="🎬+🎵 Video + Audio (1080p+)"
-                        android:textAllCaps="false"
-                        android:textSize="15sp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        app:strokeColor="#FF9800"
-                        android:layout_marginBottom="8dp" />
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
-                    <!-- Playlist Download (Premium) -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/playlistButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="📋 Playlist Download"
-                        android:textAllCaps="false"
-                        android:textSize="15sp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        app:strokeColor="#FF9800" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/divider"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⭐ Premium Features"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/premium_gold"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Video + Audio (Premium) -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/videoAudioButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="🎬+🎵 Video + Audio (1080p+)"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            style="@style/Widget.VidGrab.Button.Outlined"
+                            app:strokeColor="@color/premium_gold"
+                            android:layout_marginBottom="8dp" />
+
+                        <!-- Playlist Download (Premium) -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/playlistButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="📋 Playlist Download"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            style="@style/Widget.VidGrab.Button.Outlined"
+                            app:strokeColor="@color/premium_gold" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Format Selection List -->
+            <!-- Format Selection List (Hidden by default) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/formatCard"
                 android:layout_width="match_parent"
@@ -396,7 +402,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Select format"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
                         android:layout_marginBottom="8dp" />
@@ -405,9 +411,9 @@
                         android:id="@+id/formatTypeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginBottom="8dp" />
 
                     <RadioGroup
                         android:id="@+id/formatRadioGroup"
@@ -419,7 +425,7 @@
                         android:id="@+id/downloadButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="12dp"
                         android:text="⬇ Download"
                         android:textAllCaps="false"
                         android:textSize="16sp"
@@ -511,8 +517,7 @@
                         android:text="📥 View All Downloads"
                         android:textAllCaps="false"
                         android:textSize="14sp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:textColor="@color/primary"
+                        style="@style/Widget.VidGrab.Button.Text"
                         android:layout_marginTop="4dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -522,7 +527,7 @@
                         android:text="Download Another"
                         android:textAllCaps="false"
                         android:textSize="14sp"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.VidGrab.Button.Text"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -555,6 +560,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@android:color/white" />
+        android:background="@color/ad_background" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

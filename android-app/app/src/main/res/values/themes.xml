@@ -1,10 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.VidGrab" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary Colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_light</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accent_light</item>
+        
+        <!-- Surface & Background -->
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorSurfaceVariant">@color/surface_variant</item>
+        <item name="android:colorBackground">@color/background</item>
         <item name="android:windowBackground">@color/surface</item>
+        
+        <!-- Status Bar -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        
+        <!-- Button Styles -->
+        <item name="materialButtonStyle">@style/Widget.VidGrab.Button</item>
+        
+        <!-- Card Styles -->
+        <item name="materialCardViewStyle">@style/Widget.VidGrab.CardView</item>
+    </style>
+    
+    <!-- Button Style -->
+    <style name="Widget.VidGrab.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+    
+    <!-- Outlined Button Style -->
+    <style name="Widget.VidGrab.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="strokeColor">@color/primary</item>
+    </style>
+    
+    <!-- Card Style -->
+    <style name="Widget.VidGrab.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="contentPadding">16dp</item>
+    </style>
+    
+    <!-- Text Button Style -->
+    <style name="Widget.VidGrab.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/primary</item>
     </style>
 </resources>
