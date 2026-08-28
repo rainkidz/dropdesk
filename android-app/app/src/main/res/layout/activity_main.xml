@@ -471,6 +471,17 @@
                         android:layout_marginBottom="12dp" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/viewDownloadsButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📥 View All Downloads"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:textColor="@color/primary"
+                        android:layout_marginTop="4dp" />
+
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/newDownloadButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -478,7 +489,7 @@
                         android:textAllCaps="false"
                         android:textSize="14sp"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="4dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

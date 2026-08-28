@@ -251,7 +251,9 @@ class DownloadManager(private val context: Context) {
         val files = dir.listFiles()?.sortedByDescending { it.lastModified() }
         val downloadedFile = files?.firstOrNull()
         if (downloadedFile != null && downloadedFile.exists()) {
-            postComplete(callback, downloadedFile.name)
+            // Copy to public Downloads/SnapSave so user can find it in file manager
+            val savedName = copyToPublicDownloads(downloadedFile)
+            postComplete(callback, savedName)
         } else {
             throw Exception("Download completed but file not found")
         }
@@ -285,6 +287,44 @@ class DownloadManager(private val context: Context) {
 
     private fun postError(callback: DownloadCallback, error: String) {
         handler.post { callback.onError(error) }
+    }
+
+    /**
+     * Copy file from internal storage to public Downloads/SnapSave/ folder.
+     * Returns the saved filename.
+     */
+    private fun copyToPublicDownloads(sourceFile: File): String {
+        val filename = sourceFile.name
+        val ext = filename.substringAfterLast('.', "mp4")
+        val mimeType = getMimeType(ext)
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10+ — use MediaStore
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Downloads.DISPLAY_NAME, filename)
+                put(MediaStore.Downloads.MIME_TYPE, mimeType)
+                put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/SnapSave")
+            }
+
+            val resolver = context.contentResolver
+            val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                ?: throw Exception("Cannot create file in Downloads")
+
+            resolver.openOutputStream(uri)?.use { output ->
+                sourceFile.inputStream().use { input ->
+                    input.copyTo(output)
+                }
+            }
+
+            filename
+        } else {
+            // Android 9 and below — direct file write
+            val dir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "SnapSave")
+            dir.mkdirs()
+            val destFile = File(dir, filename)
+            sourceFile.copyTo(destFile, overwrite = true)
+            filename
+        }
     }
 
     private fun sanitizeFilename(name: String): String {

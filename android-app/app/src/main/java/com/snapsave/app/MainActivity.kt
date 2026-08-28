@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var downloadStatus: TextView
     private lateinit var completeCard: MaterialCardView
     private lateinit var completeFileName: TextView
+    private lateinit var viewDownloadsButton: MaterialButton
     private lateinit var newDownloadButton: MaterialButton
     private lateinit var loginFacebookBtn: MaterialButton
     private lateinit var loginInstagramBtn: MaterialButton
@@ -139,6 +140,7 @@ class MainActivity : AppCompatActivity() {
         downloadStatus = findViewById(R.id.downloadStatus)
         completeCard = findViewById(R.id.completeCard)
         completeFileName = findViewById(R.id.completeFileName)
+        viewDownloadsButton = findViewById(R.id.viewDownloadsButton)
         newDownloadButton = findViewById(R.id.newDownloadButton)
         loginFacebookBtn = findViewById(R.id.loginFacebookBtn)
         loginInstagramBtn = findViewById(R.id.loginInstagramBtn)
@@ -173,6 +175,11 @@ class MainActivity : AppCompatActivity() {
             val url = urlInput.text.toString().trim()
             if (url.isEmpty()) return@setOnClickListener
             doDownload(url, selectedType)
+        }
+
+        // View downloads
+        viewDownloadsButton.setOnClickListener {
+            startActivity(Intent(this, DownloadsActivity::class.java))
         }
 
         // New download
@@ -472,7 +479,7 @@ class MainActivity : AppCompatActivity() {
             override fun onComplete(filePath: String, filename: String) {
                 hideAll()
                 completeCard.visibility = View.VISIBLE
-                completeFileName.text = filename
+                completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
                 Toast.makeText(this@MainActivity, "✅ Saved to Downloads/SnapSave/", Toast.LENGTH_LONG).show()
             }
 
