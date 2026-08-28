@@ -87,7 +87,8 @@ def download_video(url, output_path, format_str, progress_callback=None):
         'no_check_certificates': True,
         'geo_bypass': True,
         'progress_hooks': [progress_hook] if progress_callback else [],
-        'merge_output_format': 'mp4',
+        # Prevent merge errors when ffmpeg is not available on Android
+        'postprocessor_hooks': [],
     }
 
     try:
