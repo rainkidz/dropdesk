@@ -254,40 +254,41 @@ class MainActivity : AppCompatActivity() {
         val info = YouTubeExtractor.extract(this@MainActivity, videoId).getOrThrow()
 
         val formats = mutableListOf<FormatChoice>()
+        val seenVideoHeights = mutableSetOf<Int>()
+        val seenAudioBitrates = mutableSetOf<Int>()
 
-        // Add video formats — use height-based selectors that yt-dlp resolves at download time
+        // Add video formats — only unique heights, clean labels
         info.formats.filter { !it.isAudioOnly }.sortedByDescending { it.height ?: 0 }.forEach { fmt ->
             val ext = getExtFromMime(fmt.mimeType)
             val h = fmt.height ?: 0
-            val fmtLabel = "${fmt.qualityLabel ?: if (h > 0) "${h}p" else "Video"} — $ext"
+            // Skip if no height or duplicate height
+            if (h <= 0 || h in seenVideoHeights) return@forEach
+            seenVideoHeights.add(h)
+            val fmtLabel = "${h}p — $ext"
             // Build a yt-dlp format selector: bestvideo[height<=H][ext=EXT] — video only, no audio
-            val selector = if (h > 0) {
-                "bestvideo[height<=$h][ext=$ext]/bestvideo[height<=$h]"
-            } else {
-                "bestvideo[ext=$ext]/bestvideo"
-            }
+            val selector = "bestvideo[height<=$h][ext=$ext]/bestvideo[height<=$h]"
             formats.add(FormatChoice(
                 id = "video_${fmt.itag}",
                 label = fmtLabel,
                 type = "video",
                 ext = ext,
-                quality = fmt.qualityLabel,
+                quality = "${h}p",
                 sizeBytes = fmt.contentLength,
                 ytDlpFormatId = selector,
                 height = h
             ))
         }
 
-        // Add audio formats
+        // Add audio formats — only unique bitrates, clean labels
         info.formats.filter { it.isAudioOnly }.sortedByDescending { it.bitrate ?: 0 }.forEach { fmt ->
             val ext = getExtFromMime(fmt.mimeType)
-            val abr = (fmt.bitrate ?: 0) / 1000
-            val bitrateLabel = if (abr > 0) "${abr}kbps" else ""
-            val selector = if (abr > 0) {
-                "bestaudio[ext=$ext][abr>${abr - 50}]/bestaudio[ext=$ext]/bestaudio"
-            } else {
-                "bestaudio[ext=$ext]/bestaudio"
-            }
+            val abr = ((fmt.bitrate ?: 0) / 1000)
+            // Skip if no bitrate or duplicate bitrate (round to nearest 32kbps)
+            val roundedBitrate = (abr / 32) * 32
+            if (roundedBitrate <= 0 || roundedBitrate in seenAudioBitrates) return@forEach
+            seenAudioBitrates.add(roundedBitrate)
+            val bitrateLabel = "${roundedBitrate}kbps"
+            val selector = "bestaudio[ext=$ext][abr>${roundedBitrate - 50}]/bestaudio[ext=$ext]/bestaudio"
             formats.add(FormatChoice(
                 id = "audio_${fmt.itag}",
                 label = "Audio — $bitrateLabel — $ext",
