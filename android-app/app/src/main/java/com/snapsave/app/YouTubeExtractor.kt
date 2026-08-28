@@ -29,7 +29,8 @@ object YouTubeExtractor {
         val height: Int?,
         val bitrate: Int?,
         val contentLength: Long?,
-        val isAudioOnly: Boolean
+        val isAudioOnly: Boolean,
+        val formatIdForDl: String? = null  // yt-dlp format_id for direct download
     )
 
     /**
@@ -56,7 +57,8 @@ object YouTubeExtractor {
                     height = fmt.height.takeIf { it > 0 },
                     bitrate = fmt.bitrate.takeIf { it > 0 },
                     contentLength = fmt.filesize,
-                    isAudioOnly = !fmt.hasVideo
+                    isAudioOnly = !fmt.hasVideo,
+                    formatIdForDl = fmt.formatId
                 ))
             }
 

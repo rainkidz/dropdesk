@@ -127,6 +127,7 @@ class DownloadManager(private val context: Context) {
     fun downloadFromUrl(
         url: String,
         type: String, // "video" or "audio"
+        formatId: String? = null, // specific yt-dlp format ID from UI selection
         callback: DownloadCallback
     ) {
         currentJob?.cancel()
@@ -135,7 +136,7 @@ class DownloadManager(private val context: Context) {
                 val platform = PlatformDetector.detect(url)
 
                 when (platform) {
-                    Platform.YOUTUBE -> downloadYouTube(url, type, callback)
+                    Platform.YOUTUBE -> downloadYouTube(url, type, formatId, callback)
                     Platform.TIKTOK -> downloadTikTok(url, type, callback)
                     Platform.FACEBOOK -> downloadFacebook(url, type, callback)
                     Platform.INSTAGRAM -> downloadInstagram(url, type, callback)
@@ -150,14 +151,17 @@ class DownloadManager(private val context: Context) {
         }
     }
 
-    private suspend fun downloadYouTube(url: String, type: String, callback: DownloadCallback) {
-        val format = if (type == "audio") {
+    private suspend fun downloadYouTube(url: String, type: String, formatId: String?, callback: DownloadCallback) {
+        val format = if (!formatId.isNullOrEmpty()) {
+            // Use the specific format ID selected by user in UI
+            // This downloads a single stream — no merge/ffmpeg needed
+            formatId
+        } else if (type == "audio") {
             // Audio-only: single stream, no merge needed
             "bestaudio[ext=m4a]/bestaudio/best"
         } else {
-            // Video: use bestvideo+bestaudio for 1080p+ quality
-            // ffmpeg-kit provides ffmpeg binary for merging
-            "bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio/best[ext=mp4]/best"
+            // Video-only: single stream without audio, no merge needed
+            "bestvideo[ext=mp4]/best[ext=mp4]/best"
         }
 
         val dir = java.io.File(context.filesDir, "downloads")

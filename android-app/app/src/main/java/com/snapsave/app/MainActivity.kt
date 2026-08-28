@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var currentInfo: PlatformInfo? = null
     private var selectedType: String = "video"
+    private var selectedFormatId: String? = null
     private var downloadManager: DownloadManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,13 +204,17 @@ class MainActivity : AppCompatActivity() {
 
         // Add video formats
         info.formats.filter { !it.isAudioOnly }.sortedByDescending { it.height ?: 0 }.forEach { fmt ->
+            val fmtLabel = "${fmt.qualityLabel ?: fmt.height?.toString() ?: "Video"} — ${getExtFromMime(fmt.mimeType)}"
+            // Use the yt-dlp format_id for direct download (no merge needed)
+            // We need to find the actual format_id from YtDlpRunner
             formats.add(FormatChoice(
                 id = "video_${fmt.itag}",
-                label = "${fmt.qualityLabel ?: fmt.height?.toString() ?: "Video"} — ${getExtFromMime(fmt.mimeType)}",
+                label = fmtLabel,
                 type = "video",
                 ext = getExtFromMime(fmt.mimeType),
                 quality = fmt.qualityLabel,
-                sizeBytes = fmt.contentLength
+                sizeBytes = fmt.contentLength,
+                ytDlpFormatId = fmt.formatIdForDl
             ))
         }
 
@@ -222,7 +227,8 @@ class MainActivity : AppCompatActivity() {
                 type = "audio",
                 ext = getExtFromMime(fmt.mimeType),
                 quality = bitrate,
-                sizeBytes = fmt.contentLength
+                sizeBytes = fmt.contentLength,
+                ytDlpFormatId = fmt.formatIdForDl
             ))
         }
 
@@ -363,13 +369,20 @@ class MainActivity : AppCompatActivity() {
                 }
                 textSize = 14f
                 setPadding(0, 12, 0, 12)
-                tag = format.id
+                tag = format.ytDlpFormatId
             }
             formatRadioGroup.addView(radioButton)
 
             if (index == 0) {
                 radioButton.isChecked = true
+                selectedFormatId = format.ytDlpFormatId
             }
+        }
+
+        // Track radio button selection changes
+        formatRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            val checkedRadio = formatRadioGroup.findViewById<RadioButton>(checkedId)
+            selectedFormatId = checkedRadio?.tag as? String
         }
 
         formatCard.visibility = View.VISIBLE
@@ -386,7 +399,7 @@ class MainActivity : AppCompatActivity() {
         downloadStatus.text = "Preparing download..."
         downloadButton.isEnabled = false
 
-        downloadManager?.downloadFromUrl(url, type, object : DownloadManager.DownloadCallback {
+        downloadManager?.downloadFromUrl(url, type, selectedFormatId, object : DownloadManager.DownloadCallback {
             override fun onProgress(bytesDownloaded: Long, totalBytes: Long, percent: Int) {
                 downloadProgress.isIndeterminate = false
                 downloadProgress.progress = percent
@@ -431,6 +444,7 @@ class MainActivity : AppCompatActivity() {
         urlInput.text?.clear()
         currentInfo = null
         selectedType = "video"
+        selectedFormatId = null
         downloadButton.isEnabled = true
         urlInput.requestFocus()
     }
