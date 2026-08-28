@@ -176,6 +176,101 @@ object YtDlpRunner {
     }
 
     /**
+     * Start video+audio merge download (Premium feature).
+     * Downloads video and audio separately, then merges with ffmpeg.
+     */
+    fun startMergeDownload(
+        context: Context,
+        url: String,
+        outputPath: String,
+        videoFormat: String,
+        audioFormat: String = "bestaudio",
+        cookiesFile: String? = null
+    ) {
+        lastResult = null
+        downloadError = null
+        downloadThread?.interrupt()
+        downloadThread = Thread {
+            try {
+                initPython(context)
+                val py = Python.getInstance()
+                val ytUtils = py.getModule("yt_utils")
+                val ffmpegDir = getFfmpegLocation(context)
+
+                Log.d(TAG, "Merge download: $url video=$videoFormat audio=$audioFormat ffmpeg=$ffmpegDir")
+
+                val resultJson = ytUtils.callAttr(
+                    "download_video_audio",
+                    url,
+                    outputPath,
+                    videoFormat,
+                    audioFormat,
+                    cookiesFile ?: "",
+                    ffmpegDir ?: ""
+                ).toString()
+
+                val json = JSONObject(resultJson)
+                if (json.has("error")) {
+                    downloadError = json.getString("error")
+                } else {
+                    lastResult = outputPath
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "merge download failed", e)
+                downloadError = e.message ?: "Merge download failed"
+            }
+        }
+        downloadThread?.start()
+    }
+
+    /**
+     * Start playlist download (Premium feature).
+     */
+    fun startPlaylistDownload(
+        context: Context,
+        url: String,
+        outputPath: String,
+        format: String,
+        maxVideos: Int = 50,
+        cookiesFile: String? = null
+    ) {
+        lastResult = null
+        downloadError = null
+        downloadThread?.interrupt()
+        downloadThread = Thread {
+            try {
+                initPython(context)
+                val py = Python.getInstance()
+                val ytUtils = py.getModule("yt_utils")
+                val ffmpegDir = getFfmpegLocation(context)
+
+                Log.d(TAG, "Playlist download: $url format=$format max=$maxVideos")
+
+                val resultJson = ytUtils.callAttr(
+                    "download_playlist",
+                    url,
+                    outputPath,
+                    format,
+                    maxVideos,
+                    cookiesFile ?: "",
+                    ffmpegDir ?: ""
+                ).toString()
+
+                val json = JSONObject(resultJson)
+                if (json.has("error")) {
+                    downloadError = json.getString("error")
+                } else {
+                    lastResult = outputPath
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "playlist download failed", e)
+                downloadError = e.message ?: "Playlist download failed"
+            }
+        }
+        downloadThread?.start()
+    }
+
+    /**
      * Legacy synchronous download — blocks until done.
      */
     suspend fun download(

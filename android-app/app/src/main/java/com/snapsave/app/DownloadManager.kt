@@ -259,6 +259,182 @@ class DownloadManager(private val context: Context) {
         }
     }
 
+    /**
+     * Premium: Download video + audio and merge (1080p+).
+     */
+    fun downloadMerged(
+        url: String,
+        videoFormat: String,
+        audioFormat: String = "bestaudio",
+        callback: DownloadCallback
+    ) {
+        currentJob?.cancel()
+        currentJob = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val dir = java.io.File(context.filesDir, "downloads")
+                dir.mkdirs()
+                val outputPath = java.io.File(dir, "%(title)s.%(ext)s").absolutePath
+
+                postProgress(callback, 0, 0, 0)
+                postStatusText(callback, "Downloading video + audio (merging)...")
+
+                val platform = PlatformDetector.detect(url)
+                val cookiesFile = when (platform) {
+                    Platform.FACEBOOK -> CookieLoginActivity.getCookiesFile(context, "facebook").let { if (it.exists()) it.absolutePath else null }
+                    Platform.INSTAGRAM -> CookieLoginActivity.getCookiesFile(context, "instagram").let { if (it.exists()) it.absolutePath else null }
+                    Platform.THREADS -> CookieLoginActivity.getCookiesFile(context, "threads").let { if (it.exists()) it.absolutePath else null }
+                    else -> null
+                }
+
+                YtDlpRunner.startMergeDownload(context, url, outputPath, videoFormat, audioFormat, cookiesFile)
+
+                var lastProgressTime = System.currentTimeMillis()
+                val timeoutMs = 180_000L // 3 minutes for merge
+
+                var downloadDone = false
+                while (!downloadDone) {
+                    kotlinx.coroutines.delay(500)
+                    val progress = YtDlpRunner.getProgress(context)
+                    val currentPercent = progress.percent.toInt()
+
+                    if (progress.phase == "done" || progress.phase == "error") {
+                        downloadDone = true
+                        if (progress.phase == "done") {
+                            postStatusText(callback, "Merge complete!")
+                            postProgress(callback, 0, 0, 100)
+                        }
+                        break
+                    }
+                    if (!YtDlpRunner.isDownloading() && (progress.phase == "finalizing" || progress.phase == "merging")) {
+                        downloadDone = true
+                        postStatusText(callback, "Merge complete!")
+                        postProgress(callback, 0, 0, 100)
+                        break
+                    }
+
+                    val speedStr = progress.speed.ifEmpty { null }
+                    val etaStr = progress.eta.ifEmpty { null }
+                    val phaseStr = when (progress.phase) {
+                        "extracting" -> "Extracting info..."
+                        "downloading" -> {
+                            val parts = mutableListOf("Downloading")
+                            if (progress.total > 0) parts.add("${formatFileSize(progress.downloaded)} / ${formatFileSize(progress.total)}")
+                            parts.add("$currentPercent%")
+                            if (!speedStr.isNullOrEmpty()) parts.add(speedStr)
+                            if (!etaStr.isNullOrEmpty()) parts.add("ETA $etaStr")
+                            parts.joinToString(" ")
+                        }
+                        "merging" -> "Merging video + audio..."
+                        "finalizing" -> "Finalizing..."
+                        else -> "Processing $currentPercent%"
+                    }
+
+                    postStatusText(callback, phaseStr)
+                    postProgress(callback, progress.downloaded, progress.total, currentPercent)
+                    lastProgressTime = System.currentTimeMillis()
+
+                    if (System.currentTimeMillis() - lastProgressTime > timeoutMs && currentPercent < 100) {
+                        YtDlpRunner.stopDownload()
+                        throw Exception("Download timed out")
+                    }
+                }
+
+                val progress = YtDlpRunner.getProgress(context)
+                if (progress.phase == "error") throw Exception(progress.error.ifEmpty { "Download failed" })
+
+                val files = dir.listFiles()?.sortedByDescending { it.lastModified() }
+                val downloadedFile = files?.firstOrNull()
+                if (downloadedFile != null && downloadedFile.exists()) {
+                    val savedName = copyToPublicDownloads(downloadedFile)
+                    postComplete(callback, savedName)
+                } else {
+                    throw Exception("Download completed but file not found")
+                }
+            } catch (e: CancellationException) {
+                // Cancelled
+            } catch (e: Exception) {
+                postError(callback, e.message ?: "Download failed")
+            }
+        }
+    }
+
+    /**
+     * Premium: Download entire playlist.
+     */
+    fun downloadPlaylist(
+        url: String,
+        format: String,
+        maxVideos: Int = 50,
+        callback: DownloadCallback
+    ) {
+        currentJob?.cancel()
+        currentJob = CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val dir = java.io.File(context.filesDir, "downloads")
+                dir.mkdirs()
+                val outputPath = java.io.File(dir, "%(playlist_title)s/%(title)s.%(ext)s").absolutePath
+
+                postProgress(callback, 0, 0, 0)
+                postStatusText(callback, "Downloading playlist...")
+
+                YtDlpRunner.startPlaylistDownload(context, url, outputPath, format, maxVideos)
+
+                var lastProgressTime = System.currentTimeMillis()
+                val timeoutMs = 600_000L // 10 minutes for playlist
+
+                var downloadDone = false
+                while (!downloadDone) {
+                    kotlinx.coroutines.delay(1000)
+                    val progress = YtDlpRunner.getProgress(context)
+                    val currentPercent = progress.percent.toInt()
+
+                    if (progress.phase == "done" || progress.phase == "error") {
+                        downloadDone = true
+                        if (progress.phase == "done") {
+                            postStatusText(callback, "Playlist download complete!")
+                            postProgress(callback, 0, 0, 100)
+                        }
+                        break
+                    }
+
+                    val speedStr = progress.speed.ifEmpty { null }
+                    val phaseStr = when (progress.phase) {
+                        "extracting" -> "Extracting playlist..."
+                        "downloading" -> {
+                            val parts = mutableListOf("Downloading")
+                            val playlistIdx = progress.downloaded.toInt() // Use as index
+                            val playlistCount = progress.total.toInt()
+                            if (playlistCount > 0) parts.add("$playlistIdx/$playlistCount")
+                            parts.add("$currentPercent%")
+                            if (!speedStr.isNullOrEmpty()) parts.add(speedStr)
+                            parts.joinToString(" ")
+                        }
+                        "finalizing" -> "Finalizing..."
+                        else -> "Processing $currentPercent%"
+                    }
+
+                    postStatusText(callback, phaseStr)
+                    postProgress(callback, progress.downloaded, progress.total, currentPercent)
+                    lastProgressTime = System.currentTimeMillis()
+
+                    if (System.currentTimeMillis() - lastProgressTime > timeoutMs && currentPercent < 100) {
+                        YtDlpRunner.stopDownload()
+                        throw Exception("Playlist download timed out")
+                    }
+                }
+
+                val progress = YtDlpRunner.getProgress(context)
+                if (progress.phase == "error") throw Exception(progress.error.ifEmpty { "Download failed" })
+
+                postComplete(callback, "Playlist downloaded")
+            } catch (e: CancellationException) {
+                // Cancelled
+            } catch (e: Exception) {
+                postError(callback, e.message ?: "Download failed")
+            }
+        }
+    }
+
     fun cancel() {
         currentJob?.cancel()
         currentJob = null

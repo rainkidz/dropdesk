@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var completeFileName: TextView
     private lateinit var viewDownloadsButton: MaterialButton
     private lateinit var newDownloadButton: MaterialButton
+    private lateinit var videoAudioButton: MaterialButton
+    private lateinit var playlistButton: MaterialButton
     private lateinit var loginFacebookBtn: MaterialButton
     private lateinit var loginInstagramBtn: MaterialButton
     private lateinit var loginThreadsBtn: MaterialButton
@@ -142,6 +144,8 @@ class MainActivity : AppCompatActivity() {
         completeFileName = findViewById(R.id.completeFileName)
         viewDownloadsButton = findViewById(R.id.viewDownloadsButton)
         newDownloadButton = findViewById(R.id.newDownloadButton)
+        videoAudioButton = findViewById(R.id.videoAudioButton)
+        playlistButton = findViewById(R.id.playlistButton)
         loginFacebookBtn = findViewById(R.id.loginFacebookBtn)
         loginInstagramBtn = findViewById(R.id.loginInstagramBtn)
         loginThreadsBtn = findViewById(R.id.loginThreadsBtn)
@@ -169,6 +173,19 @@ class MainActivity : AppCompatActivity() {
         // Download type buttons
         videoOnlyButton.setOnClickListener { selectType("video") }
         audioOnlyButton.setOnClickListener { selectType("audio") }
+
+        // Premium buttons
+        videoAudioButton.setOnClickListener {
+            val url = urlInput.text.toString().trim()
+            if (url.isEmpty()) return@setOnClickListener
+            doPremiumDownload(url, "video_audio")
+        }
+
+        playlistButton.setOnClickListener {
+            val url = urlInput.text.toString().trim()
+            if (url.isEmpty()) return@setOnClickListener
+            doPremiumDownload(url, "playlist")
+        }
 
         // Download button
         downloadButton.setOnClickListener {
@@ -456,6 +473,61 @@ class MainActivity : AppCompatActivity() {
 
         formatCard.visibility = View.VISIBLE
         downloadButton.isEnabled = true
+    }
+
+    private fun doPremiumDownload(url: String, premiumType: String) {
+        hideAll()
+        progressCard.visibility = View.VISIBLE
+        downloadProgress.progress = 0
+        downloadProgress.isIndeterminate = true
+        downloadStatus.text = "Preparing premium download..."
+        downloadButton.isEnabled = false
+
+        when (premiumType) {
+            "video_audio" -> {
+                // Video + Audio merge (1080p+)
+                val videoFormat = selectedFormatId ?: "bestvideo[height<=1080][ext=mp4]/bestvideo[height<=1080]"
+                downloadManager?.downloadMerged(url, videoFormat, "bestaudio[ext=m4a]/bestaudio", object : DownloadManager.DownloadCallback {
+                    override fun onProgress(bytesDownloaded: Long, totalBytes: Long, percent: Int) {
+                        downloadProgress.isIndeterminate = false
+                        downloadProgress.progress = percent
+                    }
+                    override fun onStatusUpdate(statusText: String) {
+                        downloadStatus.text = statusText
+                    }
+                    override fun onComplete(filePath: String, filename: String) {
+                        hideAll()
+                        completeCard.visibility = View.VISIBLE
+                        completeFileName.text = "📁 $filename\nSaved to: Downloads/SnapSave/"
+                        Toast.makeText(this@MainActivity, "✅ Premium download complete!", Toast.LENGTH_LONG).show()
+                    }
+                    override fun onError(error: String) {
+                        showError("Premium download failed: $error")
+                    }
+                })
+            }
+            "playlist" -> {
+                // Playlist download
+                downloadManager?.downloadPlaylist(url, "bestvideo[height<=720]+bestaudio/bestvideo+bestaudio/best", 50, object : DownloadManager.DownloadCallback {
+                    override fun onProgress(bytesDownloaded: Long, totalBytes: Long, percent: Int) {
+                        downloadProgress.isIndeterminate = false
+                        downloadProgress.progress = percent
+                    }
+                    override fun onStatusUpdate(statusText: String) {
+                        downloadStatus.text = statusText
+                    }
+                    override fun onComplete(filePath: String, filename: String) {
+                        hideAll()
+                        completeCard.visibility = View.VISIBLE
+                        completeFileName.text = "📁 Playlist downloaded\nSaved to: Downloads/SnapSave/"
+                        Toast.makeText(this@MainActivity, "✅ Playlist download complete!", Toast.LENGTH_LONG).show()
+                    }
+                    override fun onError(error: String) {
+                        showError("Playlist download failed: $error")
+                    }
+                })
+            }
+        }
     }
 
     private fun doDownload(url: String, type: String) {

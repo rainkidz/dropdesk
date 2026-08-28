@@ -338,7 +338,41 @@
                         android:textAllCaps="false"
                         android:textSize="15sp"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        app:strokeColor="@color/accent" />
+                        app:strokeColor="@color/accent"
+                        android:layout_marginBottom="12dp" />
+
+                    <!-- Premium Section -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐ Premium Features"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#FF9800"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Video + Audio (Premium) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/videoAudioButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🎬+🎵 Video + Audio (1080p+)"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="#FF9800"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Playlist Download (Premium) -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/playlistButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📋 Playlist Download"
+                        android:textAllCaps="false"
+                        android:textSize="15sp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="#FF9800" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
