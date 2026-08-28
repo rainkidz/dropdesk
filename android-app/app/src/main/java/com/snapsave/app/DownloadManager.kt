@@ -21,6 +21,7 @@ class DownloadManager(private val context: Context) {
 
     interface DownloadCallback {
         fun onProgress(bytesDownloaded: Long, totalBytes: Long, percent: Int)
+        fun onStatusUpdate(statusText: String)
         fun onComplete(filePath: String, filename: String)
         fun onError(error: String)
     }
@@ -168,19 +169,63 @@ class DownloadManager(private val context: Context) {
         dir.mkdirs()
         val outputPath = java.io.File(dir, "%(title)s.%(ext)s").absolutePath
 
+        // Show initial status
         postProgress(callback, 0, 0, 0)
 
-        YtDlpRunner.download(context, url, outputPath, format) { line ->
-            // Parse yt-dlp progress output
-            val percentMatch = Regex("([\\d.]+)%").find(line)
-            if (percentMatch != null) {
-                val percent = percentMatch.groupValues[1].toDoubleOrNull()?.toInt() ?: -1
-                postProgress(callback, 0, 0, percent)
+        // Start download in background thread (non-blocking)
+        YtDlpRunner.startDownload(context, url, outputPath, format)
+
+        // Poll progress every 500ms
+        var lastPercent = -1
+        var lastProgressTime = System.currentTimeMillis()
+        val timeoutMs = 60_000L  // 60 seconds no progress = timeout
+
+        while (YtDlpRunner.isDownloading()) {
+            kotlinx.coroutines.delay(500)
+
+            val progress = YtDlpRunner.getProgress(context)
+            val currentPercent = progress.percent.toInt()
+
+            // Update progress if changed
+            if (currentPercent != lastPercent && currentPercent >= 0) {
+                lastPercent = currentPercent
+                lastProgressTime = System.currentTimeMillis()
+
+                // Format speed and ETA for display
+                val speedStr = progress.speed.ifEmpty { null }
+                val etaStr = progress.eta.ifEmpty { null }
+                val phaseStr = when (progress.phase) {
+                    "extracting" -> "Extracting video info..."
+                    "downloading" -> {
+                        val parts = mutableListOf("Downloading")
+                        if (progress.total > 0) {
+                            parts.add("${formatFileSize(progress.downloaded)} / ${formatFileSize(progress.total)}")
+                        }
+                        parts.add("$currentPercent%")
+                        if (!speedStr.isNullOrEmpty()) parts.add(speedStr)
+                        if (!etaStr.isNullOrEmpty()) parts.add("ETA $etaStr")
+                        parts.joinToString(" ")
+                    }
+                    "finalizing" -> "Finalizing..."
+                    else -> "Downloading $currentPercent%"
+                }
+
+                postStatusText(callback, phaseStr)
+                postProgress(callback, progress.downloaded, progress.total, currentPercent)
             }
-            if (line.contains("100%")) {
-                postProgress(callback, 0, 0, 100)
+
+            // Check for timeout — no progress for 60s
+            if (System.currentTimeMillis() - lastProgressTime > timeoutMs && currentPercent < 100) {
+                YtDlpRunner.stopDownload()
+                throw Exception("Download timed out — no progress for 60 seconds. Check your internet connection.")
             }
-        }.getOrThrow()
+        }
+
+        // Get final result
+        val result = YtDlpRunner.getResult()
+        if (result.isFailure) {
+            throw Exception(result.exceptionOrNull()?.message ?: "Download failed")
+        }
 
         // Find the downloaded file
         val files = dir.listFiles()?.sortedByDescending { it.lastModified() }
@@ -193,12 +238,14 @@ class DownloadManager(private val context: Context) {
     }
 
     private suspend fun downloadTikTok(url: String, type: String, callback: DownloadCallback) {
+        postStatusText(callback, "Fetching TikTok video info...")
         val info = TikTokExtractor.extract(url).getOrThrow()
 
         if (type == "audio") {
             val audioUrl = info.audioUrl ?: throw Exception("No audio available for this video")
             val filename = "${sanitizeFilename(info.title)}.mp3"
 
+            postStatusText(callback, "Downloading audio...")
             TikTokExtractor.downloadFile(audioUrl, filename) { downloaded, total ->
                 val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
                 postProgress(callback, downloaded, total, percent)
@@ -209,6 +256,7 @@ class DownloadManager(private val context: Context) {
             val videoUrl = info.videoNoWmUrl.ifEmpty { info.videoUrl }
             val filename = "${sanitizeFilename(info.title)}.mp4"
 
+            postStatusText(callback, "Downloading video...")
             TikTokExtractor.downloadFile(videoUrl, filename) { downloaded, total ->
                 val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
                 postProgress(callback, downloaded, total, percent)
@@ -219,6 +267,7 @@ class DownloadManager(private val context: Context) {
     }
 
     private suspend fun downloadFacebook(url: String, type: String, callback: DownloadCallback) {
+        postStatusText(callback, "Fetching Facebook video info...")
         val info = FacebookExtractor.extract(url).getOrThrow()
 
         if (info.videoUrl.isEmpty()) {
@@ -227,6 +276,7 @@ class DownloadManager(private val context: Context) {
 
         val filename = "${sanitizeFilename(info.title)}.mp4"
 
+        postStatusText(callback, "Downloading video...")
         FacebookExtractor.downloadFile(info.videoUrl, filename) { downloaded, total ->
             val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
             postProgress(callback, downloaded, total, percent)
@@ -236,6 +286,7 @@ class DownloadManager(private val context: Context) {
     }
 
     private suspend fun downloadInstagram(url: String, type: String, callback: DownloadCallback) {
+        postStatusText(callback, "Fetching Instagram media info...")
         val info = InstagramExtractor.extract(url).getOrThrow()
 
         if (info.videoUrl.isEmpty()) {
@@ -244,6 +295,7 @@ class DownloadManager(private val context: Context) {
 
         val filename = "${sanitizeFilename(info.title)}.mp4"
 
+        postStatusText(callback, "Downloading video...")
         InstagramExtractor.downloadFile(info.videoUrl, filename) { downloaded, total ->
             val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
             postProgress(callback, downloaded, total, percent)
@@ -253,6 +305,7 @@ class DownloadManager(private val context: Context) {
     }
 
     private suspend fun downloadThreads(url: String, type: String, callback: DownloadCallback) {
+        postStatusText(callback, "Fetching Threads media info...")
         val info = ThreadsExtractor.extract(url).getOrThrow()
 
         if (info.videoUrl.isEmpty()) {
@@ -261,6 +314,7 @@ class DownloadManager(private val context: Context) {
 
         val filename = "${sanitizeFilename(info.title)}.mp4"
 
+        postStatusText(callback, "Downloading video...")
         ThreadsExtractor.downloadFile(info.videoUrl, filename) { downloaded, total ->
             val percent = if (total > 0) ((downloaded * 100) / total).toInt() else -1
             postProgress(callback, downloaded, total, percent)
@@ -276,6 +330,19 @@ class DownloadManager(private val context: Context) {
 
     private fun postProgress(callback: DownloadCallback, downloaded: Long, total: Long, percent: Int) {
         handler.post { callback.onProgress(downloaded, total, percent) }
+    }
+
+    private fun postStatusText(callback: DownloadCallback, text: String) {
+        handler.post { callback.onStatusUpdate(text) }
+    }
+
+    private fun formatFileSize(bytes: Long): String {
+        return when {
+            bytes < 1024 -> "$bytes B"
+            bytes < 1024 * 1024 -> "%.1f KB".format(bytes / 1024.0)
+            bytes < 1024 * 1024 * 1024 -> "%.1f MB".format(bytes / (1024.0 * 1024))
+            else -> "%.2f GB".format(bytes / (1024.0 * 1024 * 1024))
+        }
     }
 
     private fun postComplete(callback: DownloadCallback, filename: String) {

@@ -403,9 +403,10 @@ class MainActivity : AppCompatActivity() {
             override fun onProgress(bytesDownloaded: Long, totalBytes: Long, percent: Int) {
                 downloadProgress.isIndeterminate = false
                 downloadProgress.progress = percent
-                val downloaded = formatFileSize(bytesDownloaded)
-                val total = if (totalBytes > 0) formatFileSize(totalBytes) else "?"
-                downloadStatus.text = "Downloading... $downloaded / $total ($percent%)"
+            }
+
+            override fun onStatusUpdate(statusText: String) {
+                downloadStatus.text = statusText
             }
 
             override fun onComplete(filePath: String, filename: String) {

@@ -7,6 +7,9 @@ import os
 import sys
 import yt_dlp
 
+# Module-level progress state — polled by Kotlin via get_progress()
+_progress = {"phase": "idle", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
+
 
 def get_video_info(url):
     """
@@ -62,6 +65,11 @@ def get_video_info(url):
         return json.dumps({"error": str(e)})
 
 
+def get_progress():
+    """Return current download progress as JSON string. Called by Kotlin polling."""
+    return json.dumps(_progress)
+
+
 def download_video(url, output_path, format_str, ffmpeg_location=None, progress_callback=None):
     """
     Download video using yt-dlp.
@@ -69,16 +77,26 @@ def download_video(url, output_path, format_str, ffmpeg_location=None, progress_
     output_path: path template like "/path/to/%(title)s.%(ext)s"
     ffmpeg_location: path to directory containing ffmpeg binary (from ffmpeg-kit)
     """
+    global _progress
+    _progress = {"phase": "extracting", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
+
     def progress_hook(d):
+        global _progress
         if d['status'] == 'downloading':
-            percent = d.get('_percent_str', '0%').strip()
-            speed = d.get('_speed_str', '')
-            eta = d.get('_eta_str', '')
-            if progress_callback:
-                progress_callback(f"[download] {percent} at {speed} ETA {eta}")
+            _progress['phase'] = 'downloading'
+            try:
+                _progress['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
+            except (ValueError, AttributeError):
+                _progress['percent'] = 0.0
+            _progress['speed'] = d.get('_speed_str', '').strip()
+            _progress['eta'] = d.get('_eta_str', '').strip()
+            _progress['downloaded'] = d.get('_downloaded_bytes', 0) or 0
+            _progress['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
+            _progress['filename'] = d.get('filename', '')
         elif d['status'] == 'finished':
-            if progress_callback:
-                progress_callback(f"[download] Complete: {d.get('filename', '')}")
+            _progress['phase'] = 'finalizing'
+            _progress['percent'] = 100.0
+            _progress['filename'] = d.get('filename', '')
 
     ydl_opts = {
         'format': format_str,
@@ -87,7 +105,7 @@ def download_video(url, output_path, format_str, ffmpeg_location=None, progress_
         'no_warnings': True,
         'no_check_certificates': True,
         'geo_bypass': True,
-        'progress_hooks': [progress_hook] if progress_callback else [],
+        'progress_hooks': [progress_hook],
         'merge_output_format': 'mp4',
     }
 
@@ -96,10 +114,15 @@ def download_video(url, output_path, format_str, ffmpeg_location=None, progress_
         ydl_opts['ffmpeg_location'] = ffmpeg_location
 
     try:
+        _progress['phase'] = 'downloading'
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-            return json.dumps({"success": True})
+        _progress['phase'] = 'done'
+        _progress['percent'] = 100.0
+        return json.dumps({"success": True})
     except Exception as e:
+        _progress['phase'] = 'error'
+        _progress['error'] = str(e)
         return json.dumps({"error": str(e)})
 
 

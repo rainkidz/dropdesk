@@ -16,6 +16,9 @@ object YtDlpRunner {
 
     private const val TAG = "YtDlpRunner"
     private var pythonInitialized = false
+    private var downloadThread: Thread? = null
+    private var lastResult: String? = null
+    private var downloadError: String? = null
 
     private fun initPython(context: Context) {
         if (!pythonInitialized) {
@@ -76,7 +79,114 @@ object YtDlpRunner {
     }
 
     /**
-     * Download video using yt-dlp via Python.
+     * Start download in background thread. Non-blocking.
+     * Call getProgress() to poll status.
+     */
+    fun startDownload(
+        context: Context,
+        url: String,
+        outputPath: String,
+        format: String
+    ) {
+        lastResult = null
+        downloadError = null
+        downloadThread?.interrupt()
+        downloadThread = Thread {
+            try {
+                initPython(context)
+                val py = Python.getInstance()
+                val ytUtils = py.getModule("yt_utils")
+
+                Log.d(TAG, "Downloading: $url with format $format")
+
+                val ffmpegDir = getFfmpegLocation(context)
+
+                val resultJson = if (ffmpegDir != null) {
+                    ytUtils.callAttr(
+                        "download_video",
+                        url,
+                        outputPath,
+                        format,
+                        ffmpegDir
+                    ).toString()
+                } else {
+                    ytUtils.callAttr(
+                        "download_video",
+                        url,
+                        outputPath,
+                        format
+                    ).toString()
+                }
+
+                val json = JSONObject(resultJson)
+                if (json.has("error")) {
+                    downloadError = json.getString("error")
+                } else {
+                    lastResult = outputPath
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "download failed", e)
+                downloadError = e.message ?: "Download failed"
+            }
+        }
+        downloadThread?.start()
+    }
+
+    /**
+     * Poll download progress from Python. Returns structured progress data.
+     */
+    fun getProgress(context: Context): DownloadProgress {
+        return try {
+            initPython(context)
+            val py = Python.getInstance()
+            val ytUtils = py.getModule("yt_utils")
+            val jsonStr = ytUtils.callAttr("get_progress").toString()
+            val json = JSONObject(jsonStr)
+            DownloadProgress(
+                phase = json.optString("phase", "idle"),
+                percent = json.optDouble("percent", 0.0),
+                speed = json.optString("speed", ""),
+                eta = json.optString("eta", ""),
+                downloaded = json.optLong("downloaded", 0),
+                total = json.optLong("total", 0),
+                filename = json.optString("filename", ""),
+                error = json.optString("error", "")
+            )
+        } catch (e: Exception) {
+            DownloadProgress(phase = "error", error = e.message ?: "Progress unavailable")
+        }
+    }
+
+    /**
+     * Check if download is still running.
+     */
+    fun isDownloading(): Boolean = downloadThread?.isAlive == true
+
+    /**
+     * Get download result after completion.
+     */
+    fun getResult(): Result<String> {
+        val error = downloadError
+        if (error != null) {
+            return Result.failure(Exception(error))
+        }
+        val result = lastResult
+        if (result != null) {
+            return Result.success(result)
+        }
+        return Result.failure(Exception("Download not completed"))
+    }
+
+    /**
+     * Stop current download.
+     */
+    fun stopDownload() {
+        downloadThread?.interrupt()
+        downloadThread = null
+    }
+
+    /**
+     * Legacy synchronous download — blocks until done.
      */
     suspend fun download(
         context: Context,
@@ -92,11 +202,8 @@ object YtDlpRunner {
 
             Log.d(TAG, "Downloading: $url with format $format")
 
-            // Get ffmpeg path from ffmpeg-kit for merging video+audio
             val ffmpegDir = getFfmpegLocation(context)
-            Log.d(TAG, "ffmpeg location: $ffmpegDir")
 
-            // yt-dlp download is synchronous, run it
             val resultJson = if (ffmpegDir != null) {
                 ytUtils.callAttr(
                     "download_video",
@@ -215,4 +322,15 @@ data class YtDlpFormat(
     val filesize: Long?,
     val bitrate: Int,
     val url: String
+)
+
+data class DownloadProgress(
+    val phase: String = "idle",
+    val percent: Double = 0.0,
+    val speed: String = "",
+    val eta: String = "",
+    val downloaded: Long = 0,
+    val total: Long = 0,
+    val filename: String = "",
+    val error: String = ""
 )
