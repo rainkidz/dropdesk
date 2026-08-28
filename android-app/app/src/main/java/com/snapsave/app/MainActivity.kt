@@ -87,12 +87,18 @@ class MainActivity : AppCompatActivity() {
     private var selectedType: String = "video"
     private var selectedFormatId: String? = null
     private var downloadManager: DownloadManager? = null
+    private lateinit var downloadQueue: DownloadQueue
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         downloadManager = DownloadManager(this)
+        downloadQueue = DownloadQueue(this)
+        
+        // Initialize notification helper
+        NotificationHelper.init(this)
+        
         bindViews()
         setupListeners()
         setupButtonAnimations()
@@ -134,6 +140,15 @@ class MainActivity : AppCompatActivity() {
                 != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+            }
+        }
+        
+        // Request notification permission for Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
             }
         }
     }
@@ -244,6 +259,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home -> {
                     showHome()
                     true
+                }
+                R.id.nav_browser -> {
+                    startActivity(Intent(this, BrowserActivity::class.java))
+                    false // Don't select, go to activity
                 }
                 R.id.nav_sites -> {
                     showSites()
@@ -784,6 +803,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         downloadManager?.cancel()
+        downloadQueue.destroy()
         mainScope.cancel()
         AdManager.destroyBannerAd(adContainer)
     }

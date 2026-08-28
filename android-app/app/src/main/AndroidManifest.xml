@@ -7,6 +7,7 @@
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name="com.chaquo.python.android.PyApplication"
@@ -53,6 +54,16 @@
 
         <activity
             android:name=".DownloadsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".BrowserActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".DownloadsQueueActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
     </application>
