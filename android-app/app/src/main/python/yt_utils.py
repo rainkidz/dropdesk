@@ -62,11 +62,12 @@ def get_video_info(url):
         return json.dumps({"error": str(e)})
 
 
-def download_video(url, output_path, format_str, progress_callback=None):
+def download_video(url, output_path, format_str, ffmpeg_location=None, progress_callback=None):
     """
     Download video using yt-dlp.
     format_str: "bestvideo+bestaudio" or "bestaudio" etc.
     output_path: path template like "/path/to/%(title)s.%(ext)s"
+    ffmpeg_location: path to directory containing ffmpeg binary (from ffmpeg-kit)
     """
     def progress_hook(d):
         if d['status'] == 'downloading':
@@ -87,9 +88,12 @@ def download_video(url, output_path, format_str, progress_callback=None):
         'no_check_certificates': True,
         'geo_bypass': True,
         'progress_hooks': [progress_hook] if progress_callback else [],
-        # Prevent merge errors when ffmpeg is not available on Android
-        'postprocessor_hooks': [],
+        'merge_output_format': 'mp4',
     }
+
+    # If ffmpeg is available, enable merging for higher quality (1080p+)
+    if ffmpeg_location and os.path.isdir(ffmpeg_location):
+        ydl_opts['ffmpeg_location'] = ffmpeg_location
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:

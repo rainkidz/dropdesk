@@ -27,6 +27,27 @@ object YtDlpRunner {
     }
 
     /**
+     * Get the path to the ffmpeg binary provided by ffmpeg-kit.
+     * ffmpeg-kit installs its .so files into the app's nativeLibraryDir.
+     * yt-dlp can find ffmpeg if the binary is in the same directory.
+     * Returns the directory path, or null if not available.
+     */
+    private fun getFfmpegLocation(context: Context): String? {
+        return try {
+            val nativeDir = context.applicationInfo.nativeLibraryDir
+            Log.d(TAG, "Native lib dir: $nativeDir")
+            if (nativeDir != null && java.io.File(nativeDir).exists()) {
+                nativeDir
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "ffmpeg-kit not available: ${e.message}")
+            null
+        }
+    }
+
+    /**
      * Get video info using yt-dlp via Python.
      */
     suspend fun getVideoInfo(
@@ -71,13 +92,27 @@ object YtDlpRunner {
 
             Log.d(TAG, "Downloading: $url with format $format")
 
+            // Get ffmpeg path from ffmpeg-kit for merging video+audio
+            val ffmpegDir = getFfmpegLocation(context)
+            Log.d(TAG, "ffmpeg location: $ffmpegDir")
+
             // yt-dlp download is synchronous, run it
-            val resultJson = ytUtils.callAttr(
-                "download_video",
-                url,
-                outputPath,
-                format
-            ).toString()
+            val resultJson = if (ffmpegDir != null) {
+                ytUtils.callAttr(
+                    "download_video",
+                    url,
+                    outputPath,
+                    format,
+                    ffmpegDir
+                ).toString()
+            } else {
+                ytUtils.callAttr(
+                    "download_video",
+                    url,
+                    outputPath,
+                    format
+                ).toString()
+            }
 
             val json = JSONObject(resultJson)
             if (json.has("error")) {

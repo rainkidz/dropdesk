@@ -153,9 +153,9 @@ class DownloadManager(private val context: Context) {
             // Audio-only: single stream, no merge needed
             "bestaudio[ext=m4a]/bestaudio/best"
         } else {
-            // Video: use single muxed format to avoid ffmpeg merge requirement
-            // This gives up to 720p but doesn't need ffmpeg
-            "best[ext=mp4]/best[ext=webm]/best"
+            // Video: use bestvideo+bestaudio for 1080p+ quality
+            // ffmpeg-kit provides ffmpeg binary for merging
+            "bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio/best[ext=mp4]/best"
         }
 
         val dir = java.io.File(context.filesDir, "downloads")

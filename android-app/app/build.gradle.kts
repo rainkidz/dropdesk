@@ -12,8 +12,8 @@ android {
         applicationId = "com.vidgrab.app"
         minSdk = 24
         targetSdk = 34
-        versionCode = 5
-        versionName = "3.1.0"
+        versionCode = 6
+        versionName = "4.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -99,6 +99,10 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // FFmpeg-kit (maintained fork) - provides ffmpeg binary for Android
+    // Needed by yt-dlp to merge separate video+audio streams for 1080p+
+    implementation("dev.ffmpegkit-maintained:ffmpeg-kit-min:8.1.7")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
