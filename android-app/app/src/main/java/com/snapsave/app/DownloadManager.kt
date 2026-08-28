@@ -152,101 +152,6 @@ class DownloadManager(private val context: Context) {
         }
     }
 
-    private suspend fun downloadYouTube(url: String, type: String, formatId: String?, callback: DownloadCallback) {
-        // Video only or audio only — single stream, no merge, no ffmpeg needed
-        val format = if (!formatId.isNullOrEmpty()) {
-            formatId
-        } else if (type == "audio") {
-            "bestaudio/best"
-        } else {
-            "bestvideo/best"
-        }
-
-        val dir = java.io.File(context.filesDir, "downloads")
-        dir.mkdirs()
-        val outputPath = java.io.File(dir, "%(title)s.%(ext)s").absolutePath
-
-        // Show initial status
-        postProgress(callback, 0, 0, 0)
-
-        // Start download in background thread (non-blocking)
-        YtDlpRunner.startDownload(context, url, outputPath, format)
-
-        // Poll progress every 500ms
-        var lastPercent = -1
-        var lastProgressTime = System.currentTimeMillis()
-        val timeoutMs = 60_000L  // 60 seconds no progress = timeout
-
-        var downloadDone = false
-        while (!downloadDone) {
-            kotlinx.coroutines.delay(500)
-
-            val progress = YtDlpRunner.getProgress(context)
-            val currentPercent = progress.percent.toInt()
-
-            // Check if download is finished or errored
-            if (progress.phase == "done" || progress.phase == "error" || !YtDlpRunner.isDownloading()) {
-                downloadDone = true
-                // Show final status
-                if (progress.phase == "done") {
-                    postStatusText(callback, "Download complete!")
-                    postProgress(callback, 0, 0, 100)
-                }
-                break
-            }
-
-            // Update progress display
-            val speedStr = progress.speed.ifEmpty { null }
-            val etaStr = progress.eta.ifEmpty { null }
-            val phaseStr = when (progress.phase) {
-                "extracting" -> "Extracting video info..."
-                "downloading" -> {
-                    val parts = mutableListOf("Downloading")
-                    if (progress.total > 0) {
-                        parts.add("${formatFileSize(progress.downloaded)} / ${formatFileSize(progress.total)}")
-                    }
-                    parts.add("$currentPercent%")
-                    if (!speedStr.isNullOrEmpty()) parts.add(speedStr)
-                    if (!etaStr.isNullOrEmpty()) parts.add("ETA $etaStr")
-                    parts.joinToString(" ")
-                }
-                "finalizing" -> "Finalizing..."
-                else -> "Downloading $currentPercent%"
-            }
-
-            postStatusText(callback, phaseStr)
-            postProgress(callback, progress.downloaded, progress.total, currentPercent)
-            lastProgressTime = System.currentTimeMillis()
-
-            // Check for timeout — no progress for 60s
-            if (System.currentTimeMillis() - lastProgressTime > timeoutMs && currentPercent < 100) {
-                YtDlpRunner.stopDownload()
-                throw Exception("Download timed out — no progress for 60 seconds. Check your internet connection.")
-            }
-        }
-
-        // Check for error from progress
-        val progress = YtDlpRunner.getProgress(context)
-        if (progress.phase == "error") {
-            throw Exception(progress.error.ifEmpty { "Download failed" })
-        }
-
-        // Get final result
-        val result = YtDlpRunner.getResult()
-        if (result.isFailure) {
-            throw Exception(result.exceptionOrNull()?.message ?: "Download failed")
-        }
-
-        // Find the downloaded file
-        val files = dir.listFiles()?.sortedByDescending { it.lastModified() }
-        val downloadedFile = files?.firstOrNull()
-        if (downloadedFile != null && downloadedFile.exists()) {
-            postComplete(callback, downloadedFile.name)
-        } else {
-            throw Exception("Download completed but file not found")
-        }
-    }
-
     /**
      * Unified download for ALL platforms via yt-dlp.
      * yt-dlp supports YouTube, TikTok, Facebook, Instagram, Threads, and 1000+ sites.
@@ -258,7 +163,7 @@ class DownloadManager(private val context: Context) {
         } else if (type == "audio") {
             "bestaudio/best"
         } else {
-            "bestvideo/best"
+            "best/bestvideo"
         }
 
         val dir = java.io.File(context.filesDir, "downloads")

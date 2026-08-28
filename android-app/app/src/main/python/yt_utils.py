@@ -79,6 +79,9 @@ def download_video(url, output_path, format_str, cookies_file="", progress_callb
     """
     global _progress
     _progress = {"phase": "extracting", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
+    # Clear any stale state
+    _progress['_done'] = False
+    _progress['_error'] = False
 
     def progress_hook(d):
         global _progress
@@ -106,6 +109,8 @@ def download_video(url, output_path, format_str, cookies_file="", progress_callb
         'no_check_certificates': True,
         'geo_bypass': True,
         'progress_hooks': [progress_hook],
+        'noplaylist': True,
+        'postprocessors': [],
     }
 
     # Use cookies for authenticated downloads (Facebook, Instagram, etc.)
@@ -118,10 +123,12 @@ def download_video(url, output_path, format_str, cookies_file="", progress_callb
             ydl.download([url])
         _progress['phase'] = 'done'
         _progress['percent'] = 100.0
+        _progress['_done'] = True
         return json.dumps({"success": True})
     except Exception as e:
         _progress['phase'] = 'error'
         _progress['error'] = str(e)
+        _progress['_error'] = True
         return json.dumps({"error": str(e)})
 
 
