@@ -169,8 +169,8 @@
                                 android:orientation="vertical"
                                 android:padding="16dp"
                                 android:gravity="center">
-                                <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_youtube" android:contentDescription="YouTube" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="YouTube" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/youtube_red" android:layout_marginTop="6dp" />
+                                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_youtube" android:contentDescription="YouTube" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="YouTube" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/youtube_red" android:layout_marginTop="4dp" android:singleLine="true" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
@@ -193,8 +193,8 @@
                                 android:orientation="vertical"
                                 android:padding="16dp"
                                 android:gravity="center">
-                                <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_tiktok_logo" android:contentDescription="TikTok" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TikTok" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/tiktok_pink" android:layout_marginTop="6dp" />
+                                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_tiktok_logo" android:contentDescription="TikTok" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TikTok" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/tiktok_pink" android:layout_marginTop="4dp" android:singleLine="true" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
@@ -224,8 +224,8 @@
                                 android:orientation="vertical"
                                 android:padding="16dp"
                                 android:gravity="center">
-                                <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_instagram_logo" android:contentDescription="Instagram" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Instagram" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/instagram_pink" android:layout_marginTop="4dp" />
+                                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_instagram_logo" android:contentDescription="Instagram" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Instagram" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/instagram_pink" android:layout_marginTop="4dp" android:singleLine="true" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
@@ -248,8 +248,8 @@
                                 android:orientation="vertical"
                                 android:padding="16dp"
                                 android:gravity="center">
-                                <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_facebook_logo" android:contentDescription="Facebook" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Facebook" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/facebook_blue" android:layout_marginTop="4dp" />
+                                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_facebook_logo" android:contentDescription="Facebook" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Facebook" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/facebook_blue" android:layout_marginTop="4dp" android:singleLine="true" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
@@ -271,8 +271,8 @@
                                 android:orientation="vertical"
                                 android:padding="16dp"
                                 android:gravity="center">
-                                <ImageView android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_threads_logo" android:contentDescription="Threads" />
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Threads" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="4dp" />
+                                <ImageView android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_threads_logo" android:contentDescription="Threads" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Threads" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/text_primary" android:layout_marginTop="4dp" android:singleLine="true" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
                     </LinearLayout>
