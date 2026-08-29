@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- YouTube Red Rounded Rectangle -->
+    <path
+        android:fillColor="#FF0000"
+        android:pathData="M43.2,11.1c-0.5,-1.8 -1.9,-3.2 -3.7,-3.7C36.5,6 24,6 24,6S11.5,6 8.5,7.4c-1.8,0.5 -3.2,1.9 -3.7,3.7C3.5,14.1 3.5,24 3.5,24s0,9.9 1.3,12.9c0.5,1.8 1.9,3.2 3.7,3.7c3,1.3 15.5,1.3 15.5,1.3s12.5,0 15.5,-1.3c1.8,-0.5 3.2,-1.9 3.7,-3.7c1.3,-3 1.3,-12.9 1.3,-12.9S44.5,14.1 43.2,11.1z" />
+    <!-- White Play Triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M19.5,31.2l11.3,-7.2l-11.3,-7.2V31.2z" />
+</vector>

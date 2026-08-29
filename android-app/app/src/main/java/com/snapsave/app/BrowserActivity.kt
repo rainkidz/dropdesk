@@ -435,6 +435,9 @@ class BrowserActivity : AppCompatActivity() {
                     return true // Don't navigate to this URL
                 }
 
+                // Check if URL is a video page
+                checkUrlForVideo(url)
+
                 currentUrl = url
                 urlInput.setText(url)
                 return false
@@ -584,7 +587,7 @@ class BrowserActivity : AppCompatActivity() {
     private fun showHomepage() {
         homepageGrid.visibility = View.VISIBLE
         webView.visibility = View.GONE
-        fabDownload.visibility = View.GONE
+        fabDownload.hide()
         isHomepage = true
         urlInput.text?.clear()
         urlInput.requestFocus()
@@ -736,7 +739,7 @@ class BrowserActivity : AppCompatActivity() {
         }
 
         if (isVideoPage) {
-            fabDownload.visibility = View.VISIBLE
+            fabDownload.show()
         }
     }
 
@@ -804,41 +807,35 @@ class BrowserActivity : AppCompatActivity() {
         val options = when (platform) {
             Platform.YOUTUBE -> arrayOf(
                 "🎬 Video Only (Choose Quality)",
-                "🎵 Audio Only (MP3)",
-                "⬇ Quick Download (Best Quality)",
-                "📋 Copy Link",
-                "🔗 Open in Home Tab"
+                "🎵 Audio Only",
+                "⬇ Quick Download",
+                "📋 Copy Link"
             )
             Platform.TIKTOK -> arrayOf(
                 "🎬 Video (No Watermark)",
                 "🎵 Audio / Music",
                 "⬇ Quick Download",
-                "📋 Copy Link",
-                "🔗 Open in Home Tab"
+                "📋 Copy Link"
             )
             Platform.INSTAGRAM -> arrayOf(
                 "🎬 Video / Reel",
                 "📷 Photo / Image",
                 "⬇ Quick Download",
-                "📋 Copy Link",
-                "🔗 Open in Home Tab"
+                "📋 Copy Link"
             )
             Platform.FACEBOOK -> arrayOf(
                 "🎬 Video (MP4)",
                 "⬇ Quick Download",
-                "📋 Copy Link",
-                "🔗 Open in Home Tab"
+                "📋 Copy Link"
             )
             Platform.THREADS -> arrayOf(
                 "🎬 Video",
                 "⬇ Quick Download",
-                "📋 Copy Link",
-                "🔗 Open in Home Tab"
+                "📋 Copy Link"
             )
             else -> arrayOf(
                 "⬇ Quick Download",
-                "📋 Copy Link",
-                "🔗 Open in Home Tab"
+                "📋 Copy Link"
             )
         }
 
@@ -863,18 +860,8 @@ class BrowserActivity : AppCompatActivity() {
                         clipboard.setPrimaryClip(clip)
                         Toast.makeText(this, "Link copied!", Toast.LENGTH_SHORT).show()
                     }
-                    choice.contains("Open in Home") -> {
-                        // Pass URL back to MainActivity for inspection
-                        val intent = Intent(this, MainActivity::class.java).apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, url)
-                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        }
-                        startActivity(intent)
-                        finish()
-                    }
                     else -> {
-                        // All download options go to MainActivity
+                        // ALL download options: pass URL to MainActivity for inspection + download
                         val type = if (choice.contains("Audio") || choice.contains("Music")) "audio" else "video"
                         openMainApp(url, type)
                     }
@@ -886,6 +873,7 @@ class BrowserActivity : AppCompatActivity() {
     private fun openMainApp(url: String, downloadType: String) {
         val intent = Intent(this, MainActivity::class.java).apply {
             action = Intent.ACTION_SEND
+            type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, url)
             putExtra("download_type", downloadType)
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

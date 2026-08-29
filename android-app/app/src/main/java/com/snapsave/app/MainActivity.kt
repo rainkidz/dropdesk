@@ -117,6 +117,10 @@ class MainActivity : AppCompatActivity() {
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
             if (sharedText != null && isUrl(sharedText)) {
+                // Make sure we're on the Home tab
+                showHome()
+                bottomNavigation.selectedItemId = R.id.nav_home
+                // Set URL and inspect
                 urlInput.setText(sharedText.trim())
                 doInspect(sharedText.trim())
             }
@@ -128,7 +132,8 @@ class MainActivity : AppCompatActivity() {
         return lower.contains("youtube.com") || lower.contains("youtu.be") ||
                 lower.contains("tiktok.com") || lower.contains("vm.tiktok.com") ||
                 lower.contains("facebook.com") || lower.contains("fb.watch") ||
-                lower.contains("instagram.com") || lower.contains("threads.net")
+                lower.contains("instagram.com") || lower.contains("threads.net") ||
+                lower.contains("x.com") || lower.contains("twitter.com")
     }
 
     private fun checkPermissions() {
@@ -333,6 +338,8 @@ class MainActivity : AppCompatActivity() {
                     Platform.YOUTUBE -> inspectYouTube(url)
                     Platform.TIKTOK -> inspectTikTok(url)
                     Platform.FACEBOOK -> inspectFacebook(url)
+                    Platform.INSTAGRAM -> inspectInstagram(url)
+                    Platform.THREADS -> inspectThreads(url)
                     else -> showError("Platform not supported: ${platform.displayName}")
                 }
             } catch (e: Exception) {
@@ -468,6 +475,69 @@ class MainActivity : AppCompatActivity() {
             title = info.title,
             duration = info.duration,
             thumbnail = info.thumbnail,
+            formats = formats
+        )
+
+        showResult(currentInfo!!)
+    }
+
+    private suspend fun inspectInstagram(url: String) {
+        loadingText.text = "Fetching Instagram video info..."
+        // Use yt-dlp to extract Instagram video info
+        val formats = mutableListOf<FormatChoice>()
+        formats.add(FormatChoice(
+            id = "instagram_video",
+            label = "Video / Reel",
+            type = "video",
+            ext = "mp4",
+            quality = null,
+            sizeBytes = null
+        ))
+        formats.add(FormatChoice(
+            id = "instagram_audio",
+            label = "Audio",
+            type = "audio",
+            ext = "mp3",
+            quality = null,
+            sizeBytes = null
+        ))
+
+        currentInfo = PlatformInfo(
+            platform = Platform.INSTAGRAM,
+            title = "Instagram Post",
+            duration = null,
+            thumbnail = null,
+            formats = formats
+        )
+
+        showResult(currentInfo!!)
+    }
+
+    private suspend fun inspectThreads(url: String) {
+        loadingText.text = "Fetching Threads video info..."
+        val formats = mutableListOf<FormatChoice>()
+        formats.add(FormatChoice(
+            id = "threads_video",
+            label = "Video",
+            type = "video",
+            ext = "mp4",
+            quality = null,
+            sizeBytes = null
+        ))
+        formats.add(FormatChoice(
+            id = "threads_audio",
+            label = "Audio",
+            type = "audio",
+            ext = "mp3",
+            quality = null,
+            sizeBytes = null
+        ))
+
+        currentInfo = PlatformInfo(
+            platform = Platform.THREADS,
+            title = "Threads Post",
+            duration = null,
+            thumbnail = null,
             formats = formats
         )
 
