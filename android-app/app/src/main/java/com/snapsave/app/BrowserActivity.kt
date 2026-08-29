@@ -33,6 +33,15 @@ class BrowserActivity : AppCompatActivity() {
     private var currentUrl = ""
     private var detectedVideoUrls = mutableListOf<String>()
     private var isHomepage = true
+    private val adBlockHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val adBlockRunnable = object : Runnable {
+        override fun run() {
+            if (!isHomepage && !isFinishing) {
+                injectAdBlockJs()
+            }
+            adBlockHandler.postDelayed(this, 3000) // Run every 3 seconds
+        }
+    }
 
     companion object {
         const val EXTRA_URL = "extra_url"
@@ -55,12 +64,164 @@ class BrowserActivity : AppCompatActivity() {
         setupWebView()
         setupListeners()
         setupPlatformCards()
+        adBlockHandler.postDelayed(adBlockRunnable, 3000) // Start periodic ad removal
 
         // Check if opened with a URL from intent
         val initialUrl = intent.getStringExtra(EXTRA_URL)
         if (!initialUrl.isNullOrEmpty()) {
             loadUrl(initialUrl)
         }
+    }
+
+    // ── Ad domains to block ──────────────────────────────────────
+    private val adDomains = setOf(
+        // Google Ads
+        "pagead2.googlesyndication.com",
+        "googleadservices.com",
+        "www.googleadservices.com",
+        "adservice.google.com",
+        "doubleclick.net",
+        "*.doubleclick.net",
+        "tpc.googlesyndication.com",
+        "www-doubleclick-net.cdn.ampproject.org",
+        "googletagmanager.com",
+        "googletagservices.com",
+        "googlesyndication.com",
+        // YouTube ads
+        "youtube.com/api/stats/ads",
+        "youtube.com/get_video_info&ei=",
+        "s.ytimg.com/yts/jsbin/",
+        "static.doubleclick.net",
+        "ad.doubleclick.net",
+        // Facebook / Instagram ads
+        "an.facebook.com",
+        "pixel.facebook.com",
+        "www.facebook.com/tr",
+        // Generic ad networks
+        "ads-twitter.com",
+        "analytics.twitter.com",
+        "ad.doubleclick.net",
+        "ad.turn.com",
+        "advertising.com",
+        "adnxs.com",
+        "adsrvr.org",
+        "casalemedia.com",
+        "contextweb.com",
+        "demdex.net",
+        "everesttech.net",
+        "indeed.com/ads",
+        "taboola.com",
+        "outbrain.com",
+        "moatads.com",
+        "serving-sys.com",
+        "smaato.net",
+        "unity3d.com/ads",
+        "applovin.com",
+        "inmobi.com",
+        "vungle.com",
+        "chartboost.com"
+    )
+
+    private fun isAdUrl(url: String): Boolean {
+        val lower = url.lowercase()
+        return adDomains.any { domain ->
+            if (domain.startsWith("*.")) {
+                lower.contains(domain.removePrefix("*."))
+            } else {
+                lower.contains(domain)
+            }
+        }
+    }
+
+    // ── CSS to hide ad elements on YouTube and other sites ──────
+    private fun getAdBlockCss(): String {
+        return """
+            /* YouTube ad containers */
+            ytd-ad-slot-renderer,
+            ytd-promoted-sparkles-web-renderer,
+            ytd-display-ad-renderer,
+            ytd-video-masthead-ad-ad-slot-renderer,
+            ytd-in-feed-ad-renderer,
+            ytd-ad-banner-renderer,
+            ytd-statement-banner-renderer,
+            #player-ads,
+            #ad-container,
+            .ytp-ad-overlay-container,
+            .ytp-ad-text-overlay,
+            .ytp-ad-image-overlay,
+            .ytp-ad-overlay-slot,
+            .video-ads,
+            .ytp-ad-module,
+            ytd-rich-section-renderer:has(ytd-statement-banner-renderer),
+            /* Generic ad elements */
+            [id*='google_ads'],
+            [id*='ad-slot'],
+            [class*='ad-container'],
+            [class*='advertisement'],
+            [data-ad],
+            iframe[src*='doubleclick'],
+            iframe[src*='googlesyndication'],
+            iframe[src*='googleads'],
+            /* Sponsored content */
+            ytd-rich-section-renderer:has([href*='promoted']),
+            /* YouTube premium upsell */
+            ytd-mealbar-promo-renderer,
+            /* Bottom banner ads */
+            .ytp-ad-bottomlink-section
+            /* Instagram / Facebook */
+            [data-testid='ad-banner'],
+            [class*='x1lliihq'][style*='min-height: 250px']
+        """.trimIndent()
+    }
+
+    private fun injectAdBlockCss() {
+        val css = getAdBlockCss()
+        val js = """
+            (function() {
+                var style = document.createElement('style');
+                style.id = 'vidgrab-adblock';
+                style.textContent = '$css';
+                document.head.appendChild(style);
+            })();
+        """.trimIndent()
+        webView.evaluateJavascript(js, null)
+    }
+
+    private fun injectAdBlockJs() {
+        val js = """
+            (function() {
+                // Remove ad iframes
+                document.querySelectorAll('iframe').forEach(function(f) {
+                    var src = (f.src || '').toLowerCase();
+                    if (src.includes('doubleclick') || src.includes('googlesyndication') ||
+                        src.includes('googleads') || src.includes('ad.') ||
+                        src.includes('/ads/')) {
+                        f.remove();
+                    }
+                });
+
+                // Remove ad containers by common patterns
+                document.querySelectorAll('[id*="google_ads"], [id*="ad-slot"], [class*="ad-container"], [class*="advertisement"]').forEach(function(el) {
+                    el.remove();
+                });
+
+                // YouTube-specific: remove ad overlays
+                document.querySelectorAll('.ytp-ad-overlay-container, .ytp-ad-text-overlay, .ytp-ad-image-overlay, .ytp-ad-overlay-slot, .ytp-ad-bottomlink-section').forEach(function(el) {
+                    el.remove();
+                });
+
+                // YouTube: skip ad if video ad is playing
+                var player = document.querySelector('video');
+                if (player) {
+                    // Try to skip ad by seeking to end
+                    var adLayer = document.querySelector('.ytp-ad-player-overlay');
+                    if (adLayer && player.duration > 0) {
+                        try { player.currentTime = player.duration; } catch(e) {}
+                    }
+                }
+            })();
+        """.trimIndent()
+        webView.evaluateJavascript(js, null)
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -88,6 +249,16 @@ class BrowserActivity : AppCompatActivity() {
                 return false
             }
 
+            // Block ad requests
+            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+                val url = request?.url?.toString() ?: return super.shouldInterceptRequest(view, request)
+                if (isAdUrl(url)) {
+                    // Return empty response to block the ad
+                    return WebResourceResponse("text/plain", "UTF-8", null)
+                }
+                return super.shouldInterceptRequest(view, request)
+            }
+
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 progressBar.visibility = View.VISIBLE
@@ -99,6 +270,9 @@ class BrowserActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBar.visibility = View.GONE
+                // Inject ad blocking
+                injectAdBlockCss()
+                injectAdBlockJs()
                 // Inject JavaScript to detect video elements
                 injectVideoDetection()
                 // Check URL for known video patterns
@@ -378,6 +552,7 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        adBlockHandler.removeCallbacks(adBlockRunnable)
         webView.destroy()
         super.onDestroy()
     }
