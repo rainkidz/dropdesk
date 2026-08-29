@@ -464,6 +464,13 @@ class BrowserActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBar.visibility = View.GONE
+                // Update currentUrl with the final URL (handles redirects, SPA navigation)
+                if (!url.isNullOrEmpty() && url != "about:blank") {
+                    currentUrl = url
+                    urlInput.setText(url)
+                }
+                // Inject SPA URL tracking (for YouTube)
+                injectSpaUrlTracking()
                 // Inject ad blocking (platform-specific)
                 injectAdBlockCss()
                 injectAdBlockJs()
@@ -548,9 +555,9 @@ class BrowserActivity : AppCompatActivity() {
             }
         }
 
-        // Floating download button
+        // Floating download button - get actual URL from JavaScript first
         fabDownload.setOnClickListener {
-            showDownloadDialog()
+            getActualUrlAndShowDialog()
         }
     }
 
@@ -603,6 +610,45 @@ class BrowserActivity : AppCompatActivity() {
      * Inject JavaScript to detect video elements with IntersectionObserver
      * for scroll-based platforms like TikTok, Instagram Reels, Facebook Watch
      */
+    /**
+     * Track YouTube SPA navigation (pushState/replaceState)
+     * so currentUrl stays in sync with actual page
+     */
+    private fun injectSpaUrlTracking() {
+        val js = """
+            (function() {
+                // Only run on YouTube
+                if (!window.location.href.includes('youtube.com')) return;
+
+                // Override pushState and replaceState to detect SPA navigation
+                var origPush = history.pushState;
+                var origReplace = history.replaceState;
+
+                history.pushState = function() {
+                    origPush.apply(this, arguments);
+                    window._vidgrabOnUrlChange();
+                };
+                history.replaceState = function() {
+                    origReplace.apply(this, arguments);
+                    window._vidgrabOnUrlChange();
+                };
+
+                // Listen for popstate (back/forward)
+                window.addEventListener('popstate', function() {
+                    window._vidgrabOnUrlChange();
+                });
+
+                // Callback to notify Android
+                window._vidgrabOnUrlChange = function() {
+                    try {
+                        window.location.href = 'vidgrab://url_changed?' + encodeURIComponent(window.location.href);
+                    } catch(e) {}
+                };
+            })();
+        """.trimIndent()
+        webView.evaluateJavascript(js, null)
+    }
+
     private fun injectVideoDetection() {
         val js = """
             (function() {
@@ -793,9 +839,24 @@ class BrowserActivity : AppCompatActivity() {
         webView.evaluateJavascript(js, null)
     }
 
+    /**
+     * Get actual URL from JavaScript (handles YouTube SPA navigation)
+     * then show download dialog
+     */
+    private fun getActualUrlAndShowDialog() {
+        webView.evaluateJavascript("(function() { return window.location.href; })()") { result ->
+            // Remove surrounding quotes from JavaScript string
+            val actualUrl = result?.removeSurrounding("\"") ?: currentUrl
+            // Update currentUrl with the actual URL
+            currentUrl = actualUrl
+            urlInput.setText(actualUrl)
+            showDownloadDialog()
+        }
+    }
+
     private fun showDownloadDialog() {
         val url = currentUrl
-        if (url.isEmpty()) {
+        if (url.isEmpty() || url == "about:blank") {
             Toast.makeText(this, "No URL to download", Toast.LENGTH_SHORT).show()
             return
         }
@@ -889,14 +950,22 @@ class BrowserActivity : AppCompatActivity() {
         when {
             url.startsWith("vidgrab://video_detected?") -> {
                 // Video detected via IntersectionObserver
-                if (fabDownload.visibility != View.VISIBLE) {
-                    fabDownload.visibility = View.VISIBLE
-                }
+                fabDownload.show()
             }
             url.startsWith("vidgrab://login_needed?") -> {
                 // Extract platform name
                 val platform = url.substringAfter("platform=").substringBefore("&")
                 showLoginPrompt(platform)
+            }
+            url.startsWith("vidgrab://url_changed?") -> {
+                // YouTube SPA navigation detected
+                val encodedUrl = url.substringAfter("url_changed?")
+                try {
+                    val actualUrl = java.net.URLDecoder.decode(encodedUrl, "UTF-8")
+                    currentUrl = actualUrl
+                    urlInput.setText(actualUrl)
+                    checkUrlForVideo(actualUrl)
+                } catch (_: Exception) {}
             }
         }
     }
