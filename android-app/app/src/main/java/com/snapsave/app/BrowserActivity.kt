@@ -133,8 +133,24 @@ class BrowserActivity : AppCompatActivity() {
         }
     }
 
-    // ── CSS to hide ad elements on YouTube and other sites ──────
+    // ── Detect current platform from URL ───────────────────────
+    private fun detectPlatform(url: String): Platform {
+        return PlatformDetector.detect(url)
+    }
+
+    // ── CSS to hide ad elements — platform-specific ───────────
     private fun getAdBlockCss(): String {
+        val platform = detectPlatform(currentUrl)
+        return when (platform) {
+            Platform.YOUTUBE -> getYouTubeCss()
+            Platform.TIKTOK -> getTikTokCss()
+            Platform.INSTAGRAM -> getInstagramCss()
+            Platform.FACEBOOK -> getFacebookCss()
+            else -> getGenericCss()
+        }
+    }
+
+    private fun getYouTubeCss(): String {
         return """
             /* YouTube ad containers */
             ytd-ad-slot-renderer,
@@ -153,6 +169,70 @@ class BrowserActivity : AppCompatActivity() {
             .video-ads,
             .ytp-ad-module,
             ytd-rich-section-renderer:has(ytd-statement-banner-renderer),
+            /* Sponsored content */
+            ytd-rich-section-renderer:has([href*='promoted']),
+            /* YouTube premium upsell */
+            ytd-mealbar-promo-renderer,
+            /* Bottom banner ads */
+            .ytp-ad-bottomlink-section,
+            /* YouTube notifications popup */
+            ytd-popup-container,
+            /* Channel premium upsell */
+            ytd-membership-pill-renderer
+        """.trimIndent()
+    }
+
+    private fun getTikTokCss(): String {
+        return """
+            /* TikTok download prompt */
+            [data-e2e='top-tab-create'],
+            /* TikTok cookie banner */
+            [class*='DivCookieBanner'],
+            /* TikTok login wall */
+            [class*='DivLoginBanner'],
+            /* TikTok bottom nav */
+            [class*='DivFooter'],
+            /* Generic ad elements */
+            [id*='google_ads'],
+            [class*='ad-container'],
+            iframe[src*='doubleclick']
+        """.trimIndent()
+    }
+
+    private fun getInstagramCss(): String {
+        return """
+            /* Instagram login wall */
+            [class*='x1n2onr6'][class*='x78zumc'],
+            /* Instagram bottom bar */
+            [role='navigation'],
+            /* Instagram story tray on web */
+            [class*='x9f619'] > div:first-child,
+            /* Generic ad elements */
+            [data-testid='ad-banner'],
+            [id*='google_ads'],
+            iframe[src*='doubleclick']
+        """.trimIndent()
+    }
+
+    private fun getFacebookCss(): String {
+        return """
+            /* Facebook sponsored posts */
+            [aria-label='Sponsored'],
+            [data-testid='fbfeed_story'],
+            /* Facebook story ads */
+            [class*='_9Ag-'],
+            /* Facebook reels ads */
+            [class*='x1dr75xp'],
+            /* Generic ad elements */
+            [id*='google_ads'],
+            [class*='ad-container'],
+            iframe[src*='doubleclick'],
+            iframe[src*='googlesyndication']
+        """.trimIndent()
+    }
+
+    private fun getGenericCss(): String {
+        return """
             /* Generic ad elements */
             [id*='google_ads'],
             [id*='ad-slot'],
@@ -161,16 +241,7 @@ class BrowserActivity : AppCompatActivity() {
             [data-ad],
             iframe[src*='doubleclick'],
             iframe[src*='googlesyndication'],
-            iframe[src*='googleads'],
-            /* Sponsored content */
-            ytd-rich-section-renderer:has([href*='promoted']),
-            /* YouTube premium upsell */
-            ytd-mealbar-promo-renderer,
-            /* Bottom banner ads */
-            .ytp-ad-bottomlink-section
-            /* Instagram / Facebook */
-            [data-testid='ad-banner'],
-            [class*='x1lliihq'][style*='min-height: 250px']
+            iframe[src*='googleads']
         """.trimIndent()
     }
 
@@ -188,40 +259,153 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     private fun injectAdBlockJs() {
-        val js = """
+        val platform = detectPlatform(currentUrl)
+        val platformJs = when (platform) {
+            Platform.YOUTUBE -> getYoutubeAdBlockJs()
+            Platform.TIKTOK -> getTikTokAdBlockJs()
+            Platform.INSTAGRAM -> getInstagramAdBlockJs()
+            Platform.FACEBOOK -> getFacebookAdBlockJs()
+            else -> getGenericAdBlockJs()
+        }
+        webView.evaluateJavascript(platformJs, null)
+    }
+
+    private fun getYoutubeAdBlockJs(): String {
+        return """
             (function() {
                 // Remove ad iframes
                 document.querySelectorAll('iframe').forEach(function(f) {
                     var src = (f.src || '').toLowerCase();
                     if (src.includes('doubleclick') || src.includes('googlesyndication') ||
-                        src.includes('googleads') || src.includes('ad.') ||
-                        src.includes('/ads/')) {
+                        src.includes('googleads')) {
                         f.remove();
                     }
                 });
 
-                // Remove ad containers by common patterns
-                document.querySelectorAll('[id*="google_ads"], [id*="ad-slot"], [class*="ad-container"], [class*="advertisement"]').forEach(function(el) {
+                // Remove ad containers
+                document.querySelectorAll('[id*="google_ads"], [id*="ad-slot"], [class*="ad-container"]').forEach(function(el) {
                     el.remove();
                 });
 
-                // YouTube-specific: remove ad overlays
-                document.querySelectorAll('.ytp-ad-overlay-container, .ytp-ad-text-overlay, .ytp-ad-image-overlay, .ytp-ad-overlay-slot, .ytp-ad-bottomlink-section').forEach(function(el) {
+                // YouTube: remove ad overlays
+                document.querySelectorAll('.ytp-ad-overlay-container, .ytp-ad-text-overlay, .ytp-ad-image-overlay, .ytp-ad-overlay-slot, .ytp-ad-bottomlink-section, .ytp-ad-module').forEach(function(el) {
                     el.remove();
                 });
 
-                // YouTube: skip ad if video ad is playing
+                // YouTube: try to skip ad by seeking to end
                 var player = document.querySelector('video');
-                if (player) {
-                    // Try to skip ad by seeking to end
+                if (player && player.duration > 0) {
                     var adLayer = document.querySelector('.ytp-ad-player-overlay');
-                    if (adLayer && player.duration > 0) {
+                    if (adLayer) {
                         try { player.currentTime = player.duration; } catch(e) {}
                     }
                 }
+
+                // YouTube: remove promoted content sections
+                document.querySelectorAll('ytd-rich-section-renderer').forEach(function(el) {
+                    if (el.innerHTML.includes('promoted') || el.innerHTML.includes('sponsor')) {
+                        el.remove();
+                    }
+                });
             })();
         """.trimIndent()
-        webView.evaluateJavascript(js, null)
+    }
+
+    private fun getTikTokAdBlockJs(): String {
+        return """
+            (function() {
+                // Remove ad iframes
+                document.querySelectorAll('iframe').forEach(function(f) {
+                    var src = (f.src || '').toLowerCase();
+                    if (src.includes('doubleclick') || src.includes('googlesyndication')) {
+                        f.remove();
+                    }
+                });
+
+                // Remove sponsored content
+                document.querySelectorAll('[class*="sponsor"], [class*="Promoted"], [data-e2e="sponsored"]').forEach(function(el) {
+                    el.remove();
+                });
+
+                // Remove download app prompts
+                document.querySelectorAll('[class*="DivAppPromotion"], [class*="DivDownloadBanner"]').forEach(function(el) {
+                    el.remove();
+                });
+            })();
+        """.trimIndent()
+    }
+
+    private fun getInstagramAdBlockJs(): String {
+        return """
+            (function() {
+                // Remove ad iframes
+                document.querySelectorAll('iframe').forEach(function(f) {
+                    var src = (f.src || '').toLowerCase();
+                    if (src.includes('doubleclick') || src.includes('googlesyndication')) {
+                        f.remove();
+                    }
+                });
+
+                // Remove sponsored posts
+                document.querySelectorAll('[class*="x1lliihq"]').forEach(function(el) {
+                    if (el.textContent.includes('Sponsored') || el.innerHTML.includes('Sponsored')) {
+                        el.closest('article') ? el.closest('article').remove() : el.remove();
+                    }
+                });
+
+                // Remove login prompts
+                document.querySelectorAll('[role="dialog"]').forEach(function(el) {
+                    if (el.innerHTML.includes('Log in') || el.innerHTML.includes('Sign up')) {
+                        el.remove();
+                    }
+                });
+            })();
+        """.trimIndent()
+    }
+
+    private fun getFacebookAdBlockJs(): String {
+        return """
+            (function() {
+                // Remove ad iframes
+                document.querySelectorAll('iframe').forEach(function(f) {
+                    var src = (f.src || '').toLowerCase();
+                    if (src.includes('doubleclick') || src.includes('googlesyndication')) {
+                        f.remove();
+                    }
+                });
+
+                // Remove sponsored posts
+                document.querySelectorAll('[aria-label="Sponsored"]').forEach(function(el) {
+                    var story = el.closest('[data-testid="fbfeed_story"]');
+                    if (story) story.remove();
+                });
+
+                // Remove ad containers
+                document.querySelectorAll('[class*="_9Ag-"], [class*="x1dr75xp"]').forEach(function(el) {
+                    el.remove();
+                });
+            })();
+        """.trimIndent()
+    }
+
+    private fun getGenericAdBlockJs(): String {
+        return """
+            (function() {
+                // Remove ad iframes
+                document.querySelectorAll('iframe').forEach(function(f) {
+                    var src = (f.src || '').toLowerCase();
+                    if (src.includes('doubleclick') || src.includes('googlesyndication') ||
+                        src.includes('googleads')) {
+                        f.remove();
+                    }
+                });
+
+                // Remove ad containers
+                document.querySelectorAll('[id*="google_ads"], [id*="ad-slot"], [class*="ad-container"], [class*="advertisement"]').forEach(function(el) {
+                    el.remove();
+                });
+            })();
+        """.trimIndent()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -244,6 +428,13 @@ class BrowserActivity : AppCompatActivity() {
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val url = request?.url?.toString() ?: return false
+
+                // Handle custom URL scheme from JavaScript bridge
+                if (url.startsWith("vidgrab://")) {
+                    handleCustomScheme(url)
+                    return true // Don't navigate to this URL
+                }
+
                 currentUrl = url
                 urlInput.setText(url)
                 return false
@@ -270,13 +461,15 @@ class BrowserActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 progressBar.visibility = View.GONE
-                // Inject ad blocking
+                // Inject ad blocking (platform-specific)
                 injectAdBlockCss()
                 injectAdBlockJs()
                 // Inject JavaScript to detect video elements
                 injectVideoDetection()
                 // Check URL for known video patterns
                 checkUrlForVideo(url)
+                // Check for login walls (Instagram, Facebook, TikTok)
+                checkLoginWall()
             }
 
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
@@ -404,15 +597,16 @@ class BrowserActivity : AppCompatActivity() {
     }
 
     /**
-     * Inject JavaScript to detect <video>, <source>, and <iframe> elements
-     * and extract their src URLs for download
+     * Inject JavaScript to detect video elements with IntersectionObserver
+     * for scroll-based platforms like TikTok, Instagram Reels, Facebook Watch
      */
     private fun injectVideoDetection() {
         val js = """
             (function() {
                 var videoUrls = [];
-                
-                // Find <video> elements
+                var activeVideoSrc = null;
+
+                // 1. Find <video> elements and extract src
                 var videos = document.querySelectorAll('video');
                 videos.forEach(function(v) {
                     if (v.src) videoUrls.push(v.src);
@@ -420,10 +614,9 @@ class BrowserActivity : AppCompatActivity() {
                         if (s.src) videoUrls.push(s.src);
                     });
                 });
-                
-                // Find <video> inside shadow DOMs
-                var allElements = document.querySelectorAll('*');
-                allElements.forEach(function(el) {
+
+                // 2. Find <video> inside shadow DOMs (TikTok uses this)
+                document.querySelectorAll('*').forEach(function(el) {
                     if (el.shadowRoot) {
                         el.shadowRoot.querySelectorAll('video').forEach(function(v) {
                             if (v.src) videoUrls.push(v.src);
@@ -433,25 +626,83 @@ class BrowserActivity : AppCompatActivity() {
                         });
                     }
                 });
-                
-                // Find og:video meta tags
-                document.querySelectorAll('meta[property="og:video"], meta[property="og:video:url"]').forEach(function(m) {
+
+                // 3. Find og:video meta tags (Facebook, Instagram, Threads)
+                document.querySelectorAll('meta[property="og:video"], meta[property="og:video:url"], meta[property="og:video:secure_url"]').forEach(function(m) {
                     var content = m.getAttribute('content');
-                    if (content) videoUrls.push(content);
+                    if (content && content.startsWith('http')) videoUrls.push(content);
                 });
-                
-                // Find twitter:player:stream
-                document.querySelectorAll('meta[name="twitter:player:stream"]').forEach(function(m) {
+
+                // 4. Find twitter:player:stream (Twitter/X, Threads)
+                document.querySelectorAll('meta[name="twitter:player:stream"], meta[name="twitter:video.src"]').forEach(function(m) {
                     var content = m.getAttribute('content');
-                    if (content) videoUrls.push(content);
+                    if (content && content.startsWith('http')) videoUrls.push(content);
                 });
-                
-                // Deduplicate
-                videoUrls = [...new Set(videoUrls)];
-                
-                // Send to Android
+
+                // 5. YouTube: extract from ytInitialPlayerResponse
+                try {
+                    if (window.ytInitialPlayerResponse) {
+                        var sr = window.ytInitialPlayerResponse.streamingData;
+                        if (sr && sr.formats) {
+                            sr.formats.forEach(function(f) {
+                                if (f.url) videoUrls.push(f.url);
+                            });
+                        }
+                        if (sr && sr.adaptiveFormats) {
+                            sr.adaptiveFormats.forEach(function(f) {
+                                if (f.url) videoUrls.push(f.url);
+                            });
+                        }
+                    }
+                } catch(e) {}
+
+                // 6. YouTube: extract from page source JSON
+                try {
+                    var scripts = document.querySelectorAll('script');
+                    scripts.forEach(function(s) {
+                        var text = s.textContent || '';
+                        var match = text.match(/"playbackUrl":"(https:.*?\.googlevideo\.com.*?)"/);
+                        if (match) videoUrls.push(match[1].replace(/\\u0026/g, '&'));
+                    });
+                } catch(e) {}
+
+                // 7. IntersectionObserver for TikTok/Reels scroll detection
+                if (!window._vidgrabObserver) {
+                    window._vidgrabObserver = new IntersectionObserver(function(entries) {
+                        entries.forEach(function(entry) {
+                            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+                                var video = entry.target;
+                                if (video.src) {
+                                    window._vidgrabActiveVideo = video.src;
+                                }
+                            }
+                        });
+                    }, { threshold: [0.5] });
+
+                    // Observe all video elements
+                    document.querySelectorAll('video').forEach(function(v) {
+                        window._vidgrabObserver.observe(v);
+                    });
+                }
+
+                // 8. Get active video from IntersectionObserver
+                if (window._vidgrabActiveVideo) {
+                    videoUrls.unshift(window._vidgrabActiveVideo);
+                }
+
+                // 9. Deduplicate
+                videoUrls = [...new Set(videoUrls)].filter(function(url) {
+                    return url && url.startsWith('http') && !url.includes('blob:');
+                });
+
+                // 10. Send to Android
                 if (videoUrls.length > 0) {
-                    VidGrabBridge.onVideoDetected(JSON.stringify(videoUrls));
+                    window.AndroidBridge = window.AndroidBridge || {};
+                    window.AndroidBridge.onVideoDetected = function(urls) {};
+                    // Use prompt to communicate with Android
+                    try {
+                        window.location.href = 'vidgrab://video_detected?' + encodeURIComponent(JSON.stringify(videoUrls));
+                    } catch(e) {}
                 }
             })();
         """.trimIndent()
@@ -475,7 +726,10 @@ class BrowserActivity : AppCompatActivity() {
                 url.contains("facebook.com/videos") ||
                 url.contains("fb.watch") ||
                 url.contains("threads.net/@") ||
-                url.contains("threads.net/t/")
+                url.contains("threads.net/t/") ||
+                // Also detect profile pages that might have videos
+                url.contains("youtube.com/@") ||
+                url.contains("youtube.com/channel/")
 
         if (isVideoPage && !detectedVideoUrls.contains(url)) {
             detectedVideoUrls.add(url)
@@ -486,6 +740,56 @@ class BrowserActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Detect login walls and show friendly prompt
+     */
+    private fun checkLoginWall() {
+        val js = """
+            (function() {
+                var url = window.location.href;
+                var needsLogin = false;
+                var platform = '';
+
+                // Instagram: check for login wall
+                if (url.includes('instagram.com')) {
+                    var loginBtn = document.querySelector('[data-testid="login-button"]') ||
+                                   document.querySelector('a[href="/accounts/login/"]') ||
+                                   document.querySelector('button[type="submit"]');
+                    var loginWall = document.querySelector('[class*="x9f619"] > div > div > div > h1');
+                    if (loginBtn || loginWall) {
+                        needsLogin = true;
+                        platform = 'Instagram';
+                    }
+                }
+
+                // Facebook: check for login wall
+                if (url.includes('facebook.com')) {
+                    var fbLogin = document.querySelector('[data-testid="royal_login_form"]') ||
+                                  document.querySelector('#login_form');
+                    if (fbLogin) {
+                        needsLogin = true;
+                        platform = 'Facebook';
+                    }
+                }
+
+                // TikTok: check for login prompt
+                if (url.includes('tiktok.com')) {
+                    var ttLogin = document.querySelector('[data-e2e="login-btn"]') ||
+                                  document.querySelector('[class*="DivLoginBanner"]');
+                    if (ttLogin) {
+                        needsLogin = true;
+                        platform = 'TikTok';
+                    }
+                }
+
+                if (needsLogin) {
+                    window.location.href = 'vidgrab://login_needed?platform=' + platform;
+                }
+            })();
+        """.trimIndent()
+        webView.evaluateJavascript(js, null)
+    }
+
     private fun showDownloadDialog() {
         val url = currentUrl
         if (url.isEmpty()) {
@@ -494,18 +798,62 @@ class BrowserActivity : AppCompatActivity() {
         }
 
         // Detect platform
-        val platform = PlatformDetector.detect(url)
+        val platform = detectPlatform(url)
 
+        // Platform-specific download options
         val options = when (platform) {
-            Platform.YOUTUBE -> arrayOf("🎵 Audio Only", "🎬 Video Only", "⬇ Quick Download", "📋 Copy Link")
-            Platform.TIKTOK -> arrayOf("🎬 Video (No Watermark)", "🎵 Audio / Music", "📋 Copy Link")
-            Platform.FACEBOOK -> arrayOf("🎬 Video (MP4)", "📋 Copy Link")
-            Platform.INSTAGRAM -> arrayOf("🎬 Video / Reel", "📷 Photo / Image", "📋 Copy Link")
-            else -> arrayOf("⬇ Quick Download", "📋 Copy Link")
+            Platform.YOUTUBE -> arrayOf(
+                "🎬 Video Only (Choose Quality)",
+                "🎵 Audio Only (MP3)",
+                "⬇ Quick Download (Best Quality)",
+                "📋 Copy Link",
+                "🔗 Open in Home Tab"
+            )
+            Platform.TIKTOK -> arrayOf(
+                "🎬 Video (No Watermark)",
+                "🎵 Audio / Music",
+                "⬇ Quick Download",
+                "📋 Copy Link",
+                "🔗 Open in Home Tab"
+            )
+            Platform.INSTAGRAM -> arrayOf(
+                "🎬 Video / Reel",
+                "📷 Photo / Image",
+                "⬇ Quick Download",
+                "📋 Copy Link",
+                "🔗 Open in Home Tab"
+            )
+            Platform.FACEBOOK -> arrayOf(
+                "🎬 Video (MP4)",
+                "⬇ Quick Download",
+                "📋 Copy Link",
+                "🔗 Open in Home Tab"
+            )
+            Platform.THREADS -> arrayOf(
+                "🎬 Video",
+                "⬇ Quick Download",
+                "📋 Copy Link",
+                "🔗 Open in Home Tab"
+            )
+            else -> arrayOf(
+                "⬇ Quick Download",
+                "📋 Copy Link",
+                "🔗 Open in Home Tab"
+            )
+        }
+
+        // Platform emoji for title
+        val emoji = when (platform) {
+            Platform.YOUTUBE -> "📺"
+            Platform.TIKTOK -> "🎵"
+            Platform.INSTAGRAM -> "📷"
+            Platform.FACEBOOK -> "📘"
+            Platform.THREADS -> "💬"
+            else -> "🌐"
         }
 
         AlertDialog.Builder(this, R.style.Theme_VidGrab)
-            .setTitle("Download from ${platform.displayName}")
+            .setTitle("$emoji Download from ${platform.displayName}")
             .setItems(options) { _, which ->
                 val choice = options[which]
                 when {
@@ -515,14 +863,20 @@ class BrowserActivity : AppCompatActivity() {
                         clipboard.setPrimaryClip(clip)
                         Toast.makeText(this, "Link copied!", Toast.LENGTH_SHORT).show()
                     }
-                    choice.contains("Video") || choice.contains("Quick") -> {
-                        openMainApp(url, "video")
+                    choice.contains("Open in Home") -> {
+                        // Pass URL back to MainActivity for inspection
+                        val intent = Intent(this, MainActivity::class.java).apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, url)
+                            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        }
+                        startActivity(intent)
+                        finish()
                     }
-                    choice.contains("Audio") -> {
-                        openMainApp(url, "audio")
-                    }
-                    choice.contains("Photo") -> {
-                        openMainApp(url, "video")
+                    else -> {
+                        // All download options go to MainActivity
+                        val type = if (choice.contains("Audio") || choice.contains("Music")) "audio" else "video"
+                        openMainApp(url, type)
                     }
                 }
             }
@@ -538,6 +892,42 @@ class BrowserActivity : AppCompatActivity() {
         }
         startActivity(intent)
         finish()
+    }
+
+    /**
+     * Handle custom URL scheme from JavaScript bridge
+     */
+    private fun handleCustomScheme(url: String) {
+        when {
+            url.startsWith("vidgrab://video_detected?") -> {
+                // Video detected via IntersectionObserver
+                if (fabDownload.visibility != View.VISIBLE) {
+                    fabDownload.visibility = View.VISIBLE
+                }
+            }
+            url.startsWith("vidgrab://login_needed?") -> {
+                // Extract platform name
+                val platform = url.substringAfter("platform=").substringBefore("&")
+                showLoginPrompt(platform)
+            }
+        }
+    }
+
+    /**
+     * Show friendly login prompt when platform requires login
+     */
+    private fun showLoginPrompt(platform: String) {
+        AlertDialog.Builder(this, R.style.Theme_VidGrab)
+            .setTitle("Login Required")
+            .setMessage("$platform requires login to access this content.\n\nYou can:\n• Open $platform in your phone browser to login\n• Or download from the URL directly using Home tab")
+            .setPositiveButton("OK", null)
+            .setNegativeButton("Copy URL") { _, _ ->
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("URL", currentUrl)
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(this, "URL copied!", Toast.LENGTH_SHORT).show()
+            }
+            .show()
     }
 
     @Deprecated("Use onBackPressedDispatcher")
