@@ -7,11 +7,7 @@
     <item
         android:id="@+id/nav_browser"
         android:icon="@drawable/ic_browser"
-        android:title="Browser" />
-    <item
-        android:id="@+id/nav_sites"
-        android:icon="@drawable/ic_sites"
-        android:title="Sites" />
+        android:title="Browse" />
     <item
         android:id="@+id/nav_downloads"
         android:icon="@drawable/ic_downloads"

@@ -31,7 +31,7 @@ import android.view.animation.Animation
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.switchmaterial.SwitchMaterial
+import android.view.MenuItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -68,9 +68,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adContainer: android.widget.FrameLayout
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var homeScrollView: androidx.core.widget.NestedScrollView
-    private lateinit var sitesScrollView: androidx.core.widget.NestedScrollView
-    private lateinit var settingsScrollView: androidx.core.widget.NestedScrollView
-    private lateinit var darkModeSwitch: SwitchMaterial
     private lateinit var prefs: SharedPreferences
 
     private val mainScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -187,9 +184,6 @@ class MainActivity : AppCompatActivity() {
         loginThreadsBtn = findViewById(R.id.loginThreadsBtn)
         bottomNavigation = findViewById(R.id.bottomNavigation)
         homeScrollView = findViewById(R.id.homeScrollView)
-        sitesScrollView = findViewById(R.id.sitesScrollView)
-        settingsScrollView = findViewById(R.id.settingsScrollView)
-        darkModeSwitch = findViewById(R.id.darkModeSwitch)
         prefs = getSharedPreferences("vidgrab_prefs", MODE_PRIVATE)
     }
 
@@ -264,67 +258,46 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, BrowserActivity::class.java))
                     false // Don't select, go to activity
                 }
-                R.id.nav_sites -> {
-                    showSites()
-                    true
-                }
                 R.id.nav_downloads -> {
                     startActivity(Intent(this, DownloadsActivity::class.java))
                     false // Don't select, go to activity
                 }
                 R.id.nav_settings -> {
-                    showSettings()
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    false
+                }
+                else -> false
+            }
+        }
+
+        // Apply saved dark mode
+        val nightMode = prefs.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(nightMode)
+
+        // Toolbar settings icon
+        val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
                     true
                 }
                 else -> false
             }
         }
 
-        // Dark Mode Toggle
-        val isDarkMode = prefs.getBoolean("dark_mode", false)
-        darkModeSwitch.isChecked = isDarkMode
-        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("dark_mode", isChecked).apply()
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
-
-        // Apply saved dark mode
-        if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
+        // Move login section to bottom of home, visible only when needed
+        val loginCard = findViewById<MaterialCardView>(R.id.loginCard)
+        loginCard.visibility = View.GONE
 
         updateLoginStatus()
     }
 
     private fun showHome() {
         homeScrollView.visibility = View.VISIBLE
-        sitesScrollView.visibility = View.GONE
-        settingsScrollView.visibility = View.GONE
-    }
-
-    private fun showSites() {
-        homeScrollView.visibility = View.GONE
-        sitesScrollView.visibility = View.VISIBLE
-        settingsScrollView.visibility = View.GONE
-    }
-
-    private fun showSettings() {
-        homeScrollView.visibility = View.GONE
-        sitesScrollView.visibility = View.GONE
-        settingsScrollView.visibility = View.VISIBLE
     }
 
     private fun openLogin(platform: String) {
-        val url = when (platform) {
-            CookieLoginActivity.PLATFORM_FACEBOOK -> CookieLoginActivity.PLATFORM_FACEBOOK
-            CookieLoginActivity.PLATFORM_INSTAGRAM -> CookieLoginActivity.PLATFORM_INSTAGRAM
-            CookieLoginActivity.PLATFORM_THREADS -> CookieLoginActivity.PLATFORM_THREADS
-            else -> platform
-        }
         val intent = Intent(this, CookieLoginActivity::class.java).apply {
             putExtra(CookieLoginActivity.EXTRA_PLATFORM, platform)
         }
