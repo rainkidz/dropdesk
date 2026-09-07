@@ -712,77 +712,6 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- 🎌 Anime Corner -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="@color/anime_purple"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            style="@style/TextAppearance.TubeNime.SectionTitle"
-                            android:drawableStart="@drawable/ic_speed_lines"
-                            android:drawablePadding="8dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="🎌 Anime Corner"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/anime_purple"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Download anime openings, endings, AMVs &amp; more"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary"
-                            android:layout_marginBottom="12dp" />
-
-                        <!-- Anime Quick Links -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/animeYouTubeBtn"
-                                android:layout_width="0dp"
-                                android:layout_height="36dp"
-                                android:layout_weight="1"
-                                android:text="YouTube"
-                                android:textAllCaps="false"
-                                android:textSize="11sp"
-                                android:layout_marginEnd="4dp"
-                                style="@style/Widget.TubeNime.Button.Outlined"
-                                app:strokeColor="@color/youtube_red"
-                                app:icon="@drawable/ic_youtube"
-                                app:iconSize="16dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/animeBilibiliBtn"
-                                android:layout_width="0dp"
-                                android:layout_height="36dp"
-                                android:layout_weight="1"
-                                android:text="Bilibili"
-                                android:textAllCaps="false"
-                                android:textSize="11sp"
-                                android:layout_marginStart="4dp"
-                                style="@style/Widget.TubeNime.Button.Outlined"
-                                app:strokeColor="@color/bilibili_blue"
-                                app:icon="@drawable/ic_bilibili"
-                                app:iconSize="16dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Loading Indicator -->
                 <com.google.android.material.card.MaterialCardView
@@ -1181,6 +1110,77 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/anime_purple"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            style="@style/TextAppearance.TubeNime.SectionTitle"
+                            android:drawableStart="@drawable/ic_speed_lines"
+                            android:drawablePadding="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎌 Anime Corner"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/anime_purple"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Download anime openings, endings, AMVs &amp; more"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Anime Quick Links -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/animeYouTubeBtn"
+                                android:layout_width="0dp"
+                                android:layout_height="36dp"
+                                android:layout_weight="1"
+                                android:text="YouTube"
+                                android:textAllCaps="false"
+                                android:textSize="11sp"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.TubeNime.Button.Outlined"
+                                app:strokeColor="@color/youtube_red"
+                                app:icon="@drawable/ic_youtube"
+                                app:iconSize="16dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/animeBilibiliBtn"
+                                android:layout_width="0dp"
+                                android:layout_height="36dp"
+                                android:layout_weight="1"
+                                android:text="Bilibili"
+                                android:textAllCaps="false"
+                                android:textSize="11sp"
+                                android:layout_marginStart="4dp"
+                                style="@style/Widget.TubeNime.Button.Outlined"
+                                app:strokeColor="@color/bilibili_blue"
+                                app:icon="@drawable/ic_bilibili"
+                                app:iconSize="16dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
                 <!-- Download History Header -->
                 <TextView
                     android:id="@+id/historyHeader"
