@@ -202,6 +202,7 @@ object PremiumManager {
         val context = appContext ?: return
         val client = BillingClient.newBuilder(context)
             .setListener(purchasesUpdatedListener)
+            .enablePendingPurchases()
             .build()
         billingClient = client
 
