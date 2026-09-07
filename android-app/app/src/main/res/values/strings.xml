@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">VidGrab</string>
+    <string name="app_name">TubeNime</string>
+    
+    <!-- Welcome -->
+    <string name="welcome_title">Welcome to TubeNime</string>
+    <string name="welcome_back_title">Welcome back to TubeNime</string>
+    <string name="welcome_close">Dismiss notifications</string>
+
+    <!-- Welcome banner notices (rotating) -->
+    <string name="notice_platforms_title">Now supported</string>
+    <string name="notice_platforms_body">YouTube, TikTok, Instagram, Bilibili &amp; more — paste any link to start.</string>
+    <string name="notice_seasonal_title">New season is here 🌸</string>
+    <string name="notice_seasonal_body">Fresh seasonal anime drops weekly — grab the latest openings before spoilers!</string>
+    <string name="notice_oped_title">Save the soundtrack</string>
+    <string name="notice_oped_body">Turn anime OP/ED into MP3s — tap Audio Only and listen offline.</string>
+    <string name="notice_trending_title">Trending openings</string>
+    <string name="notice_trending_body">See what openings everyone is watching — tap to browse anime openings on YouTube.</string>
+    <string name="notice_bilibili_title">Bilibili anime zone</string>
+    <string name="notice_bilibili_body">Thousands of anime episodes and fan MVs live here — tap to explore.</string>
+    <string name="notice_clipboard_title">Pro tip</string>
+    <string name="notice_clipboard_body">Copy an anime video link anywhere — TubeNime catches it automatically.</string>
+    
+    <!-- Quick Download -->
+    <string name="quick_download_title">Quick Download</string>
+    
+    <!-- Anime Corner -->
+    <string name="anime_corner_title">Anime Corner</string>
+    <string name="anime_corner_subtitle">Download anime openings, endings, AMVs &amp; more</string>
+    
+    <!-- URL Input -->
+    <string name="url_input_hint">Paste video URL here...</string>
+    <string name="url_input_description">YouTube, TikTok, Instagram, Bilibili &amp; more</string>
+    <string name="inspect_link">Inspect Link</string>
+    
+    <!-- Downloads -->
+    <string name="recent_downloads">Recent Downloads</string>
+    <string name="view_all_downloads">View All Downloads</string>
+    <string name="download_complete">Download Complete</string>
+    <string name="download_another">Download Another</string>
+    
+    <!-- About -->
+    <string name="about_version">Version 1.0</string>
+    <string name="about_description">TubeNime - Video Downloader\n\nDownload videos from your favorite platforms.\nSupports YouTube, TikTok, Instagram, Facebook,\nBilibili, Threads, and many more.\n\n✨ Features:\n• High-quality video downloads\n• Audio extraction (MP3)\n• Batch/playlist downloads\n• Built-in browser\n• Private video support\n• Dark mode</string>
 </resources>

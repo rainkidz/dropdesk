@@ -4,20 +4,42 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Download arrow vertical shaft -->
+
+    <!-- Concept C: Bold T + Anime Speed Slash -->
+    <!-- T top bar -->
     <path
-        android:pathData="M54,30 L54,62"
-        android:strokeWidth="5"
-        android:strokeColor="#FFFFFF" />
-    <!-- Download arrow head (left + right) -->
+        android:pathData="M26,32 L82,32"
+        android:strokeWidth="11"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- T stem -->
     <path
-        android:pathData="M40,50 L54,64 L68,50"
+        android:pathData="M54,32 L54,74"
+        android:strokeWidth="11"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Anime speed slash accent (longer) -->
+    <path
+        android:pathData="M64,38 L78,30"
         android:strokeWidth="5"
         android:strokeColor="#FFFFFF"
         android:strokeLineCap="round"
-        android:strokeLineJoin="round" />
-    <!-- Bottom bar -->
+        android:strokeAlpha="0.55" />
+
+    <!-- Anime speed slash accent (shorter) -->
+    <path
+        android:pathData="M68,46 L80,40"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.35" />
+
+    <!-- Subtle download dot at stem base -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M36,72h36v4H36z" />
+        android:pathData="M54,82 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:fillAlpha="0.7" />
+
 </vector>

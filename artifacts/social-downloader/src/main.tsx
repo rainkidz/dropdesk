@@ -12,7 +12,7 @@ const isNativeApp = window.location.protocol === 'capacitor:' ||
 
 // For native app: read server URL from localStorage or use default
 if (isNativeApp) {
-  const savedUrl = localStorage.getItem('dropdesk_server_url');
+  const savedUrl = localStorage.getItem('tubenime_server_url') ?? localStorage.getItem('dropdesk_server_url');
   if (savedUrl) {
     setBaseUrl(savedUrl);
   }

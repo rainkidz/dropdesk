@@ -26,21 +26,21 @@
 }
 
 # Keep data classes for serialization
--keep class com.snapsave.app.** { *; }
--keep class com.snapsave.app.PlatformInfo { *; }
--keep class com.snapsave.app.FormatChoice { *; }
--keep class com.snapsave.app.DownloadState { *; }
--keep class com.snapsave.app.InstagramExtractor { *; }
--keep class com.snapsave.app.ThreadsExtractor { *; }
--keep class com.snapsave.app.InstagramExtractor$InstagramInfo { *; }
--keep class com.snapsave.app.ThreadsExtractor$ThreadsInfo { *; }
+-keep class com.tubenime.app.** { *; }
+-keep class com.tubenime.app.PlatformInfo { *; }
+-keep class com.tubenime.app.FormatChoice { *; }
+-keep class com.tubenime.app.DownloadState { *; }
+-keep class com.tubenime.app.InstagramExtractor { *; }
+-keep class com.tubenime.app.ThreadsExtractor { *; }
+-keep class com.tubenime.app.InstagramExtractor$InstagramInfo { *; }
+-keep class com.tubenime.app.ThreadsExtractor$ThreadsInfo { *; }
 
 # Chaquopy (Python)
 -keep class com.chaquo.python.** { *; }
 -dontwarn com.chaquo.python.**
 
 # yt-dlp
--keep class com.snapsave.app.YtDlpRunner { *; }
+-keep class com.tubenime.app.YtDlpRunner { *; }
 
 # Kotlin coroutines
 -keep class kotlinx.coroutines.** { *; }

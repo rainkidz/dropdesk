@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary Blue (Lighter for dark bg) -->
-    <color name="primary">#42A5F5</color>
-    <color name="primary_dark">#1565C0</color>
-    <color name="primary_light">#90CAF9</color>
+    <color name="primary">#FF80AB</color>
+    <color name="primary_dark">#E040A0</color>
+    <color name="primary_light">#FFB3D9</color>
     
     <!-- Accent Orange -->
     <color name="accent">#FF9E40</color>
@@ -36,6 +36,28 @@
     <color name="chip_facebook_bg">#1A2A3D</color>
     <color name="chip_instagram_bg">#2E1A3D</color>
     <color name="chip_threads_bg">#2A2A2A</color>
+    <color name="chip_bilibili_bg">#1A2D3D</color>
+    
+    <!-- Anime Theme Colors -->
+    <color name="anime_pink">#FF80AB</color>
+    <color name="anime_purple">#B388FF</color>
+    <color name="anime_gradient_start">#FF80AB</color>
+    <color name="anime_gradient_end">#B388FF</color>
+    
+    <!-- Card Backgrounds -->
+    <color name="card_anime_bg">#2D1A2E</color>
+    <color name="card_quick_bg">#1E1E1E</color>
+
+    <!-- Welcome notice carousel -->
+    <color name="notice_bg">#1E1E1E</color>
+    
+    <!-- Platform Colors -->
+    <color name="youtube_red">#FF5252</color>
+    <color name="tiktok_pink">#FF5C8D</color>
+    <color name="facebook_blue">#42A5F5</color>
+    <color name="instagram_pink">#FF6E8A</color>
+    <color name="threads_black">#BDBDBD</color>
+    <color name="bilibili_blue">#4DD0E1</color>
     
     <!-- Premium Gold -->
     <color name="premium_gold">#FFD54F</color>

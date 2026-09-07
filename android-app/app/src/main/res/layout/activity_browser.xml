@@ -110,12 +110,13 @@
                     android:gravity="center_horizontal">
 
                     <!-- App Logo/Title -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔍"
-                        android:textSize="48sp"
-                        android:layout_marginTop="24dp" />
+                    <ImageView
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:src="@drawable/ic_search"
+                        android:contentDescription="@null"
+                        android:layout_marginTop="18dp"
+                        app:tint="@color/primary" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -283,10 +284,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="📋 Paste URL from Clipboard"
+                        android:text="Paste URL from Clipboard"
                         android:textAllCaps="false"
                         android:textSize="14sp"
-                        style="@style/Widget.VidGrab.Button.Outlined"
+                        style="@style/Widget.TubeNime.Button.Outlined"
                         app:strokeColor="@color/primary"
                         app:icon="@drawable/ic_paste"
                         app:iconTint="@color/primary" />

@@ -133,8 +133,8 @@ function BrandMark() {
         <span className="absolute -right-1 -top-1 size-2 rounded-full border-2 border-[hsl(var(--sidebar))] bg-[hsl(var(--accent))]" />
       </div>
       <div>
-        <div className="font-extrabold tracking-[-0.04em] text-[hsl(var(--sidebar-foreground))]">dropdesk</div>
-        <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-[hsl(var(--sidebar-foreground)/.52)]">public media desk</div>
+        <div className="font-extrabold tracking-[-0.04em] text-[hsl(var(--sidebar-foreground))]">TubeNime</div>
+        <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-[hsl(var(--sidebar-foreground)/.52)]">video downloader</div>
       </div>
     </div>
   );
@@ -145,13 +145,13 @@ function Shell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showSettings, setShowSettings] = useState(() => {
     if (isNativeApp()) {
-      return !localStorage.getItem('dropdesk_server_url');
+      return !(localStorage.getItem('tubenime_server_url') ?? localStorage.getItem('dropdesk_server_url'));
     }
     return false;
   });
   const health = useHealthCheck();
   const navItems = [
-    { href: '/', label: 'Download desk', icon: ScanLine },
+    { href: '/', label: 'Download videos', icon: ScanLine },
     { href: '/privacy', label: 'Privacy & use', icon: ShieldCheck },
   ];
 
@@ -165,7 +165,7 @@ function Shell({ children }: { children: ReactNode }) {
             <Menu className="size-5" />
           </button>
         </div>
-        <div className="mb-4 px-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Workspace</div>
+        <div className="mb-4 px-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">Menu</div>
         <nav className="space-y-1" aria-label="Primary navigation">
           {navItems.map(({ href, label, icon: Icon }) => (
             <Link
@@ -190,10 +190,10 @@ function Shell({ children }: { children: ReactNode }) {
         <div className="mt-auto rounded-xl border border-white/10 bg-white/[0.04] p-4">
           <div className="mb-3 flex items-center gap-2 text-xs font-bold text-white/80">
             <span className={`size-2 rounded-full ${health.isError ? 'bg-red-400' : 'bg-emerald-400'}`} />
-            Desk status
+            Server status
           </div>
           <p data-testid="status-health" className="text-[11px] leading-relaxed text-white/45">
-            {health.isLoading ? 'Checking the download desk…' : health.isError ? 'The service is taking a breather. Try again in a moment.' : 'Ready to inspect public links.'}
+            {health.isLoading ? 'Checking the download service…' : health.isError ? 'The service is taking a breather. Try again in a moment.' : 'Ready to inspect public links.'}
           </p>
         </div>
       </aside>
@@ -205,7 +205,7 @@ function Shell({ children }: { children: ReactNode }) {
           </button>
           <div className="hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[hsl(var(--muted-foreground))] sm:flex">
             <Radio className="size-3.5 text-[hsl(var(--accent-foreground))]" />
-            Your quiet corner of the internet
+            Videos you save, kept in one place
           </div>
           <Link href="/privacy" data-testid="link-header-privacy" className="ml-auto inline-flex items-center gap-2 text-xs font-bold text-[hsl(var(--muted-foreground))] transition-colors hover:text-[hsl(var(--foreground))]">
             <LockKeyhole className="size-3.5" />
@@ -229,8 +229,8 @@ function RecentJobs({ jobs, isLoading, isError, onRetry, onDownload }: {
     <section className="rise-in delay-3 mt-14" aria-labelledby="recent-heading">
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
-          <div className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">Your queue</div>
-          <h2 id="recent-heading" className="text-2xl font-extrabold tracking-[-0.04em]">Recent saves</h2>
+          <div className="mb-2 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-[hsl(var(--muted-foreground))]">Downloads</div>
+          <h2 id="recent-heading" className="text-2xl font-extrabold tracking-[-0.04em]">Recent downloads</h2>
         </div>
         <span className="rounded-full bg-[hsl(var(--secondary))] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[hsl(var(--muted-foreground))]">{jobs.length} items</span>
       </div>
@@ -242,15 +242,15 @@ function RecentJobs({ jobs, isLoading, isError, onRetry, onDownload }: {
         ) : isError ? (
           <div className="flex flex-col items-center justify-center px-6 py-12 text-center" data-testid="error-recent-jobs">
             <AlertTriangle className="mb-3 size-7 text-[hsl(var(--destructive))]" />
-            <p className="font-bold">Recent saves are unavailable</p>
-            <p className="mt-1 max-w-xs text-sm text-[hsl(var(--muted-foreground))]">Your next download can still start. We just could not load the queue.</p>
+            <p className="font-bold">Recent downloads are unavailable</p>
+            <p className="mt-1 max-w-xs text-sm text-[hsl(var(--muted-foreground))]">Your next download can still start. We just could not load the list.</p>
             <button data-testid="button-retry-recent-jobs" onClick={onRetry} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[hsl(var(--border))] px-3 py-2 text-xs font-bold hover:bg-[hsl(var(--muted))]"><RotateCcw className="size-3.5" /> Try again</button>
           </div>
         ) : jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-6 py-14 text-center" data-testid="empty-recent-jobs">
             <div className="mb-4 flex size-12 items-center justify-center rounded-2xl bg-[hsl(var(--secondary))] text-[hsl(var(--muted-foreground))]"><ArrowDownToLine className="size-5" /></div>
-            <p className="font-bold">Your desk is clear</p>
-            <p className="mt-1 max-w-xs text-sm text-[hsl(var(--muted-foreground))]">Inspect a public link above and your saved references will land here.</p>
+            <p className="font-bold">No downloads yet</p>
+            <p className="mt-1 max-w-xs text-sm text-[hsl(var(--muted-foreground))]">Paste a link above — the videos you save will land here.</p>
           </div>
         ) : (
           <div className="divide-y divide-[hsl(var(--border)/.75)]">
@@ -307,7 +307,7 @@ function InspectionCard({ inspection, selectedFormat, setSelectedFormat, onDownl
             <span className={`flex size-10 items-center justify-center rounded-xl ${meta.tone}`}><Icon className="size-5" /></span>
             <div>
               <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.17em] text-white/55">{meta.label} · {formatDuration(inspection.durationSeconds)}</div>
-              <h3 data-testid="text-inspection-title" className="line-clamp-3 text-lg font-extrabold leading-tight">{inspection.title || 'Untitled public media'}</h3>
+              <h3 data-testid="text-inspection-title" className="line-clamp-3 text-lg font-extrabold leading-tight">{inspection.title || 'Untitled video'}</h3>
             </div>
           </div>
         </div>
@@ -315,14 +315,14 @@ function InspectionCard({ inspection, selectedFormat, setSelectedFormat, onDownl
           <div className="mb-5 flex items-center justify-between">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[hsl(var(--muted-foreground))]">Choose a file</div>
-              <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Pick the version that fits the reference.</p>
+              <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Pick the format you want to keep.</p>
             </div>
             <CheckCircle2 className="size-5 text-[hsl(var(--chart-2))]" />
           </div>
           {!inspection.isSupported ? (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800" data-testid="status-unsupported-link">
               <div className="mb-1 flex items-center gap-2 font-bold"><AlertTriangle className="size-4" /> This source is not supported</div>
-              Public URLs from YouTube, Instagram, Threads, and TikTok work best here.
+              TubeNime works best with public YouTube, Instagram, Facebook, Threads, and TikTok links.
             </div>
           ) : (
             <>
@@ -349,7 +349,7 @@ function InspectionCard({ inspection, selectedFormat, setSelectedFormat, onDownl
               {error && <p data-testid="error-create-download" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">{apiErrorMessage(error, 'Could not start this download.')}</p>}
               <button data-testid="button-start-download" disabled={!selectedFormat || isPending} onClick={onDownload} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[hsl(var(--primary))] px-4 py-3.5 text-sm font-bold text-[hsl(var(--primary-foreground))] shadow-[4px_4px_0_hsl(var(--accent))] transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60">
                 {isPending ? <LoaderCircle className="size-4 animate-spin" /> : <ArrowDownToLine className="size-4" />}
-                {isPending ? 'Starting your save…' : 'Start download'}
+                {isPending ? 'Starting download…' : 'Start download'}
               </button>
             </>
           )}
@@ -422,7 +422,7 @@ function InstagramCookiesSetup() {
 }
 
 function ServerSettings() {
-  const [serverUrl, setServerUrl] = useState(() => localStorage.getItem('dropdesk_server_url') || '');
+  const [serverUrl, setServerUrl] = useState(() => localStorage.getItem('tubenime_server_url') ?? localStorage.getItem('dropdesk_server_url') ?? '');
   const [saved, setSaved] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testError, setTestError] = useState('');
@@ -435,7 +435,7 @@ function ServerSettings() {
       const res = await fetch(`${serverUrl.replace(/\/+$/, '')}/api/healthz`, { signal: AbortSignal.timeout(5000) });
       const data = await res.json();
       if (data.status === 'ok') {
-        localStorage.setItem('dropdesk_server_url', serverUrl.trim());
+        localStorage.setItem('tubenime_server_url', serverUrl.trim());
         window.location.reload();
       } else {
         setTestError('Server responded but is not healthy');
@@ -455,7 +455,7 @@ function ServerSettings() {
           </div>
           <div>
             <h2 className="text-lg font-extrabold">Connect to Server</h2>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">Enter the address of your Dropdesk server</p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">Enter the address of your TubeNime server</p>
           </div>
         </div>
         <div className="space-y-3">
@@ -521,7 +521,7 @@ function Home() {
       const objectUrl = URL.createObjectURL(file.data);
       const anchor = document.createElement('a');
       anchor.href = objectUrl;
-      anchor.download = activeJob.data?.filename || 'dropdesk-download';
+      anchor.download = activeJob.data?.filename || 'tubenime-download';
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -559,17 +559,17 @@ function Home() {
         <div className="absolute bottom-[-110px] right-[22%] size-56 rounded-full border-[1px] border-white/10" />
         <div className="relative max-w-2xl">
           <div className="rise-in mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-white/70">
-            <Sparkles className="size-3.5 text-[hsl(var(--accent))]" /> A better place to keep the good bits
+            <Sparkles className="size-3.5 text-[hsl(var(--accent))]" /> A video downloader that keeps it simple
           </div>
-          <h1 className="rise-in delay-1 max-w-[680px] text-4xl font-extrabold leading-[.98] tracking-[-0.07em] sm:text-6xl">Save what matters.<br /><span className="text-[hsl(var(--accent))]">Leave the noise.</span></h1>
-          <p className="rise-in delay-2 mt-6 max-w-[510px] text-sm leading-7 text-white/65 sm:text-base">Drop in a public link from the places you scroll. We inspect it first, then give you a clean file to keep for your next reference, edit, or offline moment.</p>
+          <h1 className="rise-in delay-1 max-w-[680px] text-4xl font-extrabold leading-[.98] tracking-[-0.07em] sm:text-6xl">Your favorite videos.<br /><span className="text-[hsl(var(--accent))]">Saved for later.</span></h1>
+          <p className="rise-in delay-2 mt-6 max-w-[510px] text-sm leading-7 text-white/65 sm:text-base">Paste a public link from the platforms you watch. We inspect it, show you the formats, then hand you a clean file to keep offline — no accounts, no ads.</p>
         </div>
         <div className="relative mt-9 max-w-[720px]">
           <form onSubmit={handleInspect} className="rise-in delay-3 flex flex-col gap-2 rounded-2xl bg-[hsl(var(--card))] p-2 shadow-[0_12px_30px_hsl(var(--primary)/.2)] sm:flex-row">
             <div className="flex min-w-0 flex-1 items-center gap-3 px-3">
               <Link2 className="size-5 shrink-0 text-[hsl(var(--muted-foreground))]" />
-              <label htmlFor="social-url" className="sr-only">Public social URL</label>
-              <input id="social-url" data-testid="input-social-url" value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Paste a public link to get started" className="h-12 min-w-0 flex-1 bg-transparent text-sm font-semibold text-[hsl(var(--foreground))] outline-none placeholder:text-[hsl(var(--muted-foreground))]" />
+              <label htmlFor="social-url" className="sr-only">Video URL</label>
+              <input id="social-url" data-testid="input-social-url" value={url} onChange={(event) => setUrl(event.target.value)} placeholder="Paste a video URL to get started" className="h-12 min-w-0 flex-1 bg-transparent text-sm font-semibold text-[hsl(var(--foreground))] outline-none placeholder:text-[hsl(var(--muted-foreground))]" />
               {url && <button type="button" data-testid="button-clear-url" onClick={() => setUrl('')} className="rounded-md p-1 text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]" aria-label="Clear URL"><span className="text-lg leading-none">×</span></button>}
             </div>
             <button data-testid="button-inspect-url" type="submit" disabled={inspect.isPending || url.trim().length < 8} className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[hsl(var(--accent))] px-6 text-sm font-extrabold text-[hsl(var(--primary))] transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60">
@@ -604,7 +604,7 @@ function Home() {
       <RecentJobs jobs={jobs} isLoading={recent.isLoading} isError={recent.isError} onRetry={() => recent.refetch()} onDownload={handleDownload} />
 
       <footer className="mt-16 flex flex-col justify-between gap-3 border-t border-[hsl(var(--border))] pt-5 text-[11px] text-[hsl(var(--muted-foreground))] sm:flex-row">
-        <span>Dropdesk is for public media you have permission to save.</span>
+        <span>TubeNime is for public media you have permission to save.</span>
         <Link href="/privacy" data-testid="link-footer-privacy" className="inline-flex items-center gap-1 font-bold hover:text-[hsl(var(--foreground))]">Read the privacy note <ArrowRight className="size-3" /></Link>
       </footer>
     </div>
@@ -616,8 +616,8 @@ function Privacy() {
     <div className="mx-auto max-w-[980px] px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
       <div className="rise-in max-w-2xl">
         <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[hsl(var(--accent)/.18)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-[hsl(var(--accent-foreground))]"><ShieldCheck className="size-3.5" /> The short version</div>
-        <h1 className="text-4xl font-extrabold tracking-[-0.07em] sm:text-6xl">A clear desk has<br /><span className="text-[hsl(var(--accent-foreground))]">clear boundaries.</span></h1>
-        <p className="mt-6 text-base leading-8 text-[hsl(var(--muted-foreground))]">Dropdesk is built for saving public media references, not for getting around private accounts, paywalls, or platform rules.</p>
+        <h1 className="text-4xl font-extrabold tracking-[-0.07em] sm:text-6xl">Download what you love.<br /><span className="text-[hsl(var(--accent-foreground))]">Respect the rules.</span></h1>
+        <p className="mt-6 text-base leading-8 text-[hsl(var(--muted-foreground))]">TubeNime is built for saving public media, not for getting around private accounts, paywalls, or platform rules.</p>
       </div>
       <div className="mt-12 grid gap-4 md:grid-cols-[1.1fr_.9fr]">
         <div className="rise-in delay-1 rounded-2xl bg-[hsl(var(--primary))] p-7 text-[hsl(var(--primary-foreground))] sm:p-9">
@@ -634,11 +634,11 @@ function Privacy() {
       <div className="rise-in delay-3 mt-12 divide-y divide-[hsl(var(--border))] border-y border-[hsl(var(--border))]">
         {[
           ['What we send', 'The public URL you paste and the format you choose are sent to our service to inspect and prepare the requested file.'],
-          ['What we do not need', 'No social login, password, contact list, or personal profile information is needed to use the desk.'],
+          ['What we do not need', 'No social login, password, contact list, or personal profile information is needed to use TubeNime.'],
           ['How to use a saved file', 'Treat downloads like any other reference material: keep them private when required, credit creators, and do not redistribute without permission.'],
         ].map(([title, body]) => <div key={title} className="grid gap-2 py-6 sm:grid-cols-[190px_1fr] sm:gap-8"><h3 className="text-sm font-extrabold">{title}</h3><p className="text-sm leading-7 text-[hsl(var(--muted-foreground))]">{body}</p></div>)}
       </div>
-      <div className="mt-10"><Link href="/" data-testid="link-back-to-desk" className="inline-flex items-center gap-2 rounded-xl bg-[hsl(var(--primary))] px-5 py-3 text-sm font-bold text-[hsl(var(--primary-foreground))] shadow-[3px_3px_0_hsl(var(--accent))]"><ArrowRight className="size-4 rotate-180" /> Back to the desk</Link></div>
+      <div className="mt-10">        <Link href="/" data-testid="link-back-to-desk" className="inline-flex items-center gap-2 rounded-xl bg-[hsl(var(--primary))] px-5 py-3 text-sm font-bold text-[hsl(var(--primary-foreground))] shadow-[3px_3px_0_hsl(var(--accent))]"><ArrowRight className="size-4 rotate-180" /> Back to downloads</Link></div>
     </div>
   );
 }

@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SnapSave"
+rootProject.name = "TubeNime"
 include(":app")

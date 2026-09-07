@@ -35,6 +35,65 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- ═══════ PREMIUM ═══════ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PREMIUM"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/premium_gold"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/premium_gold"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="@color/premium_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐ TubeNime Premium"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/premiumStatusValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Free plan"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginBottom="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/premiumManageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="⭐ Go Premium"
+                        android:textAllCaps="false"
+                        android:textSize="14sp"
+                        style="@style/Widget.TubeNime.Button.Outlined"
+                        app:strokeColor="@color/premium_gold"
+                        android:textColor="@color/premium_gold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- ═══════ APPEARANCE ═══════ -->
             <TextView
                 android:layout_width="wrap_content"
@@ -73,7 +132,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="🌙 Dark Mode"
+                            app:drawableStartCompat="@drawable/ic_moon" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Dark Mode"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -98,7 +157,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="🎨 App Theme"
+                            app:drawableStartCompat="@drawable/ic_swatches" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="App Theme"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -150,7 +209,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="📂 Download Location"
+                            app:drawableStartCompat="@drawable/ic_folder" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Download Location"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -158,7 +217,7 @@
                             android:id="@+id/downloadLocationValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Downloads/SnapSave"
+                            android:text="Downloads/TubeNime"
                             android:textSize="13sp"
                             android:textColor="@color/text_secondary" />
                     </LinearLayout>
@@ -178,7 +237,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="🎬 Default Video Quality"
+                            app:drawableStartCompat="@drawable/ic_video" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Default Video Quality"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -206,7 +265,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="🎵 Default Audio Quality"
+                            app:drawableStartCompat="@drawable/ic_music" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Default Audio Quality"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -233,7 +292,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="📝 File Naming"
+                            app:drawableStartCompat="@drawable/ic_note" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="File Naming"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -290,7 +349,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="📶 WiFi Only"
+                                app:drawableStartCompat="@drawable/ic_wifi" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="WiFi Only"
                                 android:textSize="15sp"
                                 android:textColor="@color/text_primary" />
 
@@ -322,7 +381,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="⚡ Max Concurrent Downloads"
+                            app:drawableStartCompat="@drawable/ic_bolt" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Max Concurrent Downloads"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -379,7 +438,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="🔔 Download Complete"
+                                app:drawableStartCompat="@drawable/ic_bell" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Download Complete"
                                 android:textSize="15sp"
                                 android:textColor="@color/text_primary" />
 
@@ -417,7 +476,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="⚠️ Download Errors"
+                                app:drawableStartCompat="@drawable/ic_alert" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Download Errors"
                                 android:textSize="15sp"
                                 android:textColor="@color/text_primary" />
 
@@ -435,6 +494,96 @@
                             android:layout_height="wrap_content"
                             android:checked="true" />
                     </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" />
+
+                    <!-- Home Notifications (welcome banner carousel) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:drawableStartCompat="@drawable/ic_home_small" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Home Notifications"
+                                android:textSize="15sp"
+                                android:textColor="@color/text_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Show anime tips &amp; notices on the home screen"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary" />
+                        </LinearLayout>
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/homeNoticesSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ═══════ USAGE ═══════ -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="USAGE"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:drawableStartCompat="@drawable/ic_chart" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="This Week's Downloads"
+                        android:textSize="15sp"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Which platforms you downloaded from recently. This data never leaves your device."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:id="@+id/weeklyUsageValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="No downloads yet this week"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginTop="12dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -467,7 +616,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🔐 Platform Logins"
+                        app:drawableStartCompat="@drawable/ic_lock" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Platform Logins"
                         android:textSize="15sp"
                         android:textColor="@color/text_primary"
                         android:layout_marginBottom="12dp" />
@@ -483,10 +632,12 @@
                             android:layout_height="36dp"
                             android:layout_weight="1"
                             android:text="Facebook"
+                                app:icon="@drawable/ic_facebook_logo"
+                                app:iconSize="14dp"
                             android:textAllCaps="false"
                             android:textSize="11sp"
                             android:layout_marginEnd="4dp"
-                            style="@style/Widget.VidGrab.Button.Outlined"
+                            style="@style/Widget.TubeNime.Button.Outlined"
                             app:strokeColor="@color/facebook_blue" />
 
                         <com.google.android.material.button.MaterialButton
@@ -495,11 +646,13 @@
                             android:layout_height="36dp"
                             android:layout_weight="1"
                             android:text="Instagram"
+                                app:icon="@drawable/ic_instagram_logo"
+                                app:iconSize="14dp"
                             android:textAllCaps="false"
                             android:textSize="11sp"
                             android:layout_marginStart="4dp"
                             android:layout_marginEnd="4dp"
-                            style="@style/Widget.VidGrab.Button.Outlined"
+                            style="@style/Widget.TubeNime.Button.Outlined"
                             app:strokeColor="@color/instagram_pink" />
 
                         <com.google.android.material.button.MaterialButton
@@ -511,7 +664,7 @@
                             android:textAllCaps="false"
                             android:textSize="11sp"
                             android:layout_marginStart="4dp"
-                            style="@style/Widget.VidGrab.Button.Outlined"
+                            style="@style/Widget.TubeNime.Button.Outlined"
                             app:strokeColor="@color/threads_black" />
                     </LinearLayout>
 
@@ -522,7 +675,7 @@
                         android:id="@+id/clearHistoryBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="🗑️ Clear Download History"
+                        app:drawableStartCompat="@drawable/ic_trash" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Clear Download History"
                         android:textSize="15sp"
                         android:textColor="@color/error"
                         android:paddingTop="12dp"
@@ -568,7 +721,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="📱 Version"
+                            app:drawableStartCompat="@drawable/ic_tube" android:drawablePadding="10dp" android:gravity="center_vertical" android:text="Version"
                             android:textSize="15sp"
                             android:textColor="@color/text_primary" />
 
@@ -586,7 +739,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="VidGrab — Download videos from YouTube, TikTok, Instagram, Facebook and more. Simple, fast, and free."
+                        android:text="TubeNime — Download videos from YouTube, TikTok, Instagram, Facebook and more. Simple, fast, and free."
                         android:textSize="13sp"
                         android:textColor="@color/text_secondary"
                         android:lineSpacingMultiplier="1.3" />

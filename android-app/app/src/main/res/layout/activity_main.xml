@@ -21,6 +21,7 @@
             android:title="@string/app_name"
             android:titleTextColor="@color/white"
             app:titleTextColor="@color/white"
+            app:logo="@drawable/brand_logo"
             app:menu="@menu/toolbar_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -43,6 +44,294 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
+
+                <!-- Welcome & Notifications Banner (dismissible + rotating anime notices) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/welcomeCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="4dp"
+                    app:strokeColor="@color/anime_pink"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="@color/card_anime_bg">
+
+                        <!-- Header: title + close button -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/welcomeTitle"
+                                style="@style/TextAppearance.TubeNime.SectionTitle"
+                                android:drawableStart="@drawable/ic_speed_lines"
+                                android:drawablePadding="8dp"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="@string/welcome_title"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/anime_pink" />
+
+                            <!-- Close (X) button — hides the banner and remembers it -->
+                            <ImageButton
+                                android:id="@+id/welcomeCloseButton"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_marginStart="8dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="@string/welcome_close"
+                                android:scaleType="fitCenter"
+                                android:padding="6dp"
+                                android:src="@drawable/ic_close"
+                                app:tint="@color/text_secondary" />
+                        </LinearLayout>
+
+                        <!-- Rotating anime notices (swipe left/right, auto-advances) -->
+                        <ViewFlipper
+                            android:id="@+id/noticeFlipper"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp">
+
+                            <!-- Notice 1: platforms -->
+                            <LinearLayout style="@style/NoticeSlide">
+
+                                <TextView
+                                    style="@style/NoticeIcon"
+                                    android:text="📺" />
+
+                                <LinearLayout style="@style/NoticeTextCol">
+
+                                    <TextView
+                                        style="@style/NoticeTitle"
+                                        android:text="@string/notice_platforms_title" />
+
+                                    <TextView
+                                        style="@style/NoticeBody"
+                                        android:text="@string/notice_platforms_body" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Notice 2: seasonal anime -->
+                            <LinearLayout style="@style/NoticeSlide">
+
+                                <TextView
+                                    style="@style/NoticeIcon"
+                                    android:text="🌸" />
+
+                                <LinearLayout style="@style/NoticeTextCol">
+
+                                    <TextView
+                                        style="@style/NoticeTitle"
+                                        android:text="@string/notice_seasonal_title" />
+
+                                    <TextView
+                                        style="@style/NoticeBody"
+                                        android:text="@string/notice_seasonal_body" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Notice 3: OP/ED audio tip -->
+                            <LinearLayout style="@style/NoticeSlide">
+
+                                <TextView
+                                    style="@style/NoticeIcon"
+                                    android:text="🎧" />
+
+                                <LinearLayout style="@style/NoticeTextCol">
+
+                                    <TextView
+                                        style="@style/NoticeTitle"
+                                        android:text="@string/notice_oped_title" />
+
+                                    <TextView
+                                        style="@style/NoticeBody"
+                                        android:text="@string/notice_oped_body" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Notice 4: trending openings (tap to browse) -->
+                            <LinearLayout style="@style/NoticeSlide">
+
+                                <TextView
+                                    style="@style/NoticeIcon"
+                                    android:text="🔥" />
+
+                                <LinearLayout style="@style/NoticeTextCol">
+
+                                    <TextView
+                                        style="@style/NoticeTitle"
+                                        android:text="@string/notice_trending_title" />
+
+                                    <TextView
+                                        style="@style/NoticeBody"
+                                        android:text="@string/notice_trending_body" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Notice 5: Bilibili anime zone (tap to browse) -->
+                            <LinearLayout style="@style/NoticeSlide">
+
+                                <TextView
+                                    style="@style/NoticeIcon"
+                                    android:text="🏮" />
+
+                                <LinearLayout style="@style/NoticeTextCol">
+
+                                    <TextView
+                                        style="@style/NoticeTitle"
+                                        android:text="@string/notice_bilibili_title" />
+
+                                    <TextView
+                                        style="@style/NoticeBody"
+                                        android:text="@string/notice_bilibili_body" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- Notice 6: clipboard tip -->
+                            <LinearLayout style="@style/NoticeSlide">
+
+                                <TextView
+                                    style="@style/NoticeIcon"
+                                    android:text="📋" />
+
+                                <LinearLayout style="@style/NoticeTextCol">
+
+                                    <TextView
+                                        style="@style/NoticeTitle"
+                                        android:text="@string/notice_clipboard_title" />
+
+                                    <TextView
+                                        style="@style/NoticeBody"
+                                        android:text="@string/notice_clipboard_body" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </ViewFlipper>
+
+                        <!-- Page dots -->
+                        <LinearLayout
+                            android:id="@+id/noticeDots"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <View
+                                style="@style/NoticeDot"
+                                android:background="@drawable/notice_dot_active" />
+
+                            <View
+                                style="@style/NoticeDot"
+                                android:background="@drawable/notice_dot_inactive" />
+
+                            <View
+                                style="@style/NoticeDot"
+                                android:background="@drawable/notice_dot_inactive" />
+
+                            <View
+                                style="@style/NoticeDot"
+                                android:background="@drawable/notice_dot_inactive" />
+
+                            <View
+                                style="@style/NoticeDot"
+                                android:background="@drawable/notice_dot_inactive" />
+
+                            <View
+                                style="@style/NoticeDot"
+                                android:background="@drawable/notice_dot_inactive" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- (Legacy) supported-platforms row kept hidden for reference -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/legacyPlatformsCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@color/card_anime_bg">
+
+                        <!-- Supported Platforms Row -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_youtube"
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="YouTube" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_tiktok_logo"
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="TikTok" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_instagram_logo"
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="Instagram" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_bilibili"
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="Bilibili" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_facebook_logo"
+                                android:layout_marginEnd="8dp"
+                                android:contentDescription="Facebook" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_threads_logo"
+                                android:contentDescription="Threads" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="&amp; many more"
+                                android:textSize="11sp"
+                                android:textColor="@color/text_secondary"
+                                android:textStyle="italic"
+                                android:gravity="end" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Login Section (Hidden by default) -->
                 <com.google.android.material.card.MaterialCardView
@@ -93,7 +382,7 @@
                                 android:textAllCaps="false"
                                 android:textSize="12sp"
                                 android:layout_marginEnd="4dp"
-                                style="@style/Widget.VidGrab.Button.Outlined"
+                                style="@style/Widget.TubeNime.Button.Outlined"
                                 app:strokeColor="@color/facebook_blue" />
 
                             <com.google.android.material.button.MaterialButton
@@ -106,7 +395,7 @@
                                 android:textSize="12sp"
                                 android:layout_marginStart="4dp"
                                 android:layout_marginEnd="4dp"
-                                style="@style/Widget.VidGrab.Button.Outlined"
+                                style="@style/Widget.TubeNime.Button.Outlined"
                                 app:strokeColor="@color/instagram_pink" />
 
                             <com.google.android.material.button.MaterialButton
@@ -118,8 +407,221 @@
                                 android:textAllCaps="false"
                                 android:textSize="12sp"
                                 android:layout_marginStart="4dp"
-                                style="@style/Widget.VidGrab.Button.Outlined"
+                                style="@style/Widget.TubeNime.Button.Outlined"
                                 app:strokeColor="@color/threads_black" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Quick Download Platforms -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            style="@style/TextAppearance.TubeNime.SectionTitle"
+                            android:drawableStart="@drawable/ic_speed_lines"
+                            android:drawablePadding="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="⚡ Quick Download"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Platform Grid Row 1 (Clickable) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginBottom="8dp">
+
+                            <!-- YouTube -->
+                            <LinearLayout
+                                android:id="@+id/quickYouTube"
+                                android:layout_width="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:background="@color/chip_youtube_bg"
+                                android:layout_marginEnd="4dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_youtube"
+                                    android:contentDescription="YouTube" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="YouTube"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/youtube_red"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- TikTok -->
+                            <LinearLayout
+                                android:id="@+id/quickTikTok"
+                                android:layout_width="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:background="@color/chip_tiktok_bg"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginEnd="4dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_tiktok_logo"
+                                    android:contentDescription="TikTok" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="TikTok"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/tiktok_pink"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Instagram -->
+                            <LinearLayout
+                                android:id="@+id/quickInstagram"
+                                android:layout_width="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:background="@color/chip_instagram_bg"
+                                android:layout_marginStart="4dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_instagram_logo"
+                                    android:contentDescription="Instagram" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Instagram"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/instagram_pink"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Platform Grid Row 2 -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <!-- Bilibili -->
+                            <LinearLayout
+                                android:id="@+id/quickBilibili"
+                                android:layout_width="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:background="@color/chip_bilibili_bg"
+                                android:layout_marginEnd="4dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_bilibili"
+                                    android:contentDescription="Bilibili" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Bilibili"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/bilibili_blue"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Facebook -->
+                            <LinearLayout
+                                android:id="@+id/quickFacebook"
+                                android:layout_width="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:background="@color/chip_facebook_bg"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginEnd="4dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_facebook_logo"
+                                    android:contentDescription="Facebook" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Facebook"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/facebook_blue"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <!-- Threads -->
+                            <LinearLayout
+                                android:id="@+id/quickThreads"
+                                android:layout_width="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="center"
+                                android:padding="8dp"
+                                android:background="@color/chip_threads_bg"
+                                android:layout_marginStart="4dp">
+                                <ImageView
+                                    android:layout_width="28dp"
+                                    android:layout_height="28dp"
+                                    android:src="@drawable/ic_threads_logo"
+                                    android:contentDescription="Threads" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Threads"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/threads_black"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -140,9 +642,12 @@
                         android:padding="16dp">
 
                         <TextView
+                            style="@style/TextAppearance.TubeNime.SectionTitle"
+                            android:drawableStart="@drawable/ic_speed_lines"
+                            android:drawablePadding="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Paste a video link"
+                            android:text="🔗 Paste a video link"
                             android:textSize="18sp"
                             android:textStyle="bold"
                             android:textColor="@color/text_primary"
@@ -151,7 +656,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="YouTube, TikTok, Instagram, Facebook, and more"
+                            android:text="YouTube, TikTok, Instagram, Bilibili &amp; more"
                             android:textSize="12sp"
                             android:textColor="@color/text_secondary"
                             android:layout_marginBottom="12dp" />
@@ -161,8 +666,10 @@
                             android:layout_height="wrap_content"
                             android:hint="Paste video URL here..."
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            app:startIconDrawable="@android:drawable/ic_menu_search"
+                            app:startIconDrawable="@drawable/ic_clipboard_paste"
                             app:endIconMode="clear_text">
+
+                            <!-- Quick paste: fills the field AND inspects straight away -->
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/urlInput"
@@ -171,6 +678,23 @@
                                 android:inputType="textUri"
                                 android:singleLine="true"
                                 android:imeOptions="actionGo" />
+
+                            <TextView
+                                android:id="@+id/pasteShortcut"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="4dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:drawableStart="@drawable/ic_clipboard_paste"
+                                android:drawablePadding="4dp"
+                                android:drawableTint="@color/primary"
+                                android:gravity="center_vertical"
+                                android:padding="6dp"
+                                android:text="Paste &amp; Inspect"
+                                android:textColor="@color/primary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.button.MaterialButton
@@ -181,8 +705,82 @@
                             android:text="Inspect Link"
                             android:textAllCaps="false"
                             app:backgroundTint="@color/primary"
-                            app:icon="@android:drawable/ic_menu_search"
-                            app:iconGravity="textStart" />
+                            app:icon="@drawable/ic_search"
+                            app:iconGravity="textStart"
+                            app:iconTint="@color/text_secondary" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 🎌 Anime Corner -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/anime_purple"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            style="@style/TextAppearance.TubeNime.SectionTitle"
+                            android:drawableStart="@drawable/ic_speed_lines"
+                            android:drawablePadding="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🎌 Anime Corner"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/anime_purple"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Download anime openings, endings, AMVs &amp; more"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:layout_marginBottom="12dp" />
+
+                        <!-- Anime Quick Links -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/animeYouTubeBtn"
+                                android:layout_width="0dp"
+                                android:layout_height="36dp"
+                                android:layout_weight="1"
+                                android:text="YouTube"
+                                android:textAllCaps="false"
+                                android:textSize="11sp"
+                                android:layout_marginEnd="4dp"
+                                style="@style/Widget.TubeNime.Button.Outlined"
+                                app:strokeColor="@color/youtube_red"
+                                app:icon="@drawable/ic_youtube"
+                                app:iconSize="16dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/animeBilibiliBtn"
+                                android:layout_width="0dp"
+                                android:layout_height="36dp"
+                                android:layout_weight="1"
+                                android:text="Bilibili"
+                                android:textAllCaps="false"
+                                android:textSize="11sp"
+                                android:layout_marginStart="4dp"
+                                style="@style/Widget.TubeNime.Button.Outlined"
+                                app:strokeColor="@color/bilibili_blue"
+                                app:icon="@drawable/ic_bilibili"
+                                app:iconSize="16dp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -273,6 +871,22 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
+                        <!-- Video Thumbnail -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginBottom="12dp"
+                            app:cardCornerRadius="8dp"
+                            app:cardElevation="0dp">
+
+                            <ImageView
+                                android:id="@+id/videoThumbnail"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:contentDescription="Video thumbnail"
+                                android:background="@color/surface_variant" />
+                        </com.google.android.material.card.MaterialCardView>
                         <!-- Platform Chip -->
                         <com.google.android.material.chip.Chip
                             android:id="@+id/platformChip"
@@ -327,7 +941,7 @@
                             android:text="🎬 Video Only"
                             android:textAllCaps="false"
                             android:textSize="14sp"
-                            style="@style/Widget.VidGrab.Button.Outlined"
+                            style="@style/Widget.TubeNime.Button.Outlined"
                             app:strokeColor="@color/primary"
                             android:layout_marginBottom="8dp" />
 
@@ -339,7 +953,7 @@
                             android:text="🎵 Audio Only"
                             android:textAllCaps="false"
                             android:textSize="14sp"
-                            style="@style/Widget.VidGrab.Button.Outlined"
+                            style="@style/Widget.TubeNime.Button.Outlined"
                             app:strokeColor="@color/accent"
                             android:layout_marginBottom="12dp" />
 
@@ -374,7 +988,7 @@
                                 android:text="🎬+🎵 Video + Audio (1080p+)"
                                 android:textAllCaps="false"
                                 android:textSize="14sp"
-                                style="@style/Widget.VidGrab.Button.Outlined"
+                                style="@style/Widget.TubeNime.Button.Outlined"
                                 app:strokeColor="@color/premium_gold"
                                 android:layout_marginBottom="8dp" />
 
@@ -386,8 +1000,19 @@
                                 android:text="📋 Playlist Download"
                                 android:textAllCaps="false"
                                 android:textSize="14sp"
-                                style="@style/Widget.VidGrab.Button.Outlined"
+                                style="@style/Widget.TubeNime.Button.Outlined"
                                 app:strokeColor="@color/premium_gold" />
+
+                            <!-- Tier hint (updated at runtime) -->
+                            <TextView
+                                android:id="@+id/premiumHint"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:textSize="11sp"
+                                android:textColor="@color/premium_gold"
+                                android:layout_marginTop="8dp"
+                                android:gravity="center" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -440,6 +1065,20 @@
                             android:textAllCaps="false"
                             android:textSize="16sp"
                             app:backgroundTint="@color/primary" />
+
+                        <!-- Batch queue (Premium only, shown at runtime) -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/queueButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone"
+                            android:text="🗂️ Add to Batch Queue"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            style="@style/Widget.TubeNime.Button.Outlined"
+                            app:strokeColor="@color/premium_gold"
+                            android:textColor="@color/premium_gold" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -527,7 +1166,7 @@
                             android:text="📥 View All Downloads"
                             android:textAllCaps="false"
                             android:textSize="14sp"
-                            style="@style/Widget.VidGrab.Button.Text"
+                            style="@style/Widget.TubeNime.Button.Text"
                             android:layout_marginTop="4dp" />
 
                         <com.google.android.material.button.MaterialButton
@@ -537,7 +1176,7 @@
                             android:text="Download Another"
                             android:textAllCaps="false"
                             android:textSize="14sp"
-                            style="@style/Widget.VidGrab.Button.Text"
+                            style="@style/Widget.TubeNime.Button.Text"
                             android:layout_marginTop="4dp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -547,7 +1186,7 @@
                     android:id="@+id/historyHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Recent Downloads"
+                    android:text="📥 Recent Downloads"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary"
@@ -573,8 +1212,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/surface"
-        app:itemIconTint="@color/primary"
-        app:itemTextColor="@color/primary"
+        app:itemIconTint="@color/nav_icon_tint"
+        app:itemTextColor="@color/nav_text_color"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
 

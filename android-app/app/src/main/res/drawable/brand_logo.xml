@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO: Replace with the official TubeNime logo when provided.
+     This is a single swap point: splash screen and toolbar both
+     reference @drawable/brand_logo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Placeholder: Concept C (Bold T + Anime Speed Slash) -->
+    <path
+        android:pathData="M26,32 L82,32"
+        android:strokeWidth="11"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <path
+        android:pathData="M54,32 L54,74"
+        android:strokeWidth="11"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <path
+        android:pathData="M64,38 L78,30"
+        android:strokeWidth="5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.55" />
+
+    <path
+        android:pathData="M68,46 L80,40"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeAlpha="0.35" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,82 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:fillAlpha="0.7" />
+
+</vector>

@@ -1,14 +1,51 @@
 """
 YouTube extraction using yt-dlp.
 Called from Kotlin via Chaquopy Python bridge.
+
+Progress is kept per job_id so several downloads (e.g. a premium batch queue)
+can run in parallel without overwriting each other's state. Every download
+function accepts a trailing ``job_id`` argument; Kotlin polls the matching id
+with ``get_progress(job_id)``.
 """
 import json
 import os
 import sys
 import yt_dlp
 
-# Module-level progress state — polled by Kotlin via get_progress()
-_progress = {"phase": "idle", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
+# Per-job progress registry — keyed by job_id, polled by Kotlin via get_progress(job_id)
+_jobs = {}
+_EMPTY_STATE = {
+    "phase": "idle",
+    "percent": 0.0,
+    "speed": "",
+    "eta": "",
+    "downloaded": 0,
+    "total": 0,
+    "filename": "",
+    "error": "",
+}
+
+
+def _state(job_id=""):
+    """Return the mutable state dict for a job, creating it on first use."""
+    key = job_id or ""
+    st = _jobs.get(key)
+    if st is None:
+        st = dict(_EMPTY_STATE)
+        st["_done"] = False
+        st["_error"] = False
+        _jobs[key] = st
+    return st
+
+
+def _reset(job_id=""):
+    """Reset a job to its extracting/not-done state."""
+    st = _state(job_id)
+    st.update(_EMPTY_STATE)
+    st["phase"] = "extracting"
+    st["_done"] = False
+    st["_error"] = False
+    return st
 
 
 def get_video_info(url):
@@ -65,43 +102,39 @@ def get_video_info(url):
         return json.dumps({"error": str(e)})
 
 
-def get_progress():
-    """Return current download progress as JSON string. Called by Kotlin polling."""
-    return json.dumps(_progress)
+def get_progress(job_id=""):
+    """Return progress for one job as a JSON string. Called by Kotlin polling."""
+    return json.dumps(_state(job_id))
 
 
-def download_video(url, output_path, format_str, cookies_file="", progress_callback=None):
+def download_video(url, output_path, format_str, cookies_file="", job_id=""):
     """
-    Download video using yt-dlp.
-    format_str: "bestvideo+bestaudio" or "bestaudio" etc.
+    Download a single video/audio stream using yt-dlp.
+    format_str: "bestvideo" or "bestaudio" etc.
     output_path: path template like "/path/to/%(title)s.%(ext)s"
     cookies_file: path to Netscape cookies.txt file for authentication
+    job_id: unique id so parallel jobs don't share progress state
     """
-    global _progress
-    _progress = {"phase": "extracting", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
-    # Clear any stale state
-    _progress['_done'] = False
-    _progress['_error'] = False
+    st = _reset(job_id)
 
     def progress_hook(d):
-        global _progress
         if d['status'] == 'downloading':
-            _progress['phase'] = 'downloading'
+            st['phase'] = 'downloading'
             try:
-                _progress['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
+                st['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
             except (ValueError, AttributeError):
-                _progress['percent'] = 0.0
-            _progress['speed'] = d.get('_speed_str', '').strip()
-            _progress['eta'] = d.get('_eta_str', '').strip()
-            _progress['downloaded'] = d.get('_downloaded_bytes', 0) or 0
-            _progress['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
-            _progress['filename'] = d.get('filename', '')
+                st['percent'] = 0.0
+            st['speed'] = d.get('_speed_str', '').strip()
+            st['eta'] = d.get('_eta_str', '').strip()
+            st['downloaded'] = d.get('_downloaded_bytes', 0) or 0
+            st['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
+            st['filename'] = d.get('filename', '')
         elif d['status'] == 'finished':
             # Only mark as finalizing on first finish — don't reset to downloading
-            if _progress['phase'] != 'done':
-                _progress['phase'] = 'finalizing'
-            _progress['percent'] = 100.0
-            _progress['filename'] = d.get('filename', '')
+            if st['phase'] != 'done':
+                st['phase'] = 'finalizing'
+            st['percent'] = 100.0
+            st['filename'] = d.get('filename', '')
 
     ydl_opts = {
         'format': format_str,
@@ -120,53 +153,50 @@ def download_video(url, output_path, format_str, cookies_file="", progress_callb
         ydl_opts['cookiefile'] = cookies_file
 
     try:
-        _progress['phase'] = 'downloading'
+        st['phase'] = 'downloading'
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-        _progress['phase'] = 'done'
-        _progress['percent'] = 100.0
-        _progress['_done'] = True
+        st['phase'] = 'done'
+        st['percent'] = 100.0
+        st['_done'] = True
         return json.dumps({"success": True})
     except Exception as e:
-        _progress['phase'] = 'error'
-        _progress['error'] = str(e)
-        _progress['_error'] = True
+        st['phase'] = 'error'
+        st['error'] = str(e)
+        st['_error'] = True
         return json.dumps({"error": str(e)})
 
 
-def download_video_audio(url, output_path, video_format, audio_format="bestaudio", cookies_file="", ffmpeg_location=""):
+def download_video_audio(url, output_path, video_format, audio_format="bestaudio", cookies_file="", ffmpeg_location="", job_id=""):
     """
     Download video + audio and merge using ffmpeg.
     video_format: e.g. "bestvideo[height<=1080][ext=mp4]"
     audio_format: e.g. "bestaudio[ext=m4a]"
     This is for premium users who want 1080p+ with audio.
+    job_id: unique id so parallel jobs don't share progress state
     """
-    global _progress
-    _progress = {"phase": "extracting", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": ""}
-    _progress['_done'] = False
-    _progress['_error'] = False
+    st = _reset(job_id)
 
     def progress_hook(d):
-        global _progress
         if d['status'] == 'downloading':
-            _progress['phase'] = 'downloading'
+            st['phase'] = 'downloading'
             try:
-                _progress['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
+                st['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
             except (ValueError, AttributeError):
-                _progress['percent'] = 0.0
-            _progress['speed'] = d.get('_speed_str', '').strip()
-            _progress['eta'] = d.get('_eta_str', '').strip()
-            _progress['downloaded'] = d.get('_downloaded_bytes', 0) or 0
-            _progress['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
-            _progress['filename'] = d.get('filename', '')
+                st['percent'] = 0.0
+            st['speed'] = d.get('_speed_str', '').strip()
+            st['eta'] = d.get('_eta_str', '').strip()
+            st['downloaded'] = d.get('_downloaded_bytes', 0) or 0
+            st['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
+            st['filename'] = d.get('filename', '')
         elif d['status'] == 'finished':
-            if _progress['phase'] != 'done':
-                _progress['phase'] = 'merging'  # Merging video + audio
-            _progress['percent'] = 100.0
-            _progress['filename'] = d.get('filename', '')
+            if st['phase'] != 'done':
+                st['phase'] = 'merging'  # Merging video + audio
+            st['percent'] = 100.0
+            st['filename'] = d.get('filename', '')
 
     # Merge format: bestvideo + bestaudio → single file
-    merge_format = f"{video_format}+{audio_format}"
+    merge_format = "{}+{}".format(video_format, audio_format)
 
     ydl_opts = {
         'format': merge_format,
@@ -190,54 +220,51 @@ def download_video_audio(url, output_path, video_format, audio_format="bestaudio
         ydl_opts['cookiefile'] = cookies_file
 
     try:
-        _progress['phase'] = 'downloading'
+        st['phase'] = 'downloading'
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-        _progress['phase'] = 'done'
-        _progress['percent'] = 100.0
-        _progress['_done'] = True
+        st['phase'] = 'done'
+        st['percent'] = 100.0
+        st['_done'] = True
         return json.dumps({"success": True})
     except Exception as e:
-        _progress['phase'] = 'error'
-        _progress['error'] = str(e)
-        _progress['_error'] = True
+        st['phase'] = 'error'
+        st['error'] = str(e)
+        st['_error'] = True
         return json.dumps({"error": str(e)})
 
 
-def download_playlist(url, output_path, format_str, max_videos=50, cookies_file="", ffmpeg_location=""):
+def download_playlist(url, output_path, format_str, max_videos=50, cookies_file="", ffmpeg_location="", job_id=""):
     """
     Download entire playlist.
     format_str: "bestvideo+bestaudio" or "bestaudio" etc.
     max_videos: limit number of videos to download
+    job_id: unique id so parallel jobs don't share progress state
     """
-    global _progress
-    _progress = {"phase": "extracting", "percent": 0.0, "speed": "", "eta": "", "downloaded": 0, "total": 0, "filename": "", "error": "", "playlist_count": 0, "playlist_index": 0}
-    _progress['_done'] = False
-    _progress['_error'] = False
+    st = _reset(job_id)
 
     def progress_hook(d):
-        global _progress
         if d['status'] == 'downloading':
-            _progress['phase'] = 'downloading'
+            st['phase'] = 'downloading'
             try:
-                _progress['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
+                st['percent'] = float(d.get('_percent_str', '0%').strip().replace('%', '').strip())
             except (ValueError, AttributeError):
-                _progress['percent'] = 0.0
-            _progress['speed'] = d.get('_speed_str', '').strip()
-            _progress['eta'] = d.get('_eta_str', '').strip()
-            _progress['downloaded'] = d.get('_downloaded_bytes', 0) or 0
-            _progress['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
-            _progress['filename'] = d.get('filename', '')
+                st['percent'] = 0.0
+            st['speed'] = d.get('_speed_str', '').strip()
+            st['eta'] = d.get('_eta_str', '').strip()
+            st['downloaded'] = d.get('_downloaded_bytes', 0) or 0
+            st['total'] = d.get('_total_bytes', 0) or d.get('_total_bytes_estimate', 0) or 0
+            st['filename'] = d.get('filename', '')
             # Track playlist progress
             if d.get('playlist_index'):
-                _progress['playlist_index'] = d['playlist_index']
+                st['playlist_index'] = d['playlist_index']
             if d.get('playlist_count'):
-                _progress['playlist_count'] = d['playlist_count']
+                st['playlist_count'] = d['playlist_count']
         elif d['status'] == 'finished':
-            if _progress['phase'] != 'done':
-                _progress['phase'] = 'finalizing'
-            _progress['percent'] = 100.0
-            _progress['filename'] = d.get('filename', '')
+            if st['phase'] != 'done':
+                st['phase'] = 'finalizing'
+            st['percent'] = 100.0
+            st['filename'] = d.get('filename', '')
 
     ydl_opts = {
         'format': format_str,
@@ -260,17 +287,17 @@ def download_playlist(url, output_path, format_str, max_videos=50, cookies_file=
         ydl_opts['cookiefile'] = cookies_file
 
     try:
-        _progress['phase'] = 'downloading'
+        st['phase'] = 'downloading'
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-        _progress['phase'] = 'done'
-        _progress['percent'] = 100.0
-        _progress['_done'] = True
+        st['phase'] = 'done'
+        st['percent'] = 100.0
+        st['_done'] = True
         return json.dumps({"success": True})
     except Exception as e:
-        _progress['phase'] = 'error'
-        _progress['error'] = str(e)
-        _progress['_error'] = True
+        st['phase'] = 'error'
+        st['error'] = str(e)
+        st['_error'] = True
         return json.dumps({"error": str(e)})
 
 

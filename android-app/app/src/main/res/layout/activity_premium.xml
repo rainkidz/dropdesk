@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/surface">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/premium_gold">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:title="TubeNime Premium"
+            android:titleTextColor="@color/black"
+            app:titleTextColor="@color/black"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="@color/black" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Status header -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/premium_gold"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:background="@color/premium_bg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⭐ Unlock everything TubeNime can do"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="6dp" />
+
+                    <TextView
+                        android:id="@+id/premiumStatusText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Free plan"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Benefits -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WHY GO PREMIUM"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🎬+🎵  Merged video &amp; audio"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Video with sound in one file — up to 2160p (4K) on YouTube &amp; Bilibili."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📺  Full HD &amp; 4K unlocked"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Free plan is capped at 720p / 128kbps. Premium removes every limit."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="📋  Playlist downloads"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Grab entire playlists in one go, up to 50 videos."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🗂️  Batch queue &amp; parallel downloads"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Queue many videos and download several at the same time."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🔓  Private &amp; restricted posts"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Login (Instagram / Threads / Facebook) and download private content."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="10dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="🚫  No ads"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ads are removed everywhere once you're premium."
+                        android:textSize="12sp"
+                        android:textColor="@color/text_secondary"
+                        android:paddingTop="2dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Buy buttons -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/monthlyButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Subscribe Monthly"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"
+                app:backgroundTint="@color/premium_gold"
+                app:icon="@drawable/ic_bolt"
+                app:iconTint="@color/black"
+                android:textColor="@color/black" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/yearlyButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Subscribe Yearly"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.TubeNime.Button.Outlined"
+                app:strokeColor="@color/premium_gold"
+                app:icon="@drawable/ic_bolt"
+                android:textColor="@color/premium_gold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/restoreButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="↩ Restore Purchase"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                style="@style/Widget.TubeNime.Button.Text"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Debug / test toggle (only shown on debuggable builds) -->
+            <LinearLayout
+                android:id="@+id/debugSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DEVELOPER / TEST MODE"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/warning"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="1dp"
+                    app:strokeColor="@color/warning"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Unlock Premium (test)"
+                                android:textSize="15sp"
+                                android:textColor="@color/text_primary" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/debugSwitch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/debugStatusText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Only visible on debug builds. Never ships in release."
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:paddingTop="4dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Subscriptions auto-renew until canceled in Google Play. Cancel anytime."
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

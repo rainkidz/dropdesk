@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Anime speed-line accent motif (matches Concept C launcher icon) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Long slash -->
+    <path
+        android:pathData="M10,17 L20,11"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FF6B9D"
+        android:strokeLineCap="round" />
+
+    <!-- Short slash -->
+    <path
+        android:pathData="M13,20 L21,15.5"
+        android:strokeWidth="2"
+        android:strokeColor="#C77DFF"
+        android:strokeLineCap="round" />
+
+    <!-- Tiny dash -->
+    <path
+        android:pathData="M7,14 L11,11.5"
+        android:strokeWidth="2"
+        android:strokeColor="#FF6B9D"
+        android:strokeAlpha="0.55"
+        android:strokeLineCap="round" />
+
+</vector>

@@ -53,7 +53,22 @@ Thumbs.db
 android/app/build/
 android/.gradle/
 android/build/
+__pycache__/
+*.pyc
 
 # Signing
 *.keystore
 *.jks
+
+# Temp/build helper files
+android-app/_*.txt
+android-app/_*.js
+android-app/preview.html
+android-app/icon-generator.html
+android-app/preview-logos/
+
+
+# Local agent artifacts
+%APPDATA%/
+.freebuff/
+flux-kontext-max*.jpg

@@ -5,14 +5,14 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:background="@color/primary_dark">
+    android:background="@drawable/ic_launcher_background">
 
     <!-- App Icon -->
     <ImageView
         android:id="@+id/splashLogo"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@drawable/ic_launcher_foreground"
+        android:src="@drawable/brand_logo"
         android:contentDescription="@string/app_name"
         android:layout_marginBottom="24dp" />
 
@@ -22,10 +22,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:textSize="32sp"
+        android:textSize="36sp"
         android:textStyle="bold"
         android:textColor="@color/white"
-        android:fontFamily="@font/inter_bold"
+        android:fontFamily="@font/baloo2_extrabold"
         android:layout_marginBottom="8dp" />
 
     <!-- Tagline -->
@@ -33,11 +33,22 @@
         android:id="@+id/splashSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Download videos from YouTube, TikTok, Instagram &amp; more"
+        android:text="🎌 Download videos from YouTube, TikTok, Instagram &amp; more"
         android:textSize="14sp"
-        android:textColor="#B0BEC5"
+        android:textColor="#E0E0E0"
         android:fontFamily="@font/inter_regular"
         android:gravity="center"
         android:paddingHorizontal="32dp" />
+
+    <!-- Loading indicator -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:indeterminate="true"
+        app:indicatorColor="@color/white"
+        app:indicatorSize="24dp"
+        app:trackThickness="2dp"
+        app:trackColor="#80FFFFFF" />
 
 </LinearLayout>

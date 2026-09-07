@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Blue -->
-    <color name="primary">#1565C0</color>
-    <color name="primary_dark">#0D47A1</color>
-    <color name="primary_light">#42A5F5</color>
+    <!-- Primary Pink (Anime Theme) -->
+    <color name="primary">#E040A0</color>
+    <color name="primary_dark">#AD1457</color>
+    <color name="primary_light">#FF80AB</color>
     
     <!-- Accent Orange -->
     <color name="accent">#FF6D00</color>
@@ -36,6 +36,13 @@
     <color name="facebook_blue">#1877F2</color>
     <color name="instagram_pink">#E4405F</color>
     <color name="threads_black">#000000</color>
+    <color name="bilibili_blue">#00A1D6</color>
+    
+    <!-- Anime Theme Colors -->
+    <color name="anime_pink">#FF6B9D</color>
+    <color name="anime_purple">#C77DFF</color>
+    <color name="anime_gradient_start">#FF6B9D</color>
+    <color name="anime_gradient_end">#C77DFF</color>
     
     <!-- Platform Chip Backgrounds -->
     <color name="chip_youtube_bg">#FFEBEE</color>
@@ -43,10 +50,19 @@
     <color name="chip_facebook_bg">#E3F2FD</color>
     <color name="chip_instagram_bg">#F3E5F5</color>
     <color name="chip_threads_bg">#E0E0E0</color>
+    <color name="chip_bilibili_bg">#E0F7FA</color>
+    
+    <!-- Card Backgrounds -->
+    <color name="card_anime_bg">#FFF0F5</color>
+    <color name="card_quick_bg">#F8F9FA</color>
+
+    <!-- Welcome notice carousel -->
+    <color name="notice_bg">#FFFFFF</color>
     
     <!-- Premium Gold -->
     <color name="premium_gold">#FFC107</color>
     <color name="premium_bg">#FFF8E1</color>
+
     
     <!-- Ad Background -->
     <color name="ad_background">#FFFFFF</color>

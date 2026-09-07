@@ -134,3 +134,62 @@ Membutuhkan cookies dari browser:
 - **APK**: WebView wrapper yang load UI dari bundled assets
 - **Server**: Node.js API yang handle inspect + download
 - **Koneksi**: HTTP ke server (perlu 1 device/computer yang jalan server)
+
+
+---
+
+## Release Signing & Rotasi Kunci (Penting!)
+
+**Kunci release TIDAK boleh disimpan di repo.** Sebelumnya `snapsave.keystore`
+(dengan password `snapsave123`) ter-commit di git — siapa pun dengan akses repo
+bisa menandatangani APK "resmi", yang langsung menembus lapisan anti-mod
+(`SecurityGuard` memercayai sertifikat persis ini). Kunci itu sudah di-untrack
+dan sekarang dikonfigurasi via env var / `local.properties` saja.
+
+### Konfigurasi signing (build.gradle.kts membaca otomatis)
+
+Prioritas: **env var → local.properties** (`android-app/local.properties`, file
+ini sudah di-`.gitignore`).
+
+**Lokal (dev):** tambahkan ke `android-app/local.properties`:
+```properties
+release.keystore.path=app/snapsave.keystore   # relatif ke android-app/ (seperti sdk.dir) atau absolut
+release.keystore.password=...
+release.key.alias=snapsave
+release.key.password=...
+```
+
+**CI (GitHub Actions):** set 4 secrets di Settings → Secrets and variables →
+Actions. Workflow release **otomatis skip** selama secret belum diisi (hanya
+artifact debug yang dihasilkan):
+- `RELEASE_KEYSTORE_BASE64` — isi file keystore dalam base64:
+  ```bash
+  base64 -w0 snapsave.keystore   # Linux/Mac
+  certutil -encode snapsave.keystore tmp.b64   # Windows (hapus header CERTIFICATE BASE64)
+  ```
+- `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`
+
+Tanpa konfigurasi, `./gradlew assembleRelease` **gagal dengan pesan jelas**
+(dicegah mengeluarkan APK release tanpa tanda tangan yang diam-diam menonaktifkan
+cek integritas).
+
+### Rotasi kunci (jika terlanjur bocor / ingin ganti)
+
+1. Generate keystore baru:
+   ```bash
+   keytool -genkeypair -v -keystore tubenime.keystore -alias tubenime      -keyalg RSA -keysize 2048 -validity 10000 -storepass <pass> -keypass <pass>
+   ```
+2. Update `local.properties` (lokal) dan GitHub Secrets (CI) dengan file/password
+   baru.
+3. **Tidak perlu edit kode**: `SecurityGuard.RELEASE_CERT_SHA256_HEX` kini diambil
+   dari `BuildConfig.RELEASE_CERT_SHA256_HEX` yang di-generate `build.gradle.kts`
+   langsung dari keystore yang dikonfigurasi — sidik jari selalu sinkron dengan
+   kunci yang benar-benar dipakai menandatangani.
+4. Verifikasi sidik jari APK hasil build:
+   ```bash
+   keytool -list -v -keystore <keystore> -alias <alias>
+   # bandingkan SHA256 cert dengan nilai RELEASE_CERT_SHA256_HEX di
+   # app/build/generated/source/buildConfig/release/com/tubenime/app/BuildConfig.java
+   ```
+5. Setelah mengganti kunci, **update semua perangkat yang menginstal build lama**
+   (upgrade APK harus ditandatangani kunci yang sama).

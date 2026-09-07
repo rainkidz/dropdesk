@@ -37,7 +37,7 @@
                 android:id="@+id/removeButton"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:src="@drawable/ic_remove"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Remove"
                 android:scaleType="centerInside" />
@@ -72,7 +72,7 @@
                 android:id="@+id/pauseResumeButton"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@android:drawable/ic_media_pause"
+                android:src="@drawable/ic_pause"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Pause/Resume"
                 android:scaleType="centerInside"

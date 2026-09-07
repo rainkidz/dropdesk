@@ -1,15 +1,84 @@
+import java.security.KeyStore
+import java.security.MessageDigest
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.chaquo.python")
 }
 
+// ── Release signing (never hardcoded: env vars → local.properties) ─────────
+// CI passes RELEASE_KEYSTORE_* env vars (populated from GitHub Secrets); local
+// dev can put release.* keys in android-app/local.properties (gitignored).
+// Keystore paths are relative to android-app/ (like sdk.dir in local.properties)
+// or absolute.
+fun localProperty(name: String): String? {
+    val props = Properties()
+    val f = rootProject.file("local.properties")
+    if (!f.exists()) return null
+    f.inputStream().use { props.load(it) }
+    return props.getProperty(name)
+}
+
+val releaseKeystorePath = System.getenv("RELEASE_KEYSTORE_FILE") ?: localProperty("release.keystore.path")
+val releaseKeystorePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: localProperty("release.keystore.password")
+val releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: localProperty("release.key.alias")
+val releaseKeyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: localProperty("release.key.password")
+val releaseSigningConfigured = !releaseKeystorePath.isNullOrBlank() &&
+    !releaseKeystorePassword.isNullOrBlank() &&
+    !releaseKeyAlias.isNullOrBlank() &&
+    !releaseKeyPassword.isNullOrBlank()
+
+// Relative paths resolve against android-app/ (rootProject), matching the
+// sdk.dir convention in local.properties; absolute paths pass through.
+fun resolveKeystoreFile(raw: String): File =
+    if (raw.startsWith("/") || raw.startsWith("\\") || raw.length >= 2 && raw[1] == ':') {
+        file(raw)
+    } else {
+        rootProject.file(raw)
+    }
+
+fun loadReleaseKeystore(): KeyStore {
+    val keystoreFile = resolveKeystoreFile(releaseKeystorePath!!)
+    if (!keystoreFile.exists()) {
+        throw GradleException("Release keystore not found: $keystoreFile — check RELEASE_KEYSTORE_FILE / release.keystore.path")
+    }
+    var lastError: Exception? = null
+    for (type in listOf("PKCS12", "JKS")) {
+        try {
+            val ks = KeyStore.getInstance(type)
+            keystoreFile.inputStream().use { ks.load(it, releaseKeystorePassword!!.toCharArray()) }
+            return ks
+        } catch (e: Exception) {
+            lastError = e
+        }
+    }
+    throw GradleException("Cannot read release keystore $keystoreFile with the configured password", lastError)
+}
+
+/**
+ * SHA-256 (hex, uppercase) of the release signing certificate, injected into
+ * BuildConfig.RELEASE_CERT_SHA256_HEX so SecurityGuard always checks the key
+ * that actually signed the APK — rotating the keystore needs no code change.
+ * Empty when no signing key is configured (check then disabled, like today).
+ */
+val releaseCertSha256Hex: String = if (releaseSigningConfigured) {
+    val ks = loadReleaseKeystore()
+    val cert = ks.getCertificate(releaseKeyAlias!!)
+        ?: throw GradleException("Alias '$releaseKeyAlias' not found in release keystore")
+    MessageDigest.getInstance("SHA-256").digest(cert.encoded)
+        .joinToString("") { "%02X".format(it) }
+} else {
+    ""
+}
+
 android {
-    namespace = "com.snapsave.app"
+    namespace = "com.tubenime.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.vidgrab.app"
+        applicationId = "com.tubenime.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 9
@@ -20,6 +89,8 @@ android {
             useSupportLibrary = true
         }
 
+        buildConfigField("String", "RELEASE_CERT_SHA256_HEX", "\"$releaseCertSha256Hex\"")
+
         ndk {
             // arm64-v8a only: covers 99%+ of real Android devices
             // Removing x86_64 saves ~35MB (native libs duplicated per ABI)
@@ -29,10 +100,12 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("snapsave.keystore")
-            storePassword = "snapsave123"
-            keyAlias = "snapsave"
-            keyPassword = "snapsave123"
+            if (releaseSigningConfigured) {
+                storeFile = resolveKeystoreFile(releaseKeystorePath!!)
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
         }
     }
 
@@ -40,7 +113,9 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            if (releaseSigningConfigured) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -56,10 +131,26 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+// Refuse to emit an unsigned "release" APK (it would ship with the integrity
+// check disabled) when no signing key is configured.
+if (!releaseSigningConfigured) {
+    tasks.matching { it.name == "assembleRelease" || it.name == "bundleRelease" }.configureEach {
+        doFirst {
+            throw GradleException(
+                "Release signing is not configured. Set RELEASE_KEYSTORE_FILE / " +
+                    "RELEASE_KEYSTORE_PASSWORD / RELEASE_KEY_ALIAS / RELEASE_KEY_PASSWORD " +
+                    "(env, e.g. GitHub Secrets) or release.keystore.path / release.keystore.password / " +
+                    "release.key.alias / release.key.password in android-app/local.properties."
+            )
         }
     }
 }
@@ -108,6 +199,12 @@ dependencies {
 
     // Google AdMob - for monetization (compatible with Kotlin 1.9)
     implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+    // Google Play Billing - premium subscriptions (compatible with compileSdk 34 / AGP 8.2)
+    implementation("com.android.billingclient:billing:6.2.1")
+
+    // Google Play Integrity API - server-side install attestation (anti-mod hardening)
+    implementation("com.google.android.play:integrity:1.2.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

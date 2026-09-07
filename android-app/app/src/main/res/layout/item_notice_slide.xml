@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One rotating notice slide inside the welcome banner carousel -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/NoticeSlide">
+
+    <TextView
+        android:id="@+id/noticeIcon"
+        style="@style/NoticeIcon" />
+
+    <LinearLayout style="@style/NoticeTextCol">
+
+        <TextView
+            android:id="@+id/noticeTitle"
+            style="@style/NoticeTitle" />
+
+        <TextView
+            android:id="@+id/noticeBody"
+            style="@style/NoticeBody" />
+    </LinearLayout>
+</LinearLayout>

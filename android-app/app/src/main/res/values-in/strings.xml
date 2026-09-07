@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TubeNime</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">Selamat datang di TubeNime</string>
+    <string name="welcome_back_title">Selamat datang kembali di TubeNime</string>
+    <string name="welcome_close">Tutup notifikasi</string>
+
+    <!-- Welcome banner notices (rotating) -->
+    <string name="notice_platforms_title">Sudah didukung</string>
+    <string name="notice_platforms_body">YouTube, TikTok, Instagram, Bilibili &amp; lainnya — tempel tautan apa saja untuk mulai.</string>
+    <string name="notice_seasonal_title">Musim baru telah tiba 🌸</string>
+    <string name="notice_seasonal_body">Anime musiman terbaru tayang tiap minggu — ambil opening-nya sebelum ke-spoiler!</string>
+    <string name="notice_oped_title">Simpan lagunya</string>
+    <string name="notice_oped_body">Ubah OP/ED anime jadi MP3 — pilih Audio Only dan dengarkan offline.</string>
+    <string name="notice_trending_title">Opening yang sedang tren</string>
+    <string name="notice_trending_body">Lihat opening yang sedang ramai ditonton — ketuk untuk menjelajah di YouTube.</string>
+    <string name="notice_bilibili_title">Zona anime Bilibili</string>
+    <string name="notice_bilibili_body">Ribuan episode anime dan fan MV ada di sini — ketuk untuk menjelajah.</string>
+    <string name="notice_clipboard_title">Tips pro</string>
+    <string name="notice_clipboard_body">Salin tautan video anime di mana saja — TubeNime otomatis mendetaknya.</string>
+
+    <!-- Quick Download -->
+    <string name="quick_download_title">Unduhan Cepat</string>
+
+    <!-- Anime Corner -->
+    <string name="anime_corner_title">Pojok Anime</string>
+    <string name="anime_corner_subtitle">Unduh anime opening, ending, AMV &amp; lainnya</string>
+
+    <!-- URL Input -->
+    <string name="url_input_hint">Tempel tautan video di sini…</string>
+    <string name="url_input_description">YouTube, TikTok, Instagram, Bilibili &amp; lainnya</string>
+    <string name="inspect_link">Periksa Tautan</string>
+
+    <!-- Downloads -->
+    <string name="recent_downloads">Unduhan Terbaru</string>
+    <string name="view_all_downloads">Lihat Semua Unduhan</string>
+    <string name="download_complete">Unduhan Selesai</string>
+    <string name="download_another">Unduh Lagi</string>
+
+    <!-- About -->
+    <string name="about_version">Versi 1.0</string>
+    <string name="about_description">TubeNime - Video Downloader
+
+Unduh video dari platform favoritmu.
+Mendukung YouTube, TikTok, Instagram, Facebook,
+Bilibili, Threads, dan lainnya.
+
+✨ Fitur:
+• Unduhan video berkualitas tinggi
+• Ekstraksi audio (MP3)
+• Unduhan batch/playlist
+• Browser bawaan
+• Dukungan video privat
+• Mode gelap</string>
+</resources>

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1a1a2e">
+    android:background="@color/surface">
 
     <!-- Header -->
     <LinearLayout
@@ -12,7 +12,7 @@
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_vertical"
-        android:background="#16213e">
+        android:background="@color/surface_variant">
 
         <TextView
             android:id="@+id/statusText"
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Login to download private content"
-            android:textColor="#ffffff"
+            android:textColor="@color/white"
             android:textSize="14sp" />
 
         <Button
@@ -29,7 +29,7 @@
             android:layout_height="36dp"
             android:text="Skip"
             android:textSize="12sp"
-            android:backgroundTint="#555555"
+            android:backgroundTint="@color/text_secondary"
             android:layout_marginStart="8dp" />
     </LinearLayout>
 
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:max="100"
-        android:progressTint="#e94560"
+        android:progressTint="@color/primary"
         android:visibility="gone" />
 
     <!-- WebView -->
@@ -57,8 +57,8 @@
         android:layout_margin="16dp"
         android:text="💾 Save Login"
         android:textSize="16sp"
-        android:backgroundTint="#e94560"
-        android:textColor="#ffffff"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/white"
         android:visibility="gone" />
 
 </LinearLayout>

@@ -19,7 +19,7 @@
             android:title="Download Queue"
             android:titleTextColor="@color/white"
             app:titleTextColor="@color/white"
-            app:navigationIcon="@drawable/ic_arrow_back" />
+            app:navigationIcon="@drawable/ic_back" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Empty View -->
