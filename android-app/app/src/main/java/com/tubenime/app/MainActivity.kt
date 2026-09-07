@@ -755,7 +755,28 @@ class MainActivity : AppCompatActivity() {
 
     private suspend fun inspectTikTok(url: String) {
         loadingText.text = "Fetching TikTok video info..."
-        val info = TikTokExtractor.extract(url).getOrThrow()
+        // tikwm first (fast metadata); when it is blocked/rate-limited it returns
+        // HTML and fails — fall back to yt-dlp extraction for the metadata.
+        val info = TikTokExtractor.extract(url).getOrElse { tikwmError ->
+            loadingText.text = "TikTok API blocked — retrying with yt-dlp..."
+            val dlp = YtDlpRunner.getVideoInfo(this, url).getOrElse { dlpError ->
+                val detail = tikwmError.message ?: "public API failed"
+                val dlpDetail = dlpError.message ?: "failed"
+                throw Exception(
+                    "TikTok is temporarily unavailable — $detail (yt-dlp: $dlpDetail). Try again in a few minutes."
+                )
+            }
+            val audio = dlp.formats.filter { !it.hasVideo && it.hasAudio }.maxByOrNull { it.bitrate }
+            TikTokExtractor.TikTokInfo(
+                title = dlp.title.ifBlank { "TikTok Video" },
+                duration = dlp.duration,
+                videoUrl = "",
+                videoNoWmUrl = "",
+                audioUrl = audio?.url,
+                coverUrl = dlp.thumbnail.ifBlank { null },
+                author = dlp.uploader.ifBlank { null }
+            )
+        }
 
         val formats = mutableListOf<FormatChoice>()
 

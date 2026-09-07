@@ -54,8 +54,16 @@ object TikTokExtractor {
                 .build()
 
             val response = client.newCall(request).execute()
+            if (!response.isSuccessful) {
+                throw Exception("TikTok API HTTP ${response.code}")
+            }
             val body = response.body?.string() ?: throw Exception("Empty response")
-            val json = JSONObject(body)
+            val json = try {
+                JSONObject(body)
+            } catch (e: org.json.JSONException) {
+                // tikwm returns HTML (CAPTCHA / rate-limit page) instead of JSON
+                throw Exception("TikTok public API is blocked right now (rate limit or CAPTCHA) - falling back to yt-dlp")
+            }
 
             val code = json.optInt("code", -1)
             if (code != 0) {
