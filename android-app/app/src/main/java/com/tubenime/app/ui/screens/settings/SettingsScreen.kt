@@ -112,6 +112,11 @@ fun SettingsScreen(
     premiumTitle: String = "FREE TIER",
     premiumSubtitle: String = "3/3 Daily Quota remaining",
     onUpgradeClick: () -> Unit = {},
+    rewardButtonVisible: Boolean = false,
+    rewardButtonEnabled: Boolean = true,
+    rewardButtonLabel: String = "WATCH AD → 30 MIN PRO",
+    rewardCountdownLabel: String? = null,
+    onWatchAdClick: () -> Unit = {},
     palettes: List<PaletteSlot> = samplePalettes(),
     selectedPalette: Int = 0,
     onPaletteSelect: (Int) -> Unit = {},
@@ -193,7 +198,53 @@ fun SettingsScreen(
                     Column(Modifier.fillMaxWidth().padding(Dimens.SpaceL)) {
                         Text(premiumTitle, style = TextStyle(fontFamily = Rubik, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, letterSpacing = (-0.45).sp), color = Ink)
                         Text(premiumSubtitle, style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 11.sp), color = EspressoBrown, modifier = Modifier.padding(top = 2.dp))
-                        if (!isPremium) {
+                        if (!isPremium && rewardButtonVisible) {
+                            val rewardShadow = inkShadowColor()
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = Dimens.SpaceM)
+                                    .drawBehind {
+                                        val o = 3.dp.toPx()
+                                        drawRoundRect(rewardShadow, Offset(o, o), size, CornerRadius(8.dp.toPx()))
+                                    }
+                                    .background(ActiveYellow, RoundedCornerShape(8.dp))
+                                    .border(2.dp, Ink, RoundedCornerShape(8.dp))
+                                    .clickable(enabled = rewardButtonEnabled, onClick = onWatchAdClick)
+                                    .padding(vertical = 12.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        painterResource(R.drawable.figma_ic_star),
+                                        contentDescription = null,
+                                        tint = TitleRed,
+                                        modifier = Modifier.size(16.dp),
+                                    )
+                                    Text(
+                                        rewardButtonLabel,
+                                        style = ChipText,
+                                        color = Ink,
+                                        modifier = Modifier.padding(start = 8.dp),
+                                    )
+                                }
+                            }
+                            if (rewardCountdownLabel != null) {
+                                Text(
+                                    rewardCountdownLabel,
+                                    style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 11.sp),
+                                    color = EspressoBrown,
+                                    modifier = Modifier.padding(top = 6.dp),
+                                )
+                            }
+                        } else if (isPremium && rewardCountdownLabel != null) {
+                            Text(
+                                rewardCountdownLabel,
+                                style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Bold, fontSize = 11.sp),
+                                color = EspressoBrown,
+                                modifier = Modifier.padding(top = 6.dp),
+                            )
+                        } else if (!isPremium && !rewardButtonVisible) {
                             val upgradeShadow = inkShadowColor()
                             Box(
                                 Modifier

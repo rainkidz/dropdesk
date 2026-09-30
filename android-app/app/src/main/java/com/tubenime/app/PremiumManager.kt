@@ -45,6 +45,7 @@ object PremiumManager {
     private const val PREF_SERVER_UNTIL_MS = "premium_server_until_ms"
     private const val PREF_REMOTE_VERDICT = "premium_remote_verdict"
     private const val PREF_LAST_ATTEST_MS = "premium_last_attest_ms"
+    private const val PREF_REWARDED_UNTIL_MS = "premium_rewarded_until_ms"
 
     /** How often Play Integrity attestation is re-run (throttle). */
     private const val ATTEST_THROTTLE_MS = 12L * 60 * 60 * 1000
@@ -110,9 +111,51 @@ object PremiumManager {
         // Server attestation only gates shipped (non-debug) builds.
         if (!isDebuggable && !remoteVerdictOk) return false
         if (isDebugPremium()) return true
+        // Rewarded-ad unlock — granted untuk 30 menit via RewardedAdManager.
+        if (hasRewardedPremium()) return true
         val ctx = appContext
         if (ctx != null && LicenseManager.isLicensed(ctx)) return true
         return billingAvailable && purchased
+    }
+
+    /** True bila rewarded-premium belum kedaluwarsa. */
+    fun hasRewardedPremium(): Boolean {
+        val until = prefs()?.getLong(PREF_REWARDED_UNTIL_MS, 0L) ?: 0L
+        if (until == 0L) return false
+        if (System.currentTimeMillis() >= until) return false
+        return true
+    }
+
+    /** Granted oleh RewardedAdManager setelah user lihat rewarded video sampai selesai. */
+    fun grantRewardedPremium(durationMs: Long) {
+        val until = System.currentTimeMillis() + durationMs
+        prefs()?.edit()?.putLong(PREF_REWARDED_UNTIL_MS, until)?.apply()
+        notifyChanged()
+    }
+
+    /** Untuk Settings "Reset reward" atau clear-license-all. */
+    fun clearRewardedPremium() {
+        prefs()?.edit()?.remove(PREF_REWARDED_UNTIL_MS)?.apply()
+        notifyChanged()
+    }
+
+    /** Sisa waktu reward aktif (untuk UI countdown). 0 = tidak aktif. */
+    fun rewardedRemainingMs(): Long {
+        val until = prefs()?.getLong(PREF_REWARDED_UNTIL_MS, 0L) ?: 0L
+        if (until == 0L) return 0L
+        return (until - System.currentTimeMillis()).coerceAtLeast(0L)
+    }
+
+    /** Label human-readable sisa waktu reward: "29 min" / "1 h 12 min" / "Expired". */
+    fun rewardedRemainingLabel(): String? {
+        val ms = rewardedRemainingMs()
+        if (ms <= 0L) return null
+        val mins = ms / 60_000
+        return when {
+            mins < 1L -> "<1 min"
+            mins < 60L -> "$mins min"
+            else -> "${mins / 60}h ${mins % 60}m"
+        }
     }
 
     /** Whether this build was compiled debuggable (only those expose the test toggle). */
@@ -161,6 +204,7 @@ object PremiumManager {
     /** Human-readable description of why premium is currently active. */
     fun sourceLabel(): String = when {
         isDebugPremium() -> "Test mode"
+        hasRewardedPremium() -> "Ad reward"
         appContext?.let { LicenseManager.isLicensed(it) } == true -> "License"
         billingAvailable && purchased -> "Subscription"
         else -> ""

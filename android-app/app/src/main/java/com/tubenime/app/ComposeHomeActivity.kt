@@ -192,7 +192,7 @@ class ComposeHomeActivity : ComponentActivity() {
             onComplete = { _, filename ->
                 completeFile.value = filename
                 phase.value = PHASE_COMPLETE
-                // Momen natural untuk interstitial (user gratis, max 1x/90 dtk).
+                // Momen natural untuk interstitial (user gratis, max 1x/60 dtk — mild).
                 AdsManager.showInterstitialIfReady(this)
             },
             onError = { err ->

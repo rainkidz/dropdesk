@@ -43,8 +43,8 @@ object AdsManager {
     private const val DEFAULT_BANNER = "ca-app-pub-7452006143730401/8120744119"
     private const val DEFAULT_INTERSTITIAL = "ca-app-pub-7452006143730401/4435368715"
 
-    /** Jeda minimal antar interstitial (90 detik). */
-    private const val INTERSTITIAL_MIN_INTERVAL_MS = 90_000L
+    /** Jeda minimal antar interstitial (60 detik — strategi mild). */
+    private const val INTERSTITIAL_MIN_INTERVAL_MS = 60_000L
 
     /** Batas waktu ambil konfigurasi dari server saat init (5 detik). */
     private const val REMOTE_FETCH_TIMEOUT_MS = 5_000L

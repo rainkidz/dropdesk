@@ -65,7 +65,10 @@ class ComposeQueueActivity : ComponentActivity() {
                     onItemPauseResume = ::pauseResume,
                     onItemRemove = { queue.removeItem(it.id) },
                     onItemClick = ::openIfCompleted,
-                    onUpgradeClick = { NavAnim.go(this, Intent(this, ComposePremiumActivity::class.java), NavAnim.TAB_QUEUE, NavAnim.TAB_NONE) },
+                    onUpgradeClick = {
+                        Toast.makeText(this, "Watch ad in Settings → PRO status to unlock queue.", Toast.LENGTH_LONG).show()
+                        NavAnim.go(this, Intent(this, ComposeSettingsActivity::class.java), NavAnim.TAB_QUEUE, NavAnim.TAB_SETTINGS)
+                    },
                     selectedNavIndex = 2, // Figma 1:5: tab Downloads aktif
                     onNavSelected = ::openNav,
                 )

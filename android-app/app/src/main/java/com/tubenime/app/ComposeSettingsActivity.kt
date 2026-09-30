@@ -35,6 +35,9 @@ class ComposeSettingsActivity : ComponentActivity() {
     private val wifiOnly = mutableStateOf(false)
     private val loginStates = mutableStateOf(mapOf<String, Boolean>())
     private val updateBanner = mutableStateOf<UpdateBanner?>(null)
+    private val rewardBusy = mutableStateOf(false)
+    private val rewardButtonLabel = mutableStateOf("WATCH AD → 30 MIN PRO")
+    private val rewardCountdown = mutableStateOf<String?>(null)
 
     override fun attachBaseContext(newBase: Context) {
 
@@ -60,6 +63,11 @@ class ComposeSettingsActivity : ComponentActivity() {
                     premiumTitle = premiumTitle.value,
                     premiumSubtitle = premiumSubtitle.value,
                     onUpgradeClick = { NavAnim.go(this, Intent(this, ComposePremiumActivity::class.java), NavAnim.TAB_SETTINGS, NavAnim.TAB_NONE) },
+                    rewardButtonVisible = !premiumActive.value && !SecurityGuard.isTampered(this),
+                    rewardButtonEnabled = !rewardBusy.value && RewardedAdManager.canOffer(this),
+                    rewardButtonLabel = rewardButtonLabel.value,
+                    rewardCountdownLabel = rewardCountdown.value,
+                    onWatchAdClick = ::onWatchAd,
                     palettes = designPalettes(),
                     selectedPalette = paletteIndex.value,
                     onPaletteSelect = ::onPaletteSelected,
@@ -94,6 +102,38 @@ class ComposeSettingsActivity : ComponentActivity() {
         PremiumManager.refreshPurchases()
         refreshAll()
         refreshUpdateBanner()
+        RewardedAdManager.preload(this)
+    }
+
+    private fun onWatchAd() {
+        if (rewardBusy.value) return
+        if (!RewardedAdManager.canOffer(this)) {
+            val waitSec = (RewardedAdManager.cooldownRemainingMs(this) / 1000).coerceAtLeast(1)
+            Toast.makeText(this, "Ad ready again in ${waitSec}s.", Toast.LENGTH_SHORT).show()
+            refreshAll()
+            return
+        }
+        rewardBusy.value = true
+        rewardButtonLabel.value = "LOADING AD…"
+        RewardedAdManager.loadAndShow(this) { outcome ->
+            runOnUiThread {
+                rewardBusy.value = false
+                rewardButtonLabel.value = "WATCH AD → 30 MIN PRO"
+                when (outcome) {
+                    is RewardedAdManager.Outcome.Rewarded ->
+                        Toast.makeText(this, "PRO unlocked for 30 min. Enjoy!", Toast.LENGTH_LONG).show()
+                    is RewardedAdManager.Outcome.SkippedCooldown ->
+                        Toast.makeText(this, "Ad ready again soon.", Toast.LENGTH_SHORT).show()
+                    is RewardedAdManager.Outcome.NotReady ->
+                        Toast.makeText(this, "Ad not ready — check connection, try again.", Toast.LENGTH_LONG).show()
+                    is RewardedAdManager.Outcome.FailedToShow ->
+                        Toast.makeText(this, "Couldn't show ad — try again.", Toast.LENGTH_LONG).show()
+                    is RewardedAdManager.Outcome.Dismissed ->
+                        Toast.makeText(this, "Watch till the end to earn PRO.", Toast.LENGTH_SHORT).show()
+                }
+                refreshAll()
+            }
+        }
     }
 
     private fun refreshUpdateBanner() {
@@ -196,15 +236,23 @@ class ComposeSettingsActivity : ComponentActivity() {
             premiumActive.value = false
             premiumTitle.value = "MODIFIED BUILD"
             premiumSubtitle.value = "Premium disabled on this build"
+            rewardCountdown.value = null
         } else {
             premiumActive.value = PremiumManager.isPremium()
             if (premiumActive.value) {
                 premiumTitle.value = "PRO"
                 val source = PremiumManager.sourceLabel()
                 premiumSubtitle.value = "Active" + (if (source.isNotEmpty()) " ($source)" else "")
+                rewardCountdown.value = PremiumManager.rewardedRemainingLabel()?.let { "Sisa PRO: $it" }
             } else {
                 premiumTitle.value = "FREE TIER"
-                premiumSubtitle.value = "Free plan — 720p max"
+                premiumSubtitle.value = "Watch ad → PRO 30 min • 720p max"
+                val cooldownMs = RewardedAdManager.cooldownRemainingMs(this)
+                rewardCountdown.value = if (cooldownMs > 0L) {
+                    "Ready again in ${cooldownMs / 1000}s"
+                } else {
+                    null
+                }
             }
         }
 
@@ -236,11 +284,10 @@ class ComposeSettingsActivity : ComponentActivity() {
 
     // ── Helpers ─────────────────────────────────────────────────
 
-    /** Blokir aksi premium-only + arahkan ke upsell. Return true bila boleh lanjut. */
+    /** Blokir aksi premium-only + arahkan ke reward (bukan paid upsell). Return true bila boleh lanjut. */
     private fun guardPremium(): Boolean {
         if (PremiumManager.isPremium()) return true
-        Toast.makeText(this, "That's a Premium feature — upgrade to unlock it.", Toast.LENGTH_LONG).show()
-        NavAnim.go(this, Intent(this, ComposePremiumActivity::class.java), NavAnim.TAB_SETTINGS, NavAnim.TAB_NONE)
+        Toast.makeText(this, "Watch a short ad above to unlock PRO for 30 min.", Toast.LENGTH_LONG).show()
         return false
     }
 
