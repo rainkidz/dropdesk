@@ -1,0 +1,30 @@
+name: Deploy landing page
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/landing/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Deploy folder `docs/landing/` to the `gh-pages` branch root, lalu
+      # serve via GitHub Pages (Settings → Pages → Branch: gh-pages).
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/landing
+          publish_branch: gh-pages
+          keep_files: false
+          force_orphan: true
+          commit_message: 'docs: update landing page'

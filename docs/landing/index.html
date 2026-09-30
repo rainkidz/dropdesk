@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TubeNime — Anime Video Downloader for Android</title>
+<meta name="description" content="TubeNime is a free Android app to browse and download anime clips and full episodes from your favourite platforms. Sideload the APK directly from GitHub Releases." />
+<meta name="theme-color" content="#FAF3E7" />
+<link rel="icon" type="image/png" href="logo.svg" />
+<style>
+  :root {
+    --paper: #FAF3E7;
+    --ink: #1A1410;
+    --espresso: #5C3A21;
+    --red: #B7131A;
+    --yellow: #F7C82B;
+    --yellow-soft: #FCE7A6;
+    --cream: #FFF3D2;
+    --line: 2px solid var(--ink);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--red); text-decoration: none; border-bottom: 1.5px solid var(--red); }
+  a:hover { background: var(--yellow-soft); }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 20px 80px; }
+  header {
+    display: flex; align-items: center; gap: 14px; padding-bottom: 18px;
+    border-bottom: var(--line);
+  }
+  header img { width: 56px; height: 56px; }
+  header h1 {
+    margin: 0; font-size: 28px; letter-spacing: 1px;
+    font-weight: 900;
+  }
+  header .tag {
+    display: inline-block; margin-top: 4px; font-size: 12px;
+    color: var(--espresso); letter-spacing: 0.5px;
+  }
+  h2 {
+    margin: 36px 0 12px; font-size: 20px; letter-spacing: 0.4px;
+    border-bottom: var(--line); padding-bottom: 6px;
+  }
+  .hero {
+    margin-top: 22px; padding: 22px;
+    background: var(--yellow); border: var(--line); border-radius: 12px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .hero p { margin: 0 0 14px; font-size: 16px; }
+  .btn {
+    display: inline-block; padding: 12px 18px; background: var(--red);
+    color: white !important; font-weight: 800; letter-spacing: 1px;
+    border: var(--line); border-radius: 8px;
+    box-shadow: 3px 3px 0 var(--ink);
+    text-transform: uppercase; font-size: 14px;
+  }
+  .btn:hover { background: #D21722; }
+  .btn.alt { background: var(--paper); color: var(--ink) !important; }
+  .grid {
+    display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-top: 16px;
+  }
+  .card {
+    padding: 14px 16px; background: white; border: var(--line);
+    border-radius: 10px; box-shadow: 3px 3px 0 var(--ink);
+  }
+  .card h3 { margin: 0 0 6px; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .card p { margin: 0; font-size: 14px; color: var(--espresso); }
+  ol.steps { padding-left: 22px; }
+  ol.steps li { margin: 10px 0; }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--cream); padding: 1px 6px; border-radius: 4px;
+    border: 1px solid var(--ink);
+  }
+  pre { padding: 12px; overflow-x: auto; }
+  .pill {
+    display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 700;
+    background: var(--ink); color: var(--paper); border-radius: 999px;
+    letter-spacing: 0.6px;
+  }
+  .pill.warn { background: var(--red); }
+  .pill.ok { background: #2E7D32; }
+  footer {
+    margin-top: 60px; padding-top: 14px; border-top: var(--line);
+    color: var(--espresso); font-size: 13px;
+  }
+  .screens { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .screens .ph {
+    flex: 1 1 320px; min-height: 180px; background: white;
+    border: var(--line); border-radius: 10px; box-shadow: 3px 3px 0 var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--espresso); font-size: 13px; text-align: center;
+    padding: 14px;
+  }
+  details { margin: 8px 0; }
+  details summary { cursor: pointer; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="logo.svg" alt="TubeNime logo" />
+    <div>
+      <h1>TUBENIME</h1>
+      <div class="tag">Anime video downloader · Free · Sideload · v4.3.0</div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p><strong>Browse trending anime clips on YouTube, TikTok, Instagram, Bilibili, Facebook &amp; Threads — and download the videos you love directly to your phone. No login, no ads on premium, no tracking.</strong></p>
+    <a class="btn" id="download-btn" href="https://github.com/rainkidz/dropdesk/releases/latest">⬇ Download APK</a>
+    <a class="btn alt" href="https://github.com/rainkidz/dropdesk/releases" style="margin-left:8px;">All releases</a>
+    <div style="margin-top:12px; font-size:13px;">
+      <span class="pill ok">arm64-v8a</span>
+      <span class="pill">min Android 7.0</span>
+      <span class="pill warn">Sideload only</span>
+    </div>
+  </section>
+
+  <h2>What you get</h2>
+  <div class="grid">
+    <div class="card"><h3>Trending feeds</h3><p>One-tap access to today's anime hashtags across 6 platforms — randomised daily so you always see something fresh.</p></div>
+    <div class="card"><h3>Up to 1080p</h3><p>Merge video + audio into a single MP4. Free tier: 720p. Premium: full HD.</p></div>
+    <div class="card"><h3>Cookie login</h3><p>Drop in your YouTube/Instagram cookies to access private or age-restricted videos. Premium feature.</p></div>
+    <div class="card"><h3>Batch downloads</h3><p>Pull entire playlists and queues. Premium feature.</p></div>
+    <div class="card"><h3>Offline license</h3><p>One-month license code unlocks premium on your device — no Play Store account needed.</p></div>
+    <div class="card"><h3>Shōnen theme</h3><p>Single, distraction-free manga-style UI. Material You deliberately off.</p></div>
+  </div>
+
+  <h2>Screens</h2>
+  <div class="screens">
+    <div class="ph">📱 Home — trending anime tiles<br/>(placeholder)</div>
+    <div class="ph">📱 Browser — open platform<br/>(placeholder)</div>
+    <div class="ph">📱 Premium — redeem code<br/>(placeholder)</div>
+    <div class="ph">📱 Settings — update banner<br/>(placeholder)</div>
+  </div>
+
+  <h2>Install (Android 7.0+)</h2>
+  <ol class="steps">
+    <li>Tap <strong>Download APK</strong> above. Your browser will save <code>tubenime-release.apk</code>.</li>
+    <li>Open the file. Android will ask you to <strong>allow installs from this source</strong>.
+      <ul>
+        <li>Stock Android: Settings → Apps → Special access → Install unknown apps → pick your browser → <em>Allow</em>.</li>
+        <li>Samsung One UI: Settings → Biometrics and security → Install unknown apps.</li>
+        <li>Xiaomi/MIUI: Settings → Privacy → Special permissions → Install unknown apps.</li>
+      </ul>
+    </li>
+    <li>Tap <strong>Install</strong>. Open TubeNime when done.</li>
+    <li>(Optional) Join the community below for the latest updates and license codes.</li>
+  </ol>
+
+  <h2>Premium &amp; licensing</h2>
+  <p>Premium is a sideload licence — no Play Billing. Two ways to pay:</p>
+  <ol class="steps">
+    <li><strong>Lokal — QRIS</strong>: scan, send proof to the seller contact in the app, receive a code.</li>
+    <li><strong>International — PayPal</strong>: send to the link in the app, receive a code.</li>
+    <li>Open the app → <strong>Settings → Premium → Redeem Code</strong>, paste your code. Done.</li>
+  </ol>
+  <p>Each licence is valid for the current month (e.g. <code>202610</code>) and binds to one device. See the in-app Premium screen for current pricing.</p>
+
+  <h2>Privacy</h2>
+  <ul>
+    <li>No analytics SDK. No Google Play Services dependency for core features.</li>
+    <li>AdMob only loads ads if you have not redeemed a licence. Premium users never see ads.</li>
+    <li>The only outbound requests are to the platforms you browse and to the licence-update endpoint.</li>
+  </ul>
+
+  <h2>Community</h2>
+  <p>Updates, downloads, and licence announcements are posted here:</p>
+  <ul>
+    <li><a href="https://github.com/rainkidz/dropdesk/releases">GitHub Releases</a></li>
+    <li><a href="https://t.me/tubenime">Telegram channel</a> (placeholder — update link)</li>
+  </ul>
+
+  <h2>FAQ</h2>
+  <details>
+    <summary>Why isn't this on the Play Store?</summary>
+    <p>YouTube's Terms of Service forbid downloading their content, and Google Play has a strict IP policy. TubeNime is distributed as a sideload APK only — same model as NewPipe, Seal, etc.</p>
+  </details>
+  <details>
+    <summary>Is this safe?</summary>
+    <p>The official APK is signed with a fixed release certificate; the in-app <em>SecurityGuard</em> will mark any repackaged build as MODIFIED and disable premium. Verify the SHA-256 fingerprint of the downloaded APK against the value listed in the release notes.</p>
+  </details>
+  <details>
+    <summary>My code says "BadSignature" — what now?</summary>
+    <p>Double-check every character. Codes are case-sensitive and use the alphabet <code>ABCDEFGHJKMNPQRSTUVWXYZ23456789</code> (no O/0/I/L/U). If still failing, contact the seller.</p>
+  </details>
+
+  <footer>
+    <p>© TubeNime contributors · Source on <a href="https://github.com/rainkidz/dropdesk">GitHub</a>. Not affiliated with YouTube, TikTok, Instagram, Bilibili, Facebook, or Threads.</p>
+  </footer>
+
+</div>
+
+<script>
+  // Auto-redirect download button to the latest release's APK asset when
+  // the GitHub API is reachable. Graceful fallback to /releases/latest.
+  (async function () {
+    try {
+      const btn = document.getElementById('download-btn');
+      if (!btn) return;
+      const resp = await fetch('https://api.github.com/repos/rainkidz/dropdesk/releases/latest', {
+        headers: { Accept: 'application/vnd.github+json' },
+      });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const apk = (data.assets || []).find(a => a.name && a.name.endsWith('.apk'));
+      if (apk && apk.browser_download_url) {
+        btn.href = apk.browser_download_url;
+        btn.textContent = '⬇ Download ' + (data.tag_name || 'latest');
+      } else if (data.html_url) {
+        btn.href = data.html_url;
+        btn.textContent = '⬇ Get ' + (data.tag_name || 'latest');
+      }
+    } catch (_) { /* keep fallback */ }
+  })();
+</script>
+</body>
+</html>
