@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TikTok tile icon (node 1:237): black square 32dp r8, ink shadow (2,2),
+     yellow music note centered. Card tilt -2° handled in PlatformGrid. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+    <!-- hard ink drop shadow (2,2) -->
+    <path
+        android:pathData="M12,4 h16 a8,8 0 0 1 8,8 v16 a8,8 0 0 1 -8,8 h-16 a8,8 0 0 1 -8,-8 v-16 a8,8 0 0 1 8,-8 Z"
+        android:fillColor="#1A1A1A"/>
+    <!-- black square r8 -->
+    <path
+        android:pathData="M10,2 h16 a8,8 0 0 1 8,8 v16 a8,8 0 0 1 -8,8 h-16 a8,8 0 0 1 -8,-8 v-16 a8,8 0 0 1 8,-8 Z"
+        android:fillColor="#1A1A1A"/>
+    <!-- yellow music note — centered in block -->
+    <group android:translateX="5.5" android:translateY="1.5">
+        <path
+            android:pathData="M15.1445,24.1019 C14.2284,24.1339 13.4328,23.8351 12.7576,23.2055 C12.0825,22.5759 11.7289,21.803 11.6969,20.8869 C11.6649,19.9708 11.9637,19.1752 12.5933,18.5 C13.2229,17.8248 13.9958,17.4713 14.9119,17.4393 C15.2311,17.4281 15.5274,17.456 15.8007,17.5229 C16.0741,17.5898 16.3383,17.6952 16.5935,17.8392 L16.2867,9.05284 L21.2836,8.87834 L21.4,12.2096 L18.0687,12.326 L18.3595,20.6542 C18.3915,21.5703 18.0927,22.366 17.4631,23.0411 C16.8335,23.7163 16.0606,24.0699 15.1445,24.1019 Z"
+            android:fillColor="#FFC940"/>
+    </group>
+</vector>

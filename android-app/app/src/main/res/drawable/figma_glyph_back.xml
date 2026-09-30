@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Glyph panah-kembali, geometri 100% dari designs/tubenime_20260918-222403.assets/icon_1_355.svg (Figma node 1:355). Bg lingkaran dibuang; fill Paper agar pas di toolbar tinta 17:2766. Forward = drawable ini + scaleX(-1). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="42dp"
+    android:height="42dp"
+    android:viewportWidth="42"
+    android:viewportHeight="42">
+        <path android:pathData="M16.6022 21.325L21.8913 26.6141L20 28.4805L11.5195 20L20 11.5195L21.8913 13.3859L16.6022 18.675H28.4804V21.325H16.6022Z" android:fillColor="#FAF3E7"/>
+</vector>

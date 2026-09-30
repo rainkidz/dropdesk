@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260911-151449.assets/icon_1_560.svg (Figma node 1:560) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="90dp"
+    android:height="90dp"
+    android:viewportWidth="90"
+    android:viewportHeight="90">
+        <group>
+        <path android:pathData="M45,29 H45 A16,16 0 0 1 61,45 V45 A16,16 0 0 1 45,61 H45 A16,16 0 0 1 29,45 V45 A16,16 0 0 1 45,29 Z" android:fillColor="#FDC73E"/>
+        <path android:pathData="M45,29 H45 A16,16 0 0 1 61,45 V45 A16,16 0 0 1 45,61 H45 A16,16 0 0 1 29,45 V45 A16,16 0 0 1 45,29 Z M45,31 H45 A14,14 0 0 1 59,45 V45 A14,14 0 0 1 45,59 H45 A14,14 0 0 1 31,45 V45 A14,14 0 0 1 45,31 Z" android:fillColor="#1A1A1A" android:fillType="evenOdd"/>
+        <path android:pathData="M41.875 50.25V39.75L50.125 45L41.875 50.25Z" android:fillColor="#1A1A1A"/>
+        </group>
+</vector>

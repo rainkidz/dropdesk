@@ -182,6 +182,9 @@ router.post("/downloads", async (req, res) => {
       broadcastProgress(job);
     });
   } else { startProcess(job, formatId); }
+
+  // Respond immediately with the created job; progress streams via SSE/polling.
+  res.json(CreateDownloadResponse.parse(publicJob(job)));
 });
 
 router.get("/downloads/recent", (_req, res) => {

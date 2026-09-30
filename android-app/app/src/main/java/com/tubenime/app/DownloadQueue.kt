@@ -36,6 +36,7 @@ class DownloadQueue private constructor(context: Context) {
         val title: String,
         val type: String, // "video", "audio", "video_audio", "playlist"
         val formatId: String?,
+        val directUrl: String? = null, // skip yt-dlp and fetch this CDN URL (e.g. TikTok)
         val status: String = "pending", // pending, downloading, paused, completed, failed
         val progress: Int = 0,
         val speed: String = "",
@@ -97,13 +98,14 @@ class DownloadQueue private constructor(context: Context) {
 
     // ── Public queue operations ────────────────────────────────────────────────────
 
-    fun addToQueue(url: String, title: String, type: String, formatId: String?): QueueItem {
+    fun addToQueue(url: String, title: String, type: String, formatId: String?, directUrl: String? = null): QueueItem {
         val item = QueueItem(
             id = currentItemId.incrementAndGet(),
             url = url,
             title = title,
             type = type,
-            formatId = formatId
+            formatId = formatId,
+            directUrl = directUrl
         )
         queue.add(item)
         notifyItemAdded(item)
@@ -281,7 +283,11 @@ class DownloadQueue private constructor(context: Context) {
 
         try {
             withContext(Dispatchers.IO) {
-                when (item.type) {
+                if (item.directUrl != null) {
+                    // Direct CDN download (TikTok) — no yt-dlp involved.
+                    val ext = if (item.type == TYPE_AUDIO) "mp3" else "mp4"
+                    manager.download(item.directUrl, "${item.title}.$ext", callback)
+                } else when (item.type) {
                     TYPE_MERGED -> manager.downloadMerged(
                         url = item.url,
                         videoFormat = item.formatId ?: defaultMergeVideoFormat(),

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260918-222403.assets/icon_17_2798.svg (Figma node 17:2798) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="42dp"
+    android:height="42dp"
+    android:viewportWidth="42"
+    android:viewportHeight="42">
+        <path android:pathData="M0,0 H40 V40 H0 Z" android:fillColor="#FFF8EF"/>
+        <path android:pathData="M1,0 H39 A1,1 0 0 1 40,1 V39 A1,1 0 0 1 39,40 H1 A1,1 0 0 1 0,39 V1 A1,1 0 0 1 1,0 Z M2,2 H38 V38 H2 Z" android:fillColor="#1E1B14" android:fillType="evenOdd"/>
+        <path android:pathData="M10.5195 26.6925V24.0424H29.4804V26.6925H10.5195ZM10.5195 21.3251V18.675H29.4804V21.3251H10.5195ZM10.5195 15.9577V13.3076H29.4804V15.9577H10.5195Z" android:fillColor="#1E1B14"/>
+</vector>

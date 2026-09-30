@@ -4,5 +4,5 @@
     <size
         android:width="8dp"
         android:height="8dp" />
-    <solid android:color="@color/anime_pink" />
+    <solid android:color="?attr/PaletteAnimePink" />
 </shape>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Input icon (node 1:190) — pixel-audit Figma render: solid ink divider 6×16dp
+     (left) + grey chain-link ~10×8dp (right, vertically centered).
+     Chain = icon_1_189.svg path translated by (-12,-19.83), offset +8 x.
+     All coordinates absolute (no group transforms). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp"
+    android:height="16dp"
+    android:viewportWidth="26"
+    android:viewportHeight="16">
+    <!-- Ink divider column: x 0..6, full height 16 -->
+    <path
+        android:pathData="M0,0 L6,0 L6,16 L0,16 Z"
+        android:fillColor="#1A1A1A"/>
+    <!-- Chain-link: x 8..24.67, y 3.8..12.17 (centered), #5D5C5B.
+         Path from svg: translated (-12,-19.83) then (+8,-4) to center vertically. -->
+    <path
+        android:pathData="M15.5,12.34 L12.17,12.34 C11.01,12.34 10.03,11.93 9.22,11.12 C8.41,10.31 8,9.32 8,8.17 C8,7.02 8.41,6.03 9.22,5.22 C10.03,4.41 11.01,4 12.17,4 L15.5,4 L15.5,5.67 L12.17,5.67 C11.47,5.67 10.88,5.91 10.4,6.4 C9.91,6.89 9.67,7.48 9.67,8.17 C9.67,8.86 9.91,9.45 10.4,9.94 C10.88,10.43 11.47,10.67 12.17,10.67 L15.5,10.67 L15.5,12.34 Z M13,9 L13,7.34 L19.67,7.34 L19.67,9 L13,9 Z M17.17,12.34 L17.17,10.67 L20.5,10.67 C21.19,10.67 21.78,10.43 22.27,9.94 C22.76,9.45 23,8.86 23,8.17 C23,7.48 22.76,6.89 22.27,6.4 C21.78,5.91 21.19,5.67 20.5,5.67 L17.17,5.67 L17.17,4 L20.5,4 C21.65,4 22.64,4.41 23.45,5.22 C24.26,6.03 24.67,7.02 24.67,8.17 C24.67,9.32 24.26,10.31 23.45,11.12 C22.64,11.93 21.65,12.34 20.5,12.34 L17.17,12.34 Z"
+        android:fillColor="#5D5C5B"
+        android:fillType="evenOdd"/>
+</vector>

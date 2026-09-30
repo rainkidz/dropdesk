@@ -62,7 +62,82 @@
     <!-- Premium Gold -->
     <color name="premium_gold">#FFD54F</color>
     <color name="premium_bg">#3D3520</color>
+    <!-- Gold/warning text reads fine bright on dark surfaces -->
+    <color name="text_on_gold">#FFD54F</color>
     
     <!-- Ad Background -->
     <color name="ad_background">#1E1E1E</color>
+    <color name="ad_container_bottom">#0D0D0D</color>
+
+    <!-- ===== Palette values · night ===== -->
+    <!-- Mochi Mint · night -->
+    <color name="primary_mochi">#7FD8A8</color>
+    <color name="primary_dark_mochi">#2F7D4F</color>
+    <color name="primary_light_mochi">#B2E8CB</color>
+    <color name="accent_mochi">#F0A868</color>
+    <color name="accent_light_mochi">#F8CBA0</color>
+    <color name="anime_pink_mochi">#7FD8A8</color>
+    <color name="anime_purple_mochi">#A3C9AD</color>
+    <color name="anime_gradient_start_mochi">#7FD8A8</color>
+    <color name="anime_gradient_end_mochi">#A3C9AD</color>
+    <color name="card_anime_bg_mochi">#1A2E20</color>
+    <color name="card_quick_bg_mochi">#1C1F1C</color>
+    <color name="surface_mochi">#101410</color>
+    <color name="surface_variant_mochi">#1A1E1A</color>
+    <color name="background_mochi">#101410</color>
+    <color name="divider_mochi">#2A322A</color>
+    <color name="notice_bg_mochi">#1A1E1A</color>
+
+    <!-- Yuzu Citrus · night -->
+    <color name="primary_yuzu">#FFC94D</color>
+    <color name="primary_dark_yuzu">#A36300</color>
+    <color name="primary_light_yuzu">#FFDD80</color>
+    <color name="accent_yuzu">#FF8A3D</color>
+    <color name="accent_light_yuzu">#FFB080</color>
+    <color name="anime_pink_yuzu">#FFC94D</color>
+    <color name="anime_purple_yuzu">#E8B04A</color>
+    <color name="anime_gradient_start_yuzu">#FFC94D</color>
+    <color name="anime_gradient_end_yuzu">#E8B04A</color>
+    <color name="card_anime_bg_yuzu">#2E2410</color>
+    <color name="card_quick_bg_yuzu">#201E18</color>
+    <color name="surface_yuzu">#131210</color>
+    <color name="surface_variant_yuzu">#1D1B16</color>
+    <color name="background_yuzu">#131210</color>
+    <color name="divider_yuzu">#2E2B22</color>
+    <color name="notice_bg_yuzu">#1D1B16</color>
+
+    <!-- Midnight Pop · night (dark-first identity: deep violet-black) -->
+    <color name="primary_midnight">#A78BFA</color>
+    <color name="primary_dark_midnight">#6C4BD8</color>
+    <color name="primary_light_midnight">#C4B0FD</color>
+    <color name="accent_midnight">#4DD9E9</color>
+    <color name="accent_light_midnight">#8AE8F2</color>
+    <color name="anime_pink_midnight">#A78BFA</color>
+    <color name="anime_purple_midnight">#8A7BE8</color>
+    <color name="anime_gradient_start_midnight">#A78BFA</color>
+    <color name="anime_gradient_end_midnight">#4DD9E9</color>
+    <color name="card_anime_bg_midnight">#201A3A</color>
+    <color name="card_quick_bg_midnight">#1B1922</color>
+    <color name="surface_midnight">#121016</color>
+    <color name="surface_variant_midnight">#1C1922</color>
+    <color name="background_midnight">#121016</color>
+    <color name="divider_midnight">#2A2634</color>
+    <color name="notice_bg_midnight">#1C1922</color>
+    <!-- Neon Pop · night = exact spec (dark-first identity) -->
+    <color name="primary_neon">#00F0FF</color>
+    <color name="primary_dark_neon">#00B8CC</color>
+    <color name="primary_light_neon">#66F6FF</color>
+    <color name="accent_neon">#FF0055</color>
+    <color name="accent_light_neon">#FF4D88</color>
+    <color name="anime_pink_neon">#FF0055</color>
+    <color name="anime_purple_neon">#8B5CF6</color>
+    <color name="anime_gradient_start_neon">#00F0FF</color>
+    <color name="anime_gradient_end_neon">#FF0055</color>
+    <color name="card_anime_bg_neon">#12101A</color>
+    <color name="card_quick_bg_neon">#101018</color>
+    <color name="surface_neon">#0A0A0F</color>
+    <color name="surface_variant_neon">#14141C</color>
+    <color name="background_neon">#0A0A0F</color>
+    <color name="divider_neon">#26262E</color>
+    <color name="notice_bg_neon">#14141C</color>
 </resources>

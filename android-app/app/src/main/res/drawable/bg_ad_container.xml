@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ad wrapper: blends the (always-white) AdView edge into the app background.
+     Light: soft grey veil toward #F1F3F4. Night: toward #0D0D0D (nav-side of #121212). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="90"
+        android:startColor="@color/ad_background"
+        android:endColor="@color/ad_container_bottom" />
+</shape>

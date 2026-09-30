@@ -59,6 +59,7 @@ class DownloadManager(private val context: Context) {
 
                 val response = client.newCall(request).execute()
                 if (!response.isSuccessful) {
+                    android.util.Log.w("DownloadManager", "HTTP ${response.code} ${response.message} for $url")
                     postError(callback, "HTTP ${response.code}: ${response.message}")
                     return@launch
                 }
@@ -452,9 +453,9 @@ class DownloadManager(private val context: Context) {
         if (!PremiumManager.isPremium()) return null
         val platform = PlatformDetector.detect(url)
         return when (platform) {
-            Platform.FACEBOOK -> CookieLoginActivity.getCookiesFile(context, "facebook").let { if (it.exists()) it.absolutePath else null }
-            Platform.INSTAGRAM -> CookieLoginActivity.getCookiesFile(context, "instagram").let { if (it.exists()) it.absolutePath else null }
-            Platform.THREADS -> CookieLoginActivity.getCookiesFile(context, "threads").let { if (it.exists()) it.absolutePath else null }
+            Platform.FACEBOOK -> CookieLoginStore.getCookiesFile(context, "facebook").let { if (it.exists()) it.absolutePath else null }
+            Platform.INSTAGRAM -> CookieLoginStore.getCookiesFile(context, "instagram").let { if (it.exists()) it.absolutePath else null }
+            Platform.THREADS -> CookieLoginStore.getCookiesFile(context, "threads").let { if (it.exists()) it.absolutePath else null }
             else -> null
         }
     }

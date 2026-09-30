@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TubeNime chunky-rounded icon set · merged video+audio: film + note linked -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- small film frame -->
+    <path
+        android:pathData="M3.5,7.5 L12.5,7.5 L12.5,13.5 L3.5,13.5 Z"
+        android:strokeColor="@color/text_primary"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- link line -->
+    <path
+        android:pathData="M12.5,10.5 L15,10.5"
+        android:strokeColor="@color/text_primary"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round" />
+    <!-- note -->
+    <path
+        android:pathData="M16.5,17.8 L16.5,8.5 L21.5,7.5 L21.5,16.8"
+        android:strokeColor="@color/text_primary"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M16.5,17.8 A1.9,1.9 0 1,1 16.49,17.8 Z"
+        android:strokeColor="@color/text_primary"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M21.5,16.8 A1.9,1.9 0 1,1 21.49,16.8 Z"
+        android:strokeColor="@color/text_primary"
+        android:strokeWidth="2"
+        android:strokeLineCap="round" />
+</vector>

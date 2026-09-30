@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260911-151449.assets/icon_1_55.svg (Figma node 1:55) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="72dp"
+    android:height="34dp"
+    android:viewportWidth="72"
+    android:viewportHeight="34">
+        <group>
+        <path android:pathData="M16,0 H32 A8,8 0 0 1 40,8 V24 A8,8 0 0 1 32,32 H16 A8,8 0 0 1 8,24 V8 A8,8 0 0 1 16,0 Z" android:fillColor="#FAF3E7"/>
+        <path android:pathData="M8,0 H24 A8,8 0 0 1 32,8 V24 A8,8 0 0 1 24,32 H8 A8,8 0 0 1 0,24 V8 A8,8 0 0 1 8,0 Z M8,2 H24 A6,6 0 0 1 30,8 V24 A6,6 0 0 1 24,30 H8 A6,6 0 0 1 2,24 V8 A6,6 0 0 1 8,2 Z" android:fillColor="#1E1B14" android:fillType="evenOdd"/>
+        <path android:pathData="M16.7394 21.8965V10.1035H21.8965V21.8965H16.7394ZM10.1035 21.8965V10.1035H15.2606V21.8965H10.1035ZM18.7269 19.909H19.909V12.091H18.7269V19.909ZM12.091 19.909H13.2731V12.091H12.091V19.909ZM12.091 12.091V19.909V12.091ZM18.7269 12.091V19.909V12.091Z" android:fillColor="#1E1B14"/>
+        <group>
+        <path android:pathData="M46,0 H62 A8,8 0 0 1 70,8 V24 A8,8 0 0 1 62,32 H46 A8,8 0 0 1 38,24 V8 A8,8 0 0 1 46,0 Z" android:fillColor="#FAF3E7"/>
+        <path android:pathData="M46,0 H62 A8,8 0 0 1 70,8 V24 A8,8 0 0 1 62,32 H46 A8,8 0 0 1 38,24 V8 A8,8 0 0 1 46,0 Z M46,2 H62 A6,6 0 0 1 68,8 V24 A6,6 0 0 1 62,30 H46 A6,6 0 0 1 40,24 V8 A6,6 0 0 1 46,2 Z" android:fillColor="#1E1B14" android:fillType="evenOdd"/>
+        <path android:pathData="M49.8 21.5892L48.4109 20.2L52.6109 16L48.4109 11.8L49.8 10.4109L54 14.6109L58.2 10.4109L59.5892 11.8L55.3892 16L59.5892 20.2L58.2 21.5892L54 17.3892L49.8 21.5892Z" android:fillColor="#1E1B14"/>
+        </group>
+        </group>
+</vector>

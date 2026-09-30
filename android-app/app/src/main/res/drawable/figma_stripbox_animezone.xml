@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260911-151449.assets/icon_1_306.svg (Figma node 1:306 —
+     kotak ikon putih strip 2: clapperboard/anime-zone glyph). Shadow offset 1.5,1.5 dihilangkan:
+     di-app digambar via inkShadowColor() theme-aware. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+    <path android:pathData="M6,0 H26 A6,6 0 0 1 32,6 V26 A6,6 0 0 1 26,32 H6 A6,6 0 0 1 0,26 V6 A6,6 0 0 1 6,0 Z" android:fillColor="#FFFFFF"/>
+    <path android:pathData="M6,1 H26 A5,5 0 0 1 31,6 V26 A5,5 0 0 1 26,31 H6 A5,5 0 0 1 1,26 V6 A5,5 0 0 1 6,1 Z" android:strokeColor="#1A1A1A" android:strokeWidth="2" android:fillColor="#00000000"/>
+    <path android:pathData="M13.9167,15.1666L13.125,16.875L11.4167,17.6666L13.125,18.4583L13.9167,20.1666L14.7083,18.4583L16.4167,17.6666L14.7083,16.875L13.9167,15.1666ZM18.9167,15.1666L18.375,16.2916L17.25,16.8333L18.375,17.375L18.9167,18.5L19.4583,17.375L20.5833,16.8333L19.4583,16.2916L18.9167,15.1666ZM9.33332,9.33331L11,12.6666H13.5L11.8333,9.33331H13.5L15.1667,12.6666H17.6667L16,9.33331H17.6667L19.3333,12.6666H21.8333L20.1667,9.33331H22.6667C23.125,9.33331 23.5174,9.49651 23.8437,9.8229C24.1701,10.1493 24.3333,10.5416 24.3333,11V21C24.3333,21.4583 24.1701,21.8507 23.8437,22.1771C23.5174,22.5035 23.125,22.6666 22.6667,22.6666H9.33332C8.87499,22.6666 8.48263,22.5035 8.15624,22.1771C7.82985,21.8507 7.66666,21.4583 7.66666,21V11C7.66666,10.5416 7.82985,10.1493 8.15624,9.8229C8.48263,9.49651 8.87499,9.33331 9.33332,9.33331ZM9.33332,14.3333V21H22.6667V14.3333H9.33332Z" android:fillColor="#1A1A1A"/>
+</vector>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YouTube tile icon (node 1:222): red square 32dp r8 + ink stroke 2px (node: rect
+     38×38 rx7 stroke #1A1A1A sw2), ink shadow (2,2), white play triangle centered. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+    <!-- hard ink drop shadow (2,2) -->
+    <path
+        android:pathData="M12,4 h16 a8,8 0 0 1 8,8 v16 a8,8 0 0 1 -8,8 h-16 a8,8 0 0 1 -8,-8 v-16 a8,8 0 0 1 8,-8 Z"
+        android:fillColor="#1A1A1A"/>
+    <!-- red square r8 -->
+    <path
+        android:pathData="M10,2 h16 a8,8 0 0 1 8,8 v16 a8,8 0 0 1 -8,8 h-16 a8,8 0 0 1 -8,-8 v-16 a8,8 0 0 1 8,-8 Z"
+        android:fillColor="#E53935"/>
+    <!-- ink stroke 2px inside (node: rect 38×38 rx7 stroke sw2 centered on edge) -->
+    <path
+        android:pathData="M10,2 h16 a8,8 0 0 1 8,8 v16 a8,8 0 0 1 -8,8 h-16 a8,8 0 0 1 -8,-8 v-16 a8,8 0 0 1 8,-8 Z M11,3.9 h14 a6,6 0 0 1 6,6 v14 a6,6 0 0 1 -6,6 h-14 a6,6 0 0 1 -6,-6 v-14 a6,6 0 0 1 6,-6 Z"
+        android:fillColor="#1A1A1A"
+        android:fillType="evenOdd"/>
+    <!-- white play triangle ▶ (node verbatim scaled to 32-block) -->
+    <path
+        android:pathData="M18.6,9.8 L18.6,18.2 L25.4,14 Z"
+        android:fillColor="#FFFFFF"/>
+</vector>

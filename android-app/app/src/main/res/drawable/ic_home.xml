@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- TubeNime chunky-rounded icon set · stroke 2.2 round cap/join · tinted by nav selector -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Home: cute cottage with wide curved roof + door cutout -->
+    <!-- roof -->
     <path
-        android:fillColor="@color/primary"
-        android:fillType="evenOdd"
-        android:pathData="M3.8,11.6 Q12,0.6 20.2,11.6 L20.2,17.4 Q20.2,19.4 18.2,19.4 L5.8,19.4 Q3.8,19.4 3.8,17.4 Z M13.3,19.4 L13.3,17.2 Q13.3,16 12,16 Q10.7,16 10.7,17.2 L10.7,19.4 Z" />
+        android:pathData="M4,10.2 L12,3.8 L20,10.2"
+        android:strokeColor="@color/text_on_primary"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- body -->
+    <path
+        android:pathData="M6,8.8 L6,19.6 L18,19.6 L18,8.8"
+        android:strokeColor="@color/text_on_primary"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <!-- door -->
+    <path
+        android:pathData="M10,19.6 L10,13.8 L14,13.8 L14,19.6"
+        android:strokeColor="@color/text_on_primary"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

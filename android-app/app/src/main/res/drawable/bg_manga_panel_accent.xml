@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Manga panel, accent ink — for secondary panels (notice/anime corner). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/PaletteSurface" />
+    <stroke android:width="3dp" android:color="?attr/PaletteAccent" />
+</shape>

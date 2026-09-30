@@ -4,6 +4,12 @@
     <color name="primary">#E040A0</color>
     <color name="primary_dark">#AD1457</color>
     <color name="primary_light">#FF80AB</color>
+
+    <!-- Kertas manga (paritas Paper Compose 0xFFFAF3E7) utk status bar -->
+    <color name="manga_paper">#FAF3E7</color>
+
+    <!-- Tinta brand (paritas Ink Compose 0xFF1A1A1A) utk ikon/splash -->
+    <color name="manga_ink">#1A1A1A</color>
     
     <!-- Accent Orange -->
     <color name="accent">#FF6D00</color>
@@ -39,7 +45,8 @@
     <color name="bilibili_blue">#00A1D6</color>
     
     <!-- Anime Theme Colors -->
-    <color name="anime_pink">#FF6B9D</color>
+    <!-- D81B60: AA contrast (>=4.5:1) on card_anime_bg light; night palette keeps bright FF80AB -->
+    <color name="anime_pink">#D81B60</color>
     <color name="anime_purple">#C77DFF</color>
     <color name="anime_gradient_start">#FF6B9D</color>
     <color name="anime_gradient_end">#C77DFF</color>
@@ -61,9 +68,86 @@
     
     <!-- Premium Gold -->
     <color name="premium_gold">#FFC107</color>
-    <color name="premium_bg">#FFF8E1</color>
+    <!-- Solid gold so gold/warning text on it is avoidable; was pale cream (gold text unreadable) -->
+    <color name="premium_bg">#FFC107</color>
+    <!-- Gold/warning text on light backgrounds (was #FFC107 on #FFF8E1 = 1.56:1) -->
+    <color name="text_on_gold">#5D4037</color>
 
     
     <!-- Ad Background -->
-    <color name="ad_background">#FFFFFF</color>
+    <color name="ad_background">#F1F3F4</color>
+    <color name="ad_container_bottom">#F1F3F4</color>
+
+    <!-- ===== Palette values (referenced by Palette.Mochi/Yuzu/Midnight styles via attrs).
+         Default (Sakura) values live above; platform/status/premium colors stay global. ===== -->
+    <!-- Mochi Mint · day -->
+    <color name="primary_mochi">#2F7D4F</color>
+    <color name="primary_dark_mochi">#1E7A4F</color>
+    <color name="primary_light_mochi">#7FD8A8</color>
+    <color name="accent_mochi">#E07B39</color>
+    <color name="accent_light_mochi">#F0A868</color>
+    <color name="anime_pink_mochi">#1E7A4F</color>
+    <color name="anime_purple_mochi">#6B8F71</color>
+    <color name="anime_gradient_start_mochi">#2F7D4F</color>
+    <color name="anime_gradient_end_mochi">#7FD8A8</color>
+    <color name="card_anime_bg_mochi">#EAF4EC</color>
+    <color name="card_quick_bg_mochi">#F7FAF7</color>
+    <color name="surface_mochi">#FAFAFA</color>
+    <color name="surface_variant_mochi">#F3F5F3</color>
+    <color name="background_mochi">#FFFFFF</color>
+    <color name="divider_mochi">#E2E6E2</color>
+    <color name="notice_bg_mochi">#FFFFFF</color>
+
+    <!-- Yuzu Citrus · day -->
+    <color name="primary_yuzu">#A36300</color>
+    <color name="primary_dark_yuzu">#8A5A00</color>
+    <color name="primary_light_yuzu">#FFC94D</color>
+    <color name="accent_yuzu">#E8590C</color>
+    <color name="accent_light_yuzu">#FF8A3D</color>
+    <color name="anime_pink_yuzu">#8A5A00</color>
+    <color name="anime_purple_yuzu">#B08900</color>
+    <color name="anime_gradient_start_yuzu">#E8A400</color>
+    <color name="anime_gradient_end_yuzu">#FF8A3D</color>
+    <color name="card_anime_bg_yuzu">#FFF7E0</color>
+    <color name="card_quick_bg_yuzu">#FFFBF2</color>
+    <color name="surface_yuzu">#FAFAF8</color>
+    <color name="surface_variant_yuzu">#F5F3EC</color>
+    <color name="background_yuzu">#FFFFFF</color>
+    <color name="divider_yuzu">#E8E4D8</color>
+    <color name="notice_bg_yuzu">#FFFFFF</color>
+
+    <!-- Midnight Pop · day -->
+    <color name="primary_midnight">#6C4BD8</color>
+    <color name="primary_dark_midnight">#5B3FD4</color>
+    <color name="primary_light_midnight">#A78BFA</color>
+    <color name="accent_midnight">#00B8D4</color>
+    <color name="accent_light_midnight">#4DD9E9</color>
+    <color name="anime_pink_midnight">#5B3FD4</color>
+    <color name="anime_purple_midnight">#9B6BD8</color>
+    <color name="anime_gradient_start_midnight">#6C4BD8</color>
+    <color name="anime_gradient_end_midnight">#00B8D4</color>
+    <color name="card_anime_bg_midnight">#EFEBFF</color>
+    <color name="card_quick_bg_midnight">#F6F5FA</color>
+    <color name="surface_midnight">#F8F8FC</color>
+    <color name="surface_variant_midnight">#EFEEF6</color>
+    <color name="background_midnight">#FFFFFF</color>
+    <color name="divider_midnight">#E4E2EE</color>
+    <color name="notice_bg_midnight">#FFFFFF</color>
+    <!-- Neon Pop · day (light-surface adaptation; night = exact spec) -->
+    <color name="primary_neon">#007E9E</color>
+    <color name="primary_dark_neon">#005F73</color>
+    <color name="primary_light_neon">#00F0FF</color>
+    <color name="accent_neon">#E0004A</color>
+    <color name="accent_light_neon">#FF0055</color>
+    <color name="anime_pink_neon">#E0004A</color>
+    <color name="anime_purple_neon">#8B5CF6</color>
+    <color name="anime_gradient_start_neon">#00F0FF</color>
+    <color name="anime_gradient_end_neon">#FF0055</color>
+    <color name="card_anime_bg_neon">#E0FBFF</color>
+    <color name="card_quick_bg_neon">#F2F7F9</color>
+    <color name="surface_neon">#F4F8FA</color>
+    <color name="surface_variant_neon">#E8EFF2</color>
+    <color name="background_neon">#FFFFFF</color>
+    <color name="divider_neon">#D5E2E8</color>
+    <color name="notice_bg_neon">#FFFFFF</color>
 </resources>

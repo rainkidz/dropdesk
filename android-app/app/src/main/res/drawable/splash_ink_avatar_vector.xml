@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Avatar goresan tinta splash — rekonstruksi vektor speed-arcs dari
+  designs/icon.png (ikon resmi): mahkota goresan tinta mengelilingi
+  play triangle. Di splash berlatar tinta, goresan memakai warna kertas.
+  Path goresan mulai trimPathEnd=0 (tersembunyi) lalu dianimasikan oleh
+  splash_ink_avatar.xml; play group mulai scale 0 lalu pop.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Gelombang 1: dua arc besar (kiri-atas & kiri-bawah) -->
+    <path
+        android:name="s1"
+        android:pathData="M18,40 Q26,22 46,16"
+        android:strokeWidth="4.5"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+    <path
+        android:name="s3"
+        android:pathData="M18,70 Q26,86 44,92"
+        android:strokeWidth="4.5"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+
+    <!-- Gelombang 2: arc kiri + dua flick dalam -->
+    <path
+        android:name="s2"
+        android:pathData="M14,48 Q13,55 15,62"
+        android:strokeWidth="4"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+    <path
+        android:name="s4"
+        android:pathData="M27,45 Q33,35 43,31"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+    <path
+        android:name="s5"
+        android:pathData="M29,67 Q35,77 45,81"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+
+    <!-- Gelombang 3: flick kanan atas & bawah -->
+    <path
+        android:name="s6"
+        android:pathData="M66,17 Q75,15 82,20"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+    <path
+        android:name="s7"
+        android:pathData="M64,91 Q73,91 80,85"
+        android:strokeWidth="2.5"
+        android:strokeColor="#FAF3E7"
+        android:strokeLineCap="round"
+        android:trimPathEnd="0" />
+
+    <!-- Play triangle merah aksi — pop di akhir timeline -->
+    <group
+        android:name="play"
+        android:scaleX="0"
+        android:scaleY="0"
+        android:pivotX="57"
+        android:pivotY="54">
+        <path
+            android:fillColor="#E53935"
+            android:pathData="M70.88,50.06 Q78,54 70.88,57.94 L46.67,71.31 Q40,75 40,67.38 L40,40.62 Q40,33 46.67,36.69 Z" />
+    </group>
+
+</vector>

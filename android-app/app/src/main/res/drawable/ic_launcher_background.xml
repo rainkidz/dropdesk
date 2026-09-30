@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Background adaptive icon: putih, menyatu dengan kanvas artwork resmi. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <gradient
-        android:type="linear"
-        android:angle="135"
-        android:startColor="#FF6B9D"
-        android:centerColor="#E040A0"
-        android:endColor="#C77DFF"
-        android:centerX="0.3"
-        android:centerY="0.3" />
+    <solid android:color="#FFFFFF" />
 </shape>

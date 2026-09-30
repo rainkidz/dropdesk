@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -32,23 +33,50 @@ object ThreadsExtractor {
     /**
      * Extract Threads video info from URL.
      * Supports: /@user/post/ID, /post/ID
+     *
+     * When [cookiesFile] is provided (a Netscape cookies.txt captured by
+     * CookieLoginActivity for a logged-in Threads account), the post page is
+     * fetched authenticated — Meta gates anonymous post pages behind a login
+     * wall, but a logged-in page embeds the `video_versions` JSON with a direct
+     * Meta CDN URL.
      */
-    suspend fun extract(url: String): Result<ThreadsInfo> = withContext(Dispatchers.IO) {
+    suspend fun extract(url: String, cookiesFile: File? = null): Result<ThreadsInfo> = withContext(Dispatchers.IO) {
         try {
             // Normalize URL
             val normalizedUrl = normalizeUrl(url)
 
-            // Try to extract from the post page
-            val result = tryPostPage(normalizedUrl)
+            // Try to extract from the post page (authenticated if cookies provided)
+            val result = tryPostPage(normalizedUrl, cookiesFile)
 
             if (result == null || result.videoUrl.isEmpty()) {
-                throw Exception("Could not extract video URL. The post may be private or not contain a video.")
+                throw Exception("Could not extract video URL. Threads requires login — add Threads cookies (Premium) to download this post.")
             }
 
             Result.success(result)
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * Build a Cookie request header from a Netscape cookies.txt file.
+     * Returns null when there are no usable cookies.
+     */
+    private fun readCookiesHeader(cookiesFile: File?): String? {
+        if (cookiesFile == null || !cookiesFile.exists()) return null
+        val pairs = mutableListOf<String>()
+        cookiesFile.readLines().forEach { rawLine ->
+            val line = rawLine.trim()
+            if (line.isEmpty() || line.startsWith("#")) return@forEach
+            // Netscape format: domain \t includeSubdomains \t path \t secure \t expiry \t name \t value
+            val parts = line.split("\t")
+            if (parts.size >= 7) {
+                val name = parts[5].trim()
+                val value = parts[6].trim()
+                if (name.isNotEmpty()) pairs.add("$name=$value")
+            }
+        }
+        return if (pairs.isEmpty()) null else pairs.joinToString("; ")
     }
 
     /**
@@ -96,16 +124,18 @@ object ThreadsExtractor {
     /**
      * Try to extract from the post page.
      */
-    private suspend fun tryPostPage(url: String): ThreadsInfo? = withContext(Dispatchers.IO) {
+    private suspend fun tryPostPage(url: String, cookiesFile: File?): ThreadsInfo? = withContext(Dispatchers.IO) {
         try {
-            val request = Request.Builder()
+            val builder = Request.Builder()
                 .url(url)
                 .header("User-Agent", USER_AGENT)
                 .header("Accept", "text/html,application/xhtml+xml")
                 .header("Accept-Language", "en-US,en;q=0.9")
-                .build()
+                .header("Referer", "https://www.threads.net/")
 
-            val response = client.newCall(request).execute()
+            readCookiesHeader(cookiesFile)?.let { builder.header("Cookie", it) }
+
+            val response = client.newCall(builder.build()).execute()
             val html = response.body?.string() ?: return@withContext null
 
             // Try to find video URL in page source
@@ -149,11 +179,14 @@ object ThreadsExtractor {
     private fun findVideoUrlInHtml(html: String): String? {
         val patterns = listOf(
             // Threads/Meta specific patterns
+            // video_versions array (logged-in comet page) — matched by the generic
+            // "src":"...mp4..." pattern below; keep these named fields too.
+            Pattern.compile("\"video_playback_url\":\"(https?://[^\"]+)\""),
             Pattern.compile("\"video_url\":\"(https?://[^\"]+)\""),
+            Pattern.compile("\"playback_url\":\"(https?://[^\"]+)\""),
             Pattern.compile("\"url\":\"(https?://[^\"]+\\.mp4[^\"]*)\""),
             Pattern.compile("\"src\":\"(https?://[^\"]+\\.mp4[^\"]*)\""),
             Pattern.compile("video_src[^>]*src=\"(https?://[^\"]+)\""),
-            Pattern.compile("\"playback_url\":\"(https?://[^\"]+)\""),
             // CDN patterns (Threads uses Meta CDN)
             Pattern.compile("(https?://scontent[^\"]+\\.mp4[^\"]*)"),
             Pattern.compile("(https?://[^\"]*cdninstagram[^\"]+\\.mp4[^\"]*)"),

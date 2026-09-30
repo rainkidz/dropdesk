@@ -1,12 +1,14 @@
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
 import { mkdir, readdir, rename, writeFile } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { logger } from "./logger";
 import { broadcastProgress } from "./sse";
 import { persistHistory } from "./history";
 import { errorMessage, sanitizeFilename, formatSizeLabel } from "./platform";
+import { getIgCookiesPath, toNetscapeCookieFile } from "./cookies";
 import type { DownloadJob, FormatKind } from "./types";
 
 const execFileAsync = promisify(execFile);
@@ -31,9 +33,9 @@ type YtDlpMetadata = {
 export async function inspectWithYtDlp(url: string, cookies?: string): Promise<YtDlpMetadata> {
   const args = ["--dump-single-json", "--skip-download", "--no-playlist", "--no-warnings"];
   if (cookies) {
-    const cookiesPath = path.join(os.tmpdir(), "social-downloader", "ig-cookies.txt");
+    const cookiesPath = getIgCookiesPath();
     await mkdir(path.dirname(cookiesPath), { recursive: true });
-    await writeFile(cookiesPath, cookies, "utf-8");
+    await writeFile(cookiesPath, toNetscapeCookieFile(cookies), "utf-8");
     args.push("--cookies", cookiesPath);
   }
   const result = await execFileAsync(
@@ -141,14 +143,24 @@ export function startProcess(job: DownloadJob, formatId: string) {
     args.push("--ffmpeg-location", ffmpegDir);
   }
 
-  const cookiesFile = path.join(os.tmpdir(), "social-downloader", "ig-cookies.txt");
-  try {
-    const { existsSync } = require("fs");
-    if (existsSync(cookiesFile)) {
-      args.push("--cookies", cookiesFile);
+  const cookiesFile = getIgCookiesPath();
+  // Only Instagram/Threads ever need cookies. Never send them to YouTube /
+  // TikTok / Facebook: a stale or non-Netscape cookie file makes yt-dlp abort
+  // with "does not look like a Netscape format cookies file" and breaks
+  // unrelated downloads.
+  if (job.platform === "instagram" || job.platform === "threads") {
+    try {
+      if (existsSync(cookiesFile)) {
+        const content = readFileSync(cookiesFile, "utf-8");
+        if (content.trimStart().startsWith("# Netscape")) {
+          args.push("--cookies", cookiesFile);
+        } else {
+          logger.warn("Skipping malformed Instagram cookies file (not Netscape format)");
+        }
+      }
+    } catch (error) {
+      logger.warn({ err: error }, "Failed to check cookies file for yt-dlp");
     }
-  } catch (error) {
-    logger.warn({ err: error }, "Failed to check cookies file for yt-dlp");
   }
 
   args.push(job.url);

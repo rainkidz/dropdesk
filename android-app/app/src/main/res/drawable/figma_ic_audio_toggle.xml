@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260911-151449.assets/icon_1_406.svg (Figma node 1:406) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="11dp"
+    android:height="16dp"
+    android:viewportWidth="11"
+    android:viewportHeight="16">
+        <path android:pathData="M3.60418 15.895C2.61686 15.895 1.76933 15.5411 1.0616 14.8334C0.353866 14.1256 0 13.2781 0 12.2908C0 11.3035 0.352909 10.4559 1.05873 9.74821C1.76455 9.04048 2.61303 8.68661 3.60418 8.68661C3.86829 8.68661 4.11231 8.71303 4.33623 8.76587C4.56014 8.81871 4.7814 8.89796 5 9.00363V0H10.8125V3.87503H7.20836V12.2908C7.20836 13.2819 6.8545 14.1304 6.14676 14.8362C5.43903 15.5421 4.5915 15.895 3.60418 15.895Z" android:fillColor="#1E1B14"/>
+</vector>

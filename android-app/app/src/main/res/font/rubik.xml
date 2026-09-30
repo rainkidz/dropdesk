@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <font
+        android:font="@font/rubik_400"
+        android:fontStyle="normal"
+        android:fontWeight="400"
+        app:font="@font/rubik_400"
+        app:fontStyle="normal"
+        app:fontWeight="400" />
+
+    <font
+        android:font="@font/rubik_500"
+        android:fontStyle="normal"
+        android:fontWeight="500"
+        app:font="@font/rubik_500"
+        app:fontStyle="normal"
+        app:fontWeight="500" />
+
+    <font
+        android:font="@font/rubik_600"
+        android:fontStyle="normal"
+        android:fontWeight="600"
+        app:font="@font/rubik_600"
+        app:fontStyle="normal"
+        app:fontWeight="600" />
+
+    <font
+        android:font="@font/rubik_700"
+        android:fontStyle="normal"
+        android:fontWeight="700"
+        app:font="@font/rubik_700"
+        app:fontStyle="normal"
+        app:fontWeight="700" />
+
+    <font
+        android:font="@font/rubik_800"
+        android:fontStyle="normal"
+        android:fontWeight="800"
+        app:font="@font/rubik_800"
+        app:fontStyle="normal"
+        app:fontWeight="800" />
+
+    <font
+        android:font="@font/rubik_900"
+        android:fontStyle="normal"
+        android:fontWeight="900"
+        app:font="@font/rubik_900"
+        app:fontStyle="normal"
+        app:fontWeight="900" />
+</font-family>

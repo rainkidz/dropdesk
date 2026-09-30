@@ -7,6 +7,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Locale
 
 /**
  * Provides the home-screen notice carousel content.
@@ -39,6 +40,23 @@ object NoticeRepository {
         val url: String? = null
     )
 
+    /**
+     * Bilibili anime zone link shown in the Anime Corner and the notice carousel.
+     *
+     * Points at Bilibili Global (Bstation), which has real English/Indonesian
+     * interfaces and an actual anime suggestion hub — unlike the Chinese-only
+     * www.bilibili.com/anime. Language follows the device locale.
+     *
+     * Note: videos on bilibili.tv are stream-only and can't be downloaded by
+     * yt-dlp; the www.bilibili.com quick-download chip is kept for that.
+     */
+    fun bilibiliAnimeZoneUrl(): String =
+        if (Locale.getDefault().language in setOf("in", "id")) {
+            "https://www.bilibili.tv/id/anime"
+        } else {
+            "https://www.bilibili.tv/en/anime"
+        }
+
     /** Hard-coded fallback notices. Indices 3 and 4 mirror the legacy tappable slides. */
     fun defaults(): List<Notice> = listOf(
         Notice(
@@ -66,7 +84,7 @@ object NoticeRepository {
             icon = "🏮",
             title = "Bilibili anime zone",
             body = "Thousands of anime episodes and fan MVs live here — tap to explore.",
-            url = "https://www.bilibili.com/anime"
+            url = bilibiliAnimeZoneUrl()
         ),
         Notice(
             icon = "📋",

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Extracted from designs/tubenime_20260911-151449.assets (Figma composite glyph) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="12"
+    android:viewportHeight="12">
+    <group android:translateX="-10.103" android:translateY="-10.103">
+        <path android:pathData="M16.7394 21.8965V10.1035H21.8965V21.8965H16.7394ZM10.1035 21.8965V10.1035H15.2606V21.8965H10.1035ZM18.7269 19.909H19.909V12.091H18.7269V19.909ZM12.091 19.909H13.2731V12.091H12.091V19.909ZM12.091 12.091V19.909V12.091ZM18.7269 12.091V19.909V12.091Z" android:fillColor="#1E1B14"/>
+    </group>
+</vector>

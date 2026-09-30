@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260911-151449.assets/icon_1_497.svg (Figma node 1:497) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="15dp"
+    android:height="14dp"
+    android:viewportWidth="15"
+    android:viewportHeight="14">
+        <path android:pathData="M2.91555 13.5252L3.98143 8.57666L0.0885709 5.3191L5.12626 4.80819L7.01352 0.122452L9.06316 4.73947L14.1156 5.07426L10.3388 8.46569L11.5767 13.374L7.20033 10.825L2.91555 13.5252Z" android:fillColor="#1E1B14"/>
+</vector>

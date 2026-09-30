@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from designs/tubenime_20260911-151449.assets/icon_1_168.svg (Figma node 1:168)
+     Red Lightning Bolt Sticker 43dp 1:1. Semua elemen konvergen di center hasil
+     rotasi -12 SVG (21.349): shadow ink feOffset(2.5,2.5); ring tinta r15..r18;
+     isi merah r15; bolt kuning path verbatim SVG. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="43dp"
+    android:height="43dp"
+    android:viewportWidth="43"
+    android:viewportHeight="43">
+
+    <path android:pathData="M5.849,23.849 A18,18 0 1 1 41.849,23.849 A18,18 0 1 1 5.849,23.849 Z" android:fillColor="#1A1A1A"/>
+
+    <path android:pathData="M3.349,21.349 A18,18 0 1 1 39.349,21.349 A18,18 0 1 1 3.349,21.349 Z M6.349,21.349 A15,15 0 1 1 36.349,21.349 A15,15 0 1 1 6.349,21.349 Z" android:fillColor="#1A1A1A" android:fillType="evenOdd"/>
+
+    <path android:pathData="M6.349,21.349 A15,15 0 1 1 36.349,21.349 A15,15 0 1 1 6.349,21.349 Z" android:fillColor="#E53935"/>
+
+    <path android:pathData="M19.1401,31.1475 L18.7424,25.2683 L14.2592,26.2213 L20.0938,12.287 L22.6003,11.7543 L23.1712,18.4485 L28.6122,17.292 L21.6262,30.619 L19.1401,31.1475 Z" android:fillColor="#FFC940"/>
+</vector>

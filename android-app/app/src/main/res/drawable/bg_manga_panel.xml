@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Manga panel: surface fill + thick ink stroke, sharp corners like a comic frame. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/PaletteSurface" />
+    <stroke android:width="3dp" android:color="?attr/PalettePrimary" />
+</shape>

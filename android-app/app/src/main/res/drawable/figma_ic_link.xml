@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Input icon (node 1:190/1:191): chain-link #5D5C5B — icon_1_189.svg verbatim,
+     path translated (-12,-19.83) so content fills viewport 16.67×8.34. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="17dp"
+    android:height="8dp"
+    android:viewportWidth="16.67"
+    android:viewportHeight="8.34">
+    <path
+        android:pathData="M7.5,8.34 H4.17 C3.01,8.34 2.03,7.93 1.22,7.12 C0.41,6.31 0,5.32 0,4.17 C0,3.02 0.41,2.03 1.22,1.22 C2.03,0.41 3.01,0 4.17,0 H7.5 V1.67 H4.17 C3.47,1.67 2.88,1.91 2.4,2.4 C1.91,2.89 1.67,3.48 1.67,4.17 C1.67,4.86 1.91,5.45 2.4,5.94 C2.88,6.43 3.47,6.67 4.17,6.67 H7.5 V8.34 Z M5,5 V3.34 H11.67 V5 H5 Z M9.17,8.34 V6.67 H12.5 C13.19,6.67 13.78,6.43 14.27,5.94 C14.76,5.45 15,4.86 15,4.17 C15,3.48 14.76,2.89 14.27,2.4 C13.78,1.91 13.19,1.67 12.5,1.67 H9.17 V0 H12.5 C13.65,0 14.64,0.41 15.45,1.22 C16.26,2.03 16.67,3.02 16.67,4.17 C16.67,5.32 16.26,6.31 15.45,7.12 C14.64,7.93 13.65,8.34 12.5,8.34 H9.17 Z"
+        android:fillColor="#5D5C5B"
+        android:fillType="evenOdd"/>
+</vector>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Implicit parent for dotted palette style names. -->
+    <style name="Palette" />
+
+    <!-- TubeNime curated palettes. Sakura is the default: values/colors.xml +
+         values-night/colors.xml already hold its values, so its style is empty
+         and ThemeEngine only applies a style when a non-default palette is chosen. -->
+
+    <!-- Mochi Mint — matcha & red bean -->
+    <style name="Palette.Mochi">
+        <item name="colorPrimary">@color/primary_mochi</item>
+        <item name="colorPrimaryDark">@color/primary_dark_mochi</item>
+        <item name="colorPrimaryVariant">@color/primary_light_mochi</item>
+        <item name="colorSecondary">@color/accent_mochi</item>
+        <item name="colorSecondaryVariant">@color/accent_light_mochi</item>
+        <item name="android:statusBarColor">@color/primary_mochi</item>
+        <item name="PalettePrimary">@color/primary_mochi</item>
+        <item name="PalettePrimaryDark">@color/primary_dark_mochi</item>
+        <item name="PalettePrimaryLight">@color/primary_light_mochi</item>
+        <item name="PaletteAccent">@color/accent_mochi</item>
+        <item name="PaletteAccentLight">@color/accent_light_mochi</item>
+        <item name="PaletteAnimePink">@color/anime_pink_mochi</item>
+        <item name="PaletteAnimePurple">@color/anime_purple_mochi</item>
+        <item name="PaletteGradientStart">@color/anime_gradient_start_mochi</item>
+        <item name="PaletteGradientEnd">@color/anime_gradient_end_mochi</item>
+        <item name="PaletteCardAnimeBg">@color/card_anime_bg_mochi</item>
+        <item name="PaletteCardQuickBg">@color/card_quick_bg_mochi</item>
+        <item name="PaletteSurface">@color/surface_mochi</item>
+        <item name="PaletteSurfaceVariant">@color/surface_variant_mochi</item>
+        <item name="PaletteBackground">@color/background_mochi</item>
+        <item name="PaletteDivider">@color/divider_mochi</item>
+        <item name="PaletteNoticeBg">@color/notice_bg_mochi</item>
+    </style>
+
+    <!-- Yuzu Citrus — yuzu yellow & bitter orange -->
+    <style name="Palette.Yuzu">
+        <item name="colorPrimary">@color/primary_yuzu</item>
+        <item name="colorPrimaryDark">@color/primary_dark_yuzu</item>
+        <item name="colorPrimaryVariant">@color/primary_light_yuzu</item>
+        <item name="colorSecondary">@color/accent_yuzu</item>
+        <item name="colorSecondaryVariant">@color/accent_light_yuzu</item>
+        <item name="android:statusBarColor">@color/primary_yuzu</item>
+        <item name="PalettePrimary">@color/primary_yuzu</item>
+        <item name="PalettePrimaryDark">@color/primary_dark_yuzu</item>
+        <item name="PalettePrimaryLight">@color/primary_light_yuzu</item>
+        <item name="PaletteAccent">@color/accent_yuzu</item>
+        <item name="PaletteAccentLight">@color/accent_light_yuzu</item>
+        <item name="PaletteAnimePink">@color/anime_pink_yuzu</item>
+        <item name="PaletteAnimePurple">@color/anime_purple_yuzu</item>
+        <item name="PaletteGradientStart">@color/anime_gradient_start_yuzu</item>
+        <item name="PaletteGradientEnd">@color/anime_gradient_end_yuzu</item>
+        <item name="PaletteCardAnimeBg">@color/card_anime_bg_yuzu</item>
+        <item name="PaletteCardQuickBg">@color/card_quick_bg_yuzu</item>
+        <item name="PaletteSurface">@color/surface_yuzu</item>
+        <item name="PaletteSurfaceVariant">@color/surface_variant_yuzu</item>
+        <item name="PaletteBackground">@color/background_yuzu</item>
+        <item name="PaletteDivider">@color/divider_yuzu</item>
+        <item name="PaletteNoticeBg">@color/notice_bg_yuzu</item>
+    </style>
+
+    <!-- Midnight Pop — neon violet & cyan, dark-first identity -->
+    <style name="Palette.Midnight">
+        <item name="colorPrimary">@color/primary_midnight</item>
+        <item name="colorPrimaryDark">@color/primary_dark_midnight</item>
+        <item name="colorPrimaryVariant">@color/primary_light_midnight</item>
+        <item name="colorSecondary">@color/accent_midnight</item>
+        <item name="colorSecondaryVariant">@color/accent_light_midnight</item>
+        <item name="android:statusBarColor">@color/primary_midnight</item>
+        <item name="PalettePrimary">@color/primary_midnight</item>
+        <item name="PalettePrimaryDark">@color/primary_dark_midnight</item>
+        <item name="PalettePrimaryLight">@color/primary_light_midnight</item>
+        <item name="PaletteAccent">@color/accent_midnight</item>
+        <item name="PaletteAccentLight">@color/accent_light_midnight</item>
+        <item name="PaletteAnimePink">@color/anime_pink_midnight</item>
+        <item name="PaletteAnimePurple">@color/anime_purple_midnight</item>
+        <item name="PaletteGradientStart">@color/anime_gradient_start_midnight</item>
+        <item name="PaletteGradientEnd">@color/anime_gradient_end_midnight</item>
+        <item name="PaletteCardAnimeBg">@color/card_anime_bg_midnight</item>
+        <item name="PaletteCardQuickBg">@color/card_quick_bg_midnight</item>
+        <item name="PaletteSurface">@color/surface_midnight</item>
+        <item name="PaletteSurfaceVariant">@color/surface_variant_midnight</item>
+        <item name="PaletteBackground">@color/background_midnight</item>
+        <item name="PaletteDivider">@color/divider_midnight</item>
+        <item name="PaletteNoticeBg">@color/notice_bg_midnight</item>
+    </style>
+    <!-- Neon Pop — cyan/magenta on pitch black, dark-first identity -->
+    <style name="Palette.Neon">
+        <item name="colorPrimary">@color/primary_neon</item>
+        <item name="colorPrimaryDark">@color/primary_dark_neon</item>
+        <item name="colorPrimaryVariant">@color/primary_light_neon</item>
+        <item name="colorSecondary">@color/accent_neon</item>
+        <item name="colorSecondaryVariant">@color/accent_light_neon</item>
+        <item name="android:statusBarColor">@color/primary_neon</item>
+        <item name="PalettePrimary">@color/primary_neon</item>
+        <item name="PalettePrimaryDark">@color/primary_dark_neon</item>
+        <item name="PalettePrimaryLight">@color/primary_light_neon</item>
+        <item name="PaletteAccent">@color/accent_neon</item>
+        <item name="PaletteAccentLight">@color/accent_light_neon</item>
+        <item name="PaletteAnimePink">@color/anime_pink_neon</item>
+        <item name="PaletteAnimePurple">@color/anime_purple_neon</item>
+        <item name="PaletteGradientStart">@color/anime_gradient_start_neon</item>
+        <item name="PaletteGradientEnd">@color/anime_gradient_end_neon</item>
+        <item name="PaletteCardAnimeBg">@color/card_anime_bg_neon</item>
+        <item name="PaletteCardQuickBg">@color/card_quick_bg_neon</item>
+        <item name="PaletteSurface">@color/surface_neon</item>
+        <item name="PaletteSurfaceVariant">@color/surface_variant_neon</item>
+        <item name="PaletteBackground">@color/background_neon</item>
+        <item name="PaletteDivider">@color/divider_neon</item>
+        <item name="PaletteNoticeBg">@color/notice_bg_neon</item>
+    </style>
+</resources>

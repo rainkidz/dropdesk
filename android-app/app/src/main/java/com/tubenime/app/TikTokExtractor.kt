@@ -42,12 +42,15 @@ object TikTokExtractor {
                 .add("url", url)
                 .add("count", "12")
                 .add("cursor", "0")
-                .add("web", "1")
-                .add("hd", "1")
+                // NOTE: no web/hd params — with them tikwm returns RELATIVE proxy
+                // paths (/video/...) and its music proxy 403s. Without them it
+                // returns absolute TikTok CDN URLs that download directly.
                 .build()
 
             val request = Request.Builder()
-                .url("${TIKWM_API}tiktok")
+                // tikwm retired the /api/tiktok route (returns 404 "page does not
+                // exist"); /api/ is the current endpoint and accepts the same form.
+                .url(TIKWM_API)
                 .post(formBody)
                 .header("User-Agent", USER_AGENT)
                 .header("Referer", "https://www.tikwm.com/")
@@ -73,16 +76,24 @@ object TikTokExtractor {
 
             val data = json.optJSONObject("data") ?: throw Exception("No data in response")
 
+            // tikwm may return either an absolute CDN URL or a relative proxy
+            // path (/video/...) — normalize both to absolute before use.
+            // Empty stays empty (so callers can fall back to another field).
+            fun absolute(url: String): String =
+                if (url.isEmpty() || url.startsWith("http")) url else "https://www.tikwm.com$url"
+
             val title = data.optString("title", "").let {
                 if (it.isEmpty() || it == "TikTok") "TikTok Video" else it
             }
             val duration = data.optDouble("duration", 0.0)
-            val videoUrl = data.optString("play", "")
-            val videoNoWmUrl = data.optString("play_addr", "").let {
+            val videoUrl = absolute(data.optString("play", ""))
+            // play_addr/hdplay are often absent — fall back to `play` so the
+            // download always has a working URL.
+            val videoNoWmUrl = absolute(data.optString("play_addr", "").let {
                 if (it.isEmpty()) data.optString("hdplay", "") else it
-            }
-            val audioUrl = data.optString("music", "")
-            val coverUrl = data.optString("cover", "")
+            }).ifEmpty { videoUrl }
+            val audioUrl = absolute(data.optString("music", "")).ifEmpty { null }
+            val coverUrl = absolute(data.optString("cover", "")).ifEmpty { null }
             val author = data.optString("author", "").let {
                 if (it.isEmpty()) null else it
             }
@@ -96,8 +107,8 @@ object TikTokExtractor {
                 duration = duration,
                 videoUrl = videoUrl,
                 videoNoWmUrl = videoNoWmUrl.ifEmpty { videoUrl },
-                audioUrl = audioUrl.ifEmpty { null },
-                coverUrl = coverUrl.ifEmpty { null },
+                audioUrl = audioUrl,
+                coverUrl = coverUrl,
                 author = author
             ))
         } catch (e: Exception) {

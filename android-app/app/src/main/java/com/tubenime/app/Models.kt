@@ -22,6 +22,7 @@ data class FormatChoice(
     val quality: String?,   // e.g. "720p", "1080p", "128kbps"
     val sizeBytes: Long?,
     val ytDlpFormatId: String? = null,  // actual yt-dlp format ID for direct download
+    val directUrl: String? = null,      // direct CDN URL (skip yt-dlp entirely, e.g. TikTok)
     val height: Int = 0,     // video height in px for building format selector
     val bitrate: Int = 0     // audio bitrate for building format selector
 )

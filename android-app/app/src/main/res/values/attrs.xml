@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TubeNime palette attributes — set by Palette.Mochi/Yuzu/Midnight styles.
+         Layouts/drawables reference ?attr/… so accent surfaces follow the chosen palette.
+         Platform colors, status colors, premium gold and text tokens stay global. -->
+    <attr name="PalettePrimary" format="color" />
+    <attr name="PalettePrimaryDark" format="color" />
+    <attr name="PalettePrimaryLight" format="color" />
+    <attr name="PaletteAccent" format="color" />
+    <attr name="PaletteAccentLight" format="color" />
+    <attr name="PaletteAnimePink" format="color" />
+    <attr name="PaletteAnimePurple" format="color" />
+    <attr name="PaletteGradientStart" format="color" />
+    <attr name="PaletteGradientEnd" format="color" />
+    <attr name="PaletteCardAnimeBg" format="color" />
+    <attr name="PaletteCardQuickBg" format="color" />
+    <attr name="PaletteSurface" format="color" />
+    <attr name="PaletteSurfaceVariant" format="color" />
+    <attr name="PaletteBackground" format="color" />
+    <attr name="PaletteDivider" format="color" />
+    <attr name="PaletteNoticeBg" format="color" />
+</resources>

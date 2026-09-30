@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Trailing arrow chip strip shortcut — Figma node 1:301/1:313/1:325
+     (lingkaran ink 24dp + panah kuning; konversi lama icon_1_301.svg salah
+     dipakai sebagai ikon kotak strip — diganti fungsi jadi arrow chip). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:pathData="M12,0 A12,12 0 0 1 24,12 A12,12 0 0 1 12,24 A12,12 0 0 1 0,12 A12,12 0 0 1 12,0 Z" android:fillColor="#1A1A1A"/>
+    <path android:pathData="M14.7834,12.6667H6.66669V11.3334H14.7834L11.05,7.60002L12,6.66669L17.3334,12L12,17.3334L11.05,16.4L14.7834,12.6667Z" android:fillColor="#FFC940"/>
+</vector>

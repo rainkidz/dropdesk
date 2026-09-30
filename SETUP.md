@@ -15,7 +15,24 @@ pnpm --filter api-server build
 PORT=5000 node --enable-source-maps artifacts/api-server/dist/index.mjs
 ```
 
-### 2. Install FFmpeg (untuk Premium Video+Audio)
+### 2. Install yt-dlp (wajib — semua inspect & download memakainya)
+
+```bash
+pip install --user yt-dlp
+```
+
+Jika server tidak menemukan `yt-dlp` (error `spawn yt-dlp ENOENT`), tambahkan
+folder Scripts Python ke PATH sebelum menjalankan server. Lokasinya biasanya:
+`%APPDATA%\Python\Python311\Scripts`. Di Git Bash, gunakan path POSIX
+(`cygpath -u "$APPDATA")/Python/Python311/Scripts`) — jangan mencampur path
+gaya Windows ke dalam PATH Git Bash, karena MSYS2 akan memotongnya di titik dua
+(contoh `C:\...` jadi rusak).
+
+```bash
+export PATH="$(cygpath -u "$APPDATA")/Python/Python311/Scripts:$PATH"
+```
+
+### 3. Install FFmpeg (untuk Premium Video+Audio)
 
 FFmpeg diperlukan untuk merge video + audio (144p–1080p).
 
@@ -29,11 +46,11 @@ pip install imageio-ffmpeg
 - https://www.gyan.dev/ffmpeg/builds/
 - Extract ke folder, tambahkan ke PATH
 
-### 3. Buka Web App
+### 4. Buka Web App
 
 Buka browser: `http://localhost:5000`
 
-### 4. Install APK Android
+### 5. Install APK Android
 
 **Download APK:**
 - GitHub Actions: buka tab "Actions" → klik workflow terakhir → download artifact "Dropdesk-debug-apk"
@@ -55,46 +72,46 @@ adb install Dropdesk.apk
 
 ---
 
-## Build APK Manual
+## Build APK / AAB Manual (aplikasi native Kotlin di `android-app/`)
 
 ### Prerequisites
-- Node.js 20+
-- Java 17 (JDK)
-- Android SDK
+- Java 17 (JDK, Temurin)
+- Android SDK dengan platform **android-35** (compileSdk/targetSdk 35)
+- Gradle wrapper sudah dikonfigurasi (Gradle 8.7, AGP 8.5.2) — tidak perlu install manual
 
 ### Steps
 
 ```bash
-# 1. Install dependencies
-pnpm install
+cd android-app
 
-# 2. Build API server
-pnpm --filter api-server build
-
-# 3. Build frontend
-cd artifacts/social-downloader
-PORT=5090 BASE_PATH=/ pnpm vite build
-
-# 4. Sync Capacitor
-npx cap sync android
-
-# 5. Build APK
-cd android
+# Debug APK (tanpa signing, untuk testing)
 ./gradlew assembleDebug
+
+# Release AAB untuk Play Store (butuh signing, lihat "Release Signing" di bawah)
+./gradlew bundleRelease
 ```
 
-APK akan ada di: `artifacts/social-downloader/android/app/build/outputs/apk/debug/app-debug.apk`
+* Debug APK: `android-app/app/build/outputs/apk/debug/app-debug.apk`
+* Release AAB: `android-app/app/build/outputs/bundle/release/app-release.aab`
+
+> Catatan: folder `artifacts/social-downloader` + `artifacts/api-server`
+> adalah web downloader pendamping (untuk testing lokal via browser),
+> bukan sumber APK. Jangan build APK dari sana.
 
 ---
 
-## Build APK via GitHub (tanpa install apapun)
+## Build via GitHub (tanpa install apapun)
 
 1. Push repo ke GitHub
 2. Buka tab "Actions" di GitHub
-3. Klik workflow "Build Dropdesk APK"
+3. Klik workflow "Build TubeNime APK"
 4. Klik "Run workflow"
 5. Tunggu selesai (~5-10 menit)
-6. Download APK dari tab "Artifacts"
+6. Download dari tab "Artifacts":
+   - `TubeNime-debug-apk` — selalu ada
+   - `TubeNime-release-apk` + `TubeNime-release-aab` — hanya jika
+     4 GitHub Secrets signing sudah diisi (lihat "Release Signing" di bawah).
+     **Upload file AAB ke Play Console, bukan APK.**
 
 ---
 
