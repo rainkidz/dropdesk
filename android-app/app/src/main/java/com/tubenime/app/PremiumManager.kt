@@ -18,6 +18,9 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Single source of truth for the premium entitlement.
@@ -106,7 +109,10 @@ object PremiumManager {
         if (installTampered) return false
         // Server attestation only gates shipped (non-debug) builds.
         if (!isDebuggable && !remoteVerdictOk) return false
-        return isDebugPremium() || (billingAvailable && purchased)
+        if (isDebugPremium()) return true
+        val ctx = appContext
+        if (ctx != null && LicenseManager.isLicensed(ctx)) return true
+        return billingAvailable && purchased
     }
 
     /** Whether this build was compiled debuggable (only those expose the test toggle). */
@@ -155,8 +161,32 @@ object PremiumManager {
     /** Human-readable description of why premium is currently active. */
     fun sourceLabel(): String = when {
         isDebugPremium() -> "Test mode"
+        appContext?.let { LicenseManager.isLicensed(it) } == true -> "License"
         billingAvailable && purchased -> "Subscription"
         else -> ""
+    }
+
+    /** "Okt 2026" bila premium berasal dari lisensi, else null. */
+    fun licensedUntilLabel(): String? =
+        appContext?.let { LicenseManager.licensedUntilLabel(it) }
+
+    /** Tukar kode lisensi → true bila valid (refresh listener otomatis). */
+    fun redeemLicense(code: String): LicenseManager.RedeemResult {
+        val ctx = appContext ?: return LicenseManager.RedeemResult.NotConfigured
+        val result = LicenseManager.redeem(ctx, code)
+        if (result is LicenseManager.RedeemResult.Ok) {
+            notifyChanged()
+            // Lapis 2 anti-bajak: daftarkan device ke server (best-effort, no-block).
+            // Gagal jaringan TIDAK menggugurkan aktivasi lokal — HMAC offline tetap sah.
+            if (BillingRepository.isEnabled()) {
+                val key = LicenseManager.normalize(code)
+                val fingerprint = LicenseManager.deviceFingerprint(ctx)
+                GlobalScope.launch(Dispatchers.IO) {
+                    runCatching { LicenseApiClient.activate(ctx, key, fingerprint) }
+                }
+            }
+        }
+        return result
     }
 
     // ── Listeners ──────────────────────────────────────────────────────────────────

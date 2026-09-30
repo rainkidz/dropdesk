@@ -30,6 +30,16 @@ val releaseSigningConfigured = !releaseKeystorePath.isNullOrBlank() &&
     !releaseKeyAlias.isNullOrBlank() &&
     !releaseKeyPassword.isNullOrBlank()
 
+// HMAC secret untuk kode lisensi premium (env → local.properties).
+// Kosong = fitur redeem nonaktif (validasi selalu gagal).
+val licenseHmacSecret = System.getenv("LICENSE_HMAC_SECRET")
+    ?: localProperty("license.hmac.secret") ?: ""
+
+// Base URL backend billing (env → local.properties), mis. http://192.168.1.10:5000
+// (test LAN) atau https://api... (produksi). Kosong = bayar otomatis disembunyikan.
+val billingBaseUrl = System.getenv("BILLING_BASE_URL")
+    ?: localProperty("billing.base.url") ?: ""
+
 // Relative paths resolve against android-app/ (rootProject), matching the
 // sdk.dir convention in local.properties; absolute paths pass through.
 fun resolveKeystoreFile(raw: String): File =
@@ -75,12 +85,12 @@ val releaseCertSha256Hex: String = if (releaseSigningConfigured) {
 
 android {
     namespace = "com.tubenime.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.tubenime.app"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 9
         versionName = "4.3.0"
 
@@ -90,6 +100,8 @@ android {
         }
 
         buildConfigField("String", "RELEASE_CERT_SHA256_HEX", "\"$releaseCertSha256Hex\"")
+        buildConfigField("String", "LICENSE_HMAC_SECRET", "\"$licenseHmacSecret\"")
+        buildConfigField("String", "BILLING_BASE_URL", "\"$billingBaseUrl\"")
 
         ndk {
             // arm64-v8a only: covers 99%+ of real Android devices
@@ -132,6 +144,10 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -165,10 +181,20 @@ chaquopy {
 }
 
 dependencies {
+    // Jetpack Compose — UI-only design screens (ui/theme, ui/components, ui/screens)
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.01")
+    implementation(composeBom)
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
     // AndroidX Core
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
@@ -177,7 +203,10 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Material Design 3
-    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.material:material:1.13.0")
+
+    // AndroidX Browser (Custom Tabs untuk halaman bayar Midtrans)
+    implementation("androidx.browser:browser:1.8.0")
 
     // Networking - OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -200,7 +229,7 @@ dependencies {
     // Google AdMob - for monetization (compatible with Kotlin 1.9)
     implementation("com.google.android.gms:play-services-ads:23.6.0")
 
-    // Google Play Billing - premium subscriptions (compatible with compileSdk 34 / AGP 8.2)
+    // Google Play Billing - premium subscriptions (compatible with compileSdk 35 / AGP 8.5)
     implementation("com.android.billingclient:billing:6.2.1")
 
     // Google Play Integrity API - server-side install attestation (anti-mod hardening)
