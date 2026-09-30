@@ -72,3 +72,37 @@ android-app/preview-logos/
 %APPDATA%/
 .freebuff/
 flux-kontext-max*.jpg
+
+# Local agent runtime state (skills cache, MCP config, fingerprints).
+# The .agents/memory/ docs ARE tracked.
+.agents/.fingerprint/
+.agents/skills/
+.agents/mcp.json
+
+# Secrets / environment — never commit Figma tokens, Stripe keys, etc.
+.env
+.env.local
+.env.*.local
+
+# One-off planning docs and design exports (not part of the build).
+DESIGN_RECOMMENDATION.md
+STITCH_BRIEF.md
+designs/
+
+# dev-helper scripts that ran once during initial app setup; the
+# remaining tools/make_license.py IS tracked (license keygen).
+tools/*.mjs
+tools/install_official_icon.py
+tools/make_launcher_pngs.py
+
+# ad-hoc debug / audit scripts.
+audit_node.js
+dump*.xml
+android-app/dump*.xml
+
+# Figma + manual QA screenshots / dumps / specs (not part of build).
+# Note: artifacts/social-downloader/ is the old Capacitor web wrapper
+# and IS tracked — only the loose artifacts/ top-level files are ignored.
+artifacts/*.png
+artifacts/*.txt
+artifacts/figma/
