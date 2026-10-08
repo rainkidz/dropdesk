@@ -6,7 +6,7 @@
 <title>TubeNime — Anime Video Downloader for Android</title>
 <meta name="description" content="TubeNime is a free Android app to browse and download anime clips and full episodes from your favourite platforms. Sideload the APK directly from GitHub Releases." />
 <meta name="theme-color" content="#FAF3E7" />
-<link rel="icon" type="image/png" href="logo.svg" />
+<link rel="icon" type="image/svg+xml" href="logo.svg" />
 <style>
   :root {
     --paper: #FAF3E7;
@@ -100,6 +100,45 @@
     color: var(--espresso); font-size: 13px; text-align: center;
     padding: 14px;
   }
+  .shot {
+    flex: 1 1 320px; background: white;
+    border: var(--line); border-radius: 10px; box-shadow: 3px 3px 0 var(--ink);
+    padding: 14px;
+  }
+  .shot h3 { margin: 0 0 2px; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; }
+  .shot p { margin: 0 0 10px; font-size: 13px; color: var(--espresso); }
+  .mock {
+    border: var(--line); border-radius: 8px; background: var(--paper);
+    overflow: hidden;
+  }
+  .mock .mbar {
+    background: var(--ink); color: var(--paper);
+    font-size: 11px; font-weight: 800; letter-spacing: 1px;
+    padding: 6px 10px;
+  }
+  .mock .mbody { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .mock .murl {
+    border: 1.5px solid var(--ink); border-radius: 6px; background: white;
+    font-size: 11px; color: #8a7a63; padding: 7px 9px;
+  }
+  .mock .mbtn {
+    border: var(--line); border-radius: 6px; text-align: center;
+    font-size: 11px; font-weight: 800; letter-spacing: 0.6px; padding: 8px;
+  }
+  .mock .mbtn.red { background: var(--red); color: white; }
+  .mock .mbtn.yellow { background: var(--yellow); color: var(--ink); }
+  .mock .mtiles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .mock .mtile {
+    border: 1.5px solid var(--ink); border-radius: 6px; background: white;
+    font-size: 10px; font-weight: 700; text-align: center; padding: 8px 2px;
+  }
+  .mock .mrow {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid var(--ink); border-radius: 6px; background: white;
+    font-size: 11px; padding: 7px 9px;
+  }
+  .mock .mdot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); flex: none; }
+  .mock .mdot.green { background: #2E7D32; }
   details { margin: 8px 0; }
   details summary { cursor: pointer; font-weight: 700; }
 </style>
@@ -111,12 +150,12 @@
     <img src="logo.svg" alt="TubeNime logo" />
     <div>
       <h1>TUBENIME</h1>
-      <div class="tag">Anime video downloader · Free · Sideload · v4.3.0</div>
+      <div class="tag">Anime video downloader · Free · Sideload · v4.5.0</div>
     </div>
   </header>
 
   <section class="hero">
-    <p><strong>Browse trending anime clips on YouTube, TikTok, Instagram, Bilibili, Facebook &amp; Threads — and download the videos you love directly to your phone. No login, no ads on premium, no tracking.</strong></p>
+    <p><strong>Browse trending anime clips on YouTube, TikTok, Instagram, Bilibili, Facebook &amp; Threads — and download the videos you love directly to your phone. No login, no tracking. Watch one short ad to unlock PRO for 30 minutes.</strong></p>
     <a class="btn" id="download-btn" href="https://github.com/rainkidz/dropdesk/releases/latest">⬇ Download APK</a>
     <a class="btn alt" href="https://github.com/rainkidz/dropdesk/releases" style="margin-left:8px;">All releases</a>
     <div style="margin-top:12px; font-size:13px;">
@@ -129,19 +168,72 @@
   <h2>What you get</h2>
   <div class="grid">
     <div class="card"><h3>Trending feeds</h3><p>One-tap access to today's anime hashtags across 6 platforms — randomised daily so you always see something fresh.</p></div>
-    <div class="card"><h3>Up to 1080p</h3><p>Merge video + audio into a single MP4. Free tier: 720p. Premium: full HD.</p></div>
-    <div class="card"><h3>Cookie login</h3><p>Drop in your YouTube/Instagram cookies to access private or age-restricted videos. Premium feature.</p></div>
-    <div class="card"><h3>Batch downloads</h3><p>Pull entire playlists and queues. Premium feature.</p></div>
-    <div class="card"><h3>Offline license</h3><p>One-month license code unlocks premium on your device — no Play Store account needed.</p></div>
+    <div class="card"><h3>Up to 1080p</h3><p>Merge video + audio into a single MP4. Free tier: 720p. PRO: full HD.</p></div>
+    <div class="card"><h3>Cookie login</h3><p>Drop in your YouTube/Instagram cookies to access private or age-restricted videos. PRO feature.</p></div>
+    <div class="card"><h3>Batch downloads</h3><p>Pull entire playlists and queues. PRO feature.</p></div>
+    <div class="card"><h3>Reward PRO</h3><p>Watch one short ad to unlock everything for 30 minutes — no account, no payment, repeatable.</p></div>
     <div class="card"><h3>Shōnen theme</h3><p>Single, distraction-free manga-style UI. Material You deliberately off.</p></div>
   </div>
 
   <h2>Screens</h2>
   <div class="screens">
-    <div class="ph">📱 Home — trending anime tiles<br/>(placeholder)</div>
-    <div class="ph">📱 Browser — open platform<br/>(placeholder)</div>
-    <div class="ph">📱 Premium — redeem code<br/>(placeholder)</div>
-    <div class="ph">📱 Settings — update banner<br/>(placeholder)</div>
+    <div class="shot">
+      <h3>Home</h3>
+      <p>Paste a link or tap a trending platform tile.</p>
+      <div class="mock">
+        <div class="mbar">TUBENIME</div>
+        <div class="mbody">
+          <div class="murl">Paste video URL (YouTube, TikTok, IG…)</div>
+          <div class="mbtn red">INSPECT LINK</div>
+          <div class="mtiles">
+            <div class="mtile">YouTube</div>
+            <div class="mtile">TikTok</div>
+            <div class="mtile">IG</div>
+            <div class="mtile">Bilibili</div>
+            <div class="mtile">FB</div>
+            <div class="mtile">Threads</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="shot">
+      <h3>Download</h3>
+      <p>Pick quality, download. PRO unlocks 1080p + batch.</p>
+      <div class="mock">
+        <div class="mbar">DOWNLOAD</div>
+        <div class="mbody">
+          <div class="mrow"><span class="mdot green"></span>720p — mp4 · free</div>
+          <div class="mrow"><span class="mdot"></span>1080p — mp4 · PRO</div>
+          <div class="mrow"><span class="mdot"></span>Audio — mp3</div>
+          <div class="mbtn red">DOWNLOAD</div>
+        </div>
+      </div>
+    </div>
+    <div class="shot">
+      <h3>Reward PRO</h3>
+      <p>Watch one short ad, unlock everything for 30 min.</p>
+      <div class="mock">
+        <div class="mbar">PREMIUM STATUS</div>
+        <div class="mbody">
+          <div class="mrow"><span class="mdot green"></span>FREE TIER · 720p max</div>
+          <div class="mbtn yellow">WATCH AD → 30 MIN PRO</div>
+          <div class="mrow"><span class="mdot green"></span>PRO · Ad reward · 29 min left</div>
+        </div>
+      </div>
+    </div>
+    <div class="shot">
+      <h3>Settings</h3>
+      <p>Quality, storage, Wi-Fi only, cookies, update banner.</p>
+      <div class="mock">
+        <div class="mbar">SETTINGS</div>
+        <div class="mbody">
+          <div class="mbtn yellow">UPDATE AVAILABLE · v4.5.0</div>
+          <div class="mrow"><span class="mdot green"></span>Quality · 720p</div>
+          <div class="mrow"><span class="mdot green"></span>Wi-Fi only · ON</div>
+          <div class="mrow"><span class="mdot"></span>Cookies · YouTube</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <h2>Install (Android 7.0+)</h2>
@@ -155,27 +247,26 @@
       </ul>
     </li>
     <li>Tap <strong>Install</strong>. Open TubeNime when done.</li>
-    <li>(Optional) Join the community below for the latest updates and license codes.</li>
+    <li>(Optional) Join the community below for the latest updates.</li>
   </ol>
 
-  <h2>Premium &amp; licensing</h2>
-  <p>Premium is a sideload licence — no Play Billing. Two ways to pay:</p>
+  <h2>Reward PRO</h2>
+  <p>No payment, no account. PRO unlocks 1080p, batch downloads, and cookie login:</p>
   <ol class="steps">
-    <li><strong>Lokal — QRIS</strong>: scan, send proof to the seller contact in the app, receive a code.</li>
-    <li><strong>International — PayPal</strong>: send to the link in the app, receive a code.</li>
-    <li>Open the app → <strong>Settings → Premium → Redeem Code</strong>, paste your code. Done.</li>
+    <li>Open the app → <strong>Settings → PREMIUM STATUS</strong>.</li>
+    <li>Tap <strong>WATCH AD → 30 MIN PRO</strong> and watch the short ad till the end.</li>
+    <li>Enjoy PRO for 30 minutes. Repeat anytime — 60s cooldown between rewards.</li>
   </ol>
-  <p>Each licence is valid for the current month (e.g. <code>202610</code>) and binds to one device. See the in-app Premium screen for current pricing.</p>
 
   <h2>Privacy</h2>
   <ul>
     <li>No analytics SDK. No Google Play Services dependency for core features.</li>
-    <li>AdMob only loads ads if you have not redeemed a licence. Premium users never see ads.</li>
-    <li>The only outbound requests are to the platforms you browse and to the licence-update endpoint.</li>
+    <li>Banner + interstitial ads fund the free tier. PRO reward sessions hide ads while active.</li>
+    <li>The only outbound requests are to the platforms you browse, AdMob, and the update endpoint.</li>
   </ul>
 
   <h2>Community</h2>
-  <p>Updates, downloads, and licence announcements are posted here:</p>
+  <p>Updates and downloads are posted here:</p>
   <ul>
     <li><a href="https://github.com/rainkidz/dropdesk/releases">GitHub Releases</a></li>
     <li><a href="https://t.me/tubenime">Telegram channel</a> (placeholder — update link)</li>
@@ -191,8 +282,8 @@
     <p>The official APK is signed with a fixed release certificate; the in-app <em>SecurityGuard</em> will mark any repackaged build as MODIFIED and disable premium. Verify the SHA-256 fingerprint of the downloaded APK against the value listed in the release notes.</p>
   </details>
   <details>
-    <summary>My code says "BadSignature" — what now?</summary>
-    <p>Double-check every character. Codes are case-sensitive and use the alphabet <code>ABCDEFGHJKMNPQRSTUVWXYZ23456789</code> (no O/0/I/L/U). If still failing, contact the seller.</p>
+    <summary>How do I unlock 1080p?</summary>
+    <p>Go to <strong>Settings → PREMIUM STATUS</strong>, tap <strong>WATCH AD → 30 MIN PRO</strong>, and watch the ad till the end. PRO stays active for 30 minutes, then you can watch again.</p>
   </details>
 
   <footer>
