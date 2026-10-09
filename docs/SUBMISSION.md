@@ -54,23 +54,23 @@ FEATURES
 • Trending anime feeds: one-tap access to today's anime hashtags
   across 6 platforms, randomised daily so you always see something
   fresh.
-• Up to 1080p MP4: free tier up to 720p, premium merges video and
+• Up to 1080p MP4: free tier up to 720p, PRO merges video and
   audio for full HD.
-• Cookie login (premium): drop in your YouTube or Instagram cookies
+• Cookie login (PRO): drop in your YouTube or Instagram cookies
   to unlock private, age-restricted, or members-only downloads.
-• Batch downloads (premium): pull entire playlists and queues.
-• Offline licence: one-month licence code unlocks premium — no Play
-  Store account needed.
+• Batch downloads (PRO): pull entire playlists and queues.
+• Reward PRO: watch one short ad to unlock everything for 30
+  minutes — no account, no payment, repeatable.
 • Shōnen theme: distraction-free manga-style UI. Material You is
   deliberately off so the look stays consistent across devices.
 
 PRIVACY
 • No analytics SDK. No Google Play Services dependency for core
   features.
-• AdMob only loads ads if you have not redeemed a licence. Premium
-  users never see ads.
-• The only outbound requests are to the platforms you browse and to
-  the licence-update endpoint.
+• Banner + interstitial ads fund the free tier. PRO reward
+  sessions hide ads while active.
+• The only outbound requests are to the platforms you browse,
+  AdMob, and the update endpoint.
 
 IMPORTANT — THIS IS A SIDELOAD APP
 TubeNime is not on the Play Store because YouTube's Terms of Service
@@ -81,10 +81,9 @@ would install NewPipe, Seal, or any other sideload video app:
 2. Allow your browser / file manager to install unknown apps.
 3. Tap Install.
 
-Premium is paid manually (QRIS locally, PayPal internationally) and
-unlocks with a redeem code inside the app — no Play Billing required.
-Visit the project page for instructions and the latest licence offers:
-https://github.com/rainkidz/dropdesk
+PRO is free: watch one short ad in Settings → PREMIUM STATUS to
+unlock everything for 30 minutes. Visit the project page for
+instructions: https://github.com/rainkidz/dropdesk
 
 NOT AFFILIATED with YouTube, TikTok, Instagram, Bilibili, Facebook,
 or Threads. All trademarks belong to their respective owners.

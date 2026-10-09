@@ -91,8 +91,8 @@ android {
         applicationId = "com.tubenime.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "4.3.0"
+        versionCode = 10
+        versionName = "4.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
