@@ -107,38 +107,11 @@
   }
   .shot h3 { margin: 0 0 2px; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; }
   .shot p { margin: 0 0 10px; font-size: 13px; color: var(--espresso); }
-  .mock {
-    border: var(--line); border-radius: 8px; background: var(--paper);
-    overflow: hidden;
+  .shot img {
+    display: block; width: 100%; height: 340px; object-fit: cover;
+    object-position: top; border: var(--line); border-radius: 8px;
+    background: var(--paper);
   }
-  .mock .mbar {
-    background: var(--ink); color: var(--paper);
-    font-size: 11px; font-weight: 800; letter-spacing: 1px;
-    padding: 6px 10px;
-  }
-  .mock .mbody { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .mock .murl {
-    border: 1.5px solid var(--ink); border-radius: 6px; background: white;
-    font-size: 11px; color: #8a7a63; padding: 7px 9px;
-  }
-  .mock .mbtn {
-    border: var(--line); border-radius: 6px; text-align: center;
-    font-size: 11px; font-weight: 800; letter-spacing: 0.6px; padding: 8px;
-  }
-  .mock .mbtn.red { background: var(--red); color: white; }
-  .mock .mbtn.yellow { background: var(--yellow); color: var(--ink); }
-  .mock .mtiles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  .mock .mtile {
-    border: 1.5px solid var(--ink); border-radius: 6px; background: white;
-    font-size: 10px; font-weight: 700; text-align: center; padding: 8px 2px;
-  }
-  .mock .mrow {
-    display: flex; align-items: center; gap: 8px;
-    border: 1.5px solid var(--ink); border-radius: 6px; background: white;
-    font-size: 11px; padding: 7px 9px;
-  }
-  .mock .mdot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); flex: none; }
-  .mock .mdot.green { background: #2E7D32; }
   details { margin: 8px 0; }
   details summary { cursor: pointer; font-weight: 700; }
 </style>
@@ -180,59 +153,22 @@
     <div class="shot">
       <h3>Home</h3>
       <p>Paste a link or tap a trending platform tile.</p>
-      <div class="mock">
-        <div class="mbar">TUBENIME</div>
-        <div class="mbody">
-          <div class="murl">Paste video URL (YouTube, TikTok, IG…)</div>
-          <div class="mbtn red">INSPECT LINK</div>
-          <div class="mtiles">
-            <div class="mtile">YouTube</div>
-            <div class="mtile">TikTok</div>
-            <div class="mtile">IG</div>
-            <div class="mtile">Bilibili</div>
-            <div class="mtile">FB</div>
-            <div class="mtile">Threads</div>
-          </div>
-        </div>
-      </div>
+      <img src="shot-home.png" alt="TubeNime Home — URL inspect and platform matrix" loading="lazy" />
     </div>
     <div class="shot">
-      <h3>Download</h3>
-      <p>Pick quality, download. PRO unlocks 1080p + batch.</p>
-      <div class="mock">
-        <div class="mbar">DOWNLOAD</div>
-        <div class="mbody">
-          <div class="mrow"><span class="mdot green"></span>720p — mp4 · free</div>
-          <div class="mrow"><span class="mdot"></span>1080p — mp4 · PRO</div>
-          <div class="mrow"><span class="mdot"></span>Audio — mp3</div>
-          <div class="mbtn red">DOWNLOAD</div>
-        </div>
-      </div>
+      <h3>Browser</h3>
+      <p>Open trending feeds per platform, in-app.</p>
+      <img src="shot-browser.png" alt="TubeNime Browser — platform list with Browse buttons" loading="lazy" />
     </div>
     <div class="shot">
       <h3>Reward PRO</h3>
       <p>Watch one short ad, unlock everything for 30 min.</p>
-      <div class="mock">
-        <div class="mbar">PREMIUM STATUS</div>
-        <div class="mbody">
-          <div class="mrow"><span class="mdot green"></span>FREE TIER · 720p max</div>
-          <div class="mbtn yellow">WATCH AD → 30 MIN PRO</div>
-          <div class="mrow"><span class="mdot green"></span>PRO · Ad reward · 29 min left</div>
-        </div>
-      </div>
+      <img src="shot-settings.png" alt="TubeNime Settings — Watch Ad button for 30 min PRO" loading="lazy" />
     </div>
     <div class="shot">
-      <h3>Settings</h3>
-      <p>Quality, storage, Wi-Fi only, cookies, update banner.</p>
-      <div class="mock">
-        <div class="mbar">SETTINGS</div>
-        <div class="mbody">
-          <div class="mbtn yellow">UPDATE AVAILABLE · v4.5.0</div>
-          <div class="mrow"><span class="mdot green"></span>Quality · 720p</div>
-          <div class="mrow"><span class="mdot green"></span>Wi-Fi only · ON</div>
-          <div class="mrow"><span class="mdot"></span>Cookies · YouTube</div>
-        </div>
-      </div>
+      <h3>Downloads</h3>
+      <p>Queue, filters, storage info — all in manga style.</p>
+      <img src="shot-downloads.png" alt="TubeNime Downloads — queue with filters" loading="lazy" />
     </div>
   </div>
 
