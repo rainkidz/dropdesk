@@ -91,8 +91,8 @@ android {
         applicationId = "com.tubenime.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 10
-        versionName = "4.5.0"
+        versionCode = 11
+        versionName = "4.5.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -123,8 +123,14 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Minify/shrink DIMATIKAN: R8 full-mode (default AGP 8+) merusak
+            // bridge Java-Python Chaquopy 15 (crash AssertionError di
+            // convert_json_object saat startup, hanya di build release).
+            // Anti-mod tidak bergantung pada obfuscation (mengandalkan
+            // SecurityGuard signature check + server-side license), jadi
+            // biaya ukuran APK (~+10 MB) dapat diterima untuk sideload.
+            isMinifyEnabled = false
+            isShrinkResources = false
             if (releaseSigningConfigured) {
                 signingConfig = signingConfigs.getByName("release")
             }

@@ -130,7 +130,7 @@ fun SettingsScreen(
     onWifiToggle: () -> Unit = {},
     cookies: List<CookieSlot> = sampleCookies(),
     onCookieClick: (CookieSlot) -> Unit = {},
-    versionTitle: String = "v4.5.0 Shōnen Engine",
+    versionTitle: String = "v4.5.1 Shōnen Engine",
     versionSubtitle: String = "Build: 9-InkRoll",
     onClearCache: () -> Unit = {},
     updateBanner: UpdateBanner? = null,

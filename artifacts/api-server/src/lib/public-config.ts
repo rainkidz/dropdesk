@@ -13,7 +13,7 @@ import { currentYearMonth } from "./license-activations";
  * Env override (rotasi tanpa rebuild):
  *   ADMOB_BANNER_ID       default = ID resmi yang tertanam di BuildConfig
  *   ADMOB_INTERSTITIAL_ID default = ID resmi
- *   MIN_APP_VERSION       default = "4.5.0"
+ *   MIN_APP_VERSION       default = "4.5.1"
  *
  * Catatan keamanan: AdMob ID yang ditaruh di BuildConfig.LICENSE_HMAC_SECRET
  * *bisa* diekstrak bajak ulet (sama keterbatasannya dengan kode lisensi).
@@ -34,7 +34,7 @@ export type SignedPublicConfig = PublicConfig & { signature: string };
 
 const DEFAULT_BANNER = "ca-app-pub-7452006143730401/8120744119";
 const DEFAULT_INTERSTITIAL = "ca-app-pub-7452006143730401/4435368715";
-const DEFAULT_MIN_VERSION = "4.5.0";
+const DEFAULT_MIN_VERSION = "4.5.1";
 
 /** Kunci signature: wajib LICENSE_HMAC_SECRET (sama dengan secret license). */
 function signingKey(): string {

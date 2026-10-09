@@ -332,7 +332,7 @@ class ComposeSettingsActivity : ComponentActivity() {
     private fun versionName(): String = try {
         "v${packageManager.getPackageInfo(packageName, 0).versionName}"
     } catch (e: Exception) {
-        "v4.5.0"
+        "v4.5.1"
     }
 
     private fun versionCode(): Long = try {
