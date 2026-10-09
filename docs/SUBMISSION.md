@@ -112,9 +112,8 @@ URL: https://app.apppure.com/
    and basic info to auto-populate.
 3. Fill the form using the metadata above. APKPure auto-detects the
    version code, min SDK, and target SDK from the APK.
-4. Upload the icon (already present in `android-app/app/src/main/res/`
-   adaptive icon set — export the foreground PNG at 512x512 first;
-   `tools/make_launcher_pngs.py` does this).
+4. Upload the icon: `docs/landing/icon-512.png` (512x512, generated
+   from `designs/icon.png`; same artwork as the in-app launcher).
 5. (Optional) Upload 3–5 phone screenshots (1080x2400 or similar).
 6. Tick "I have the right to distribute this APK".
 7. Submit. APKPure typically reviews within 24–72 hours for a new
@@ -141,7 +140,7 @@ URL: https://www.apkmirror.com/apk-upload/
    - **Changelog:** paste the body of the GitHub release notes
      (`gh release view v4.4.0-rc1 --repo rainkidz/dropdesk --json
      body` gives you the markdown).
-5. Upload a 512x512 PNG icon (same as APKPure).
+5. Upload a 512x512 PNG icon (`docs/landing/icon-512.png`, same as APKPure).
 6. Optionally upload screenshots.
 7. Tick the "I am the developer" checkbox. APKMirror cross-checks the
    signing certificate SHA-256 against the public Play Console record
