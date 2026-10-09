@@ -27,9 +27,9 @@ Release page: https://github.com/rainkidz/dropdesk/releases/latest
 
 **Package name:** com.tubenime.app
 
-**Version:** 4.4.0  (versionName from BuildConfig)
+**Version:** 4.5.0  (versionName from BuildConfig)
 
-**Version code:** 9  (auto-increment per release)
+**Version code:** 10  (auto-increment per release)
 
 **Min Android:** 7.0 (API 24)
 
@@ -39,16 +39,15 @@ Release page: https://github.com/rainkidz/dropdesk/releases/latest
 
 **Category:** Tools  (or "Video Players & Editors" — APKPure accepts both)
 
-**Short description (≤ 80 chars):**
+**Short description (≤ 80 chars, APKPure-safe — no brand names):**
 ```
-Anime video downloader for YouTube, TikTok, IG, Bilibili, FB, Threads
+Anime video downloader — trending clips, 1080p, batch queue
 ```
 
-**Long description (paste into both sites):**
+**Long description — VARIANT A (submit this first, APKPure-safe):**
 ```
-Browse trending anime clips on YouTube, TikTok, Instagram, Bilibili,
-Facebook, and Threads — and download the videos you love directly
-to your phone.
+Browse trending anime clips across popular short-video platforms
+— and download the videos you love directly to your phone.
 
 FEATURES
 • Trending anime feeds: one-tap access to today's anime hashtags
@@ -56,8 +55,8 @@ FEATURES
   fresh.
 • Up to 1080p MP4: free tier up to 720p, PRO merges video and
   audio for full HD.
-• Cookie login (PRO): drop in your YouTube or Instagram cookies
-  to unlock private, age-restricted, or members-only downloads.
+• Cookie login (PRO): drop in your account cookies to unlock
+  private, age-restricted, or members-only downloads.
 • Batch downloads (PRO): pull entire playlists and queues.
 • Reward PRO: watch one short ad to unlock everything for 30
   minutes — no account, no payment, repeatable.
@@ -73,9 +72,10 @@ PRIVACY
   AdMob, and the update endpoint.
 
 IMPORTANT — THIS IS A SIDELOAD APP
-TubeNime is not on the Play Store because YouTube's Terms of Service
-forbit downloading their content. Install the APK the same way you
-would install NewPipe, Seal, or any other sideload video app:
+TubeNime is not on the Play Store because major video platforms
+forbid downloading in their Terms of Service. Install the APK the
+same way you would install NewPipe, Seal, or any other sideload
+video app:
 
 1. Open the downloaded APK.
 2. Allow your browser / file manager to install unknown apps.
@@ -84,6 +84,19 @@ would install NewPipe, Seal, or any other sideload video app:
 PRO is free: watch one short ad in Settings → PREMIUM STATUS to
 unlock everything for 30 minutes. Visit the project page for
 instructions: https://github.com/rainkidz/dropdesk
+
+NOT AFFILIATED with any video platform. All trademarks belong
+to their respective owners.
+```
+
+**Long description — VARIANT B (fallback if A is accepted and you
+want platform names for discoverability):**
+```
+Browse trending anime clips on YouTube, TikTok, Instagram, Bilibili,
+Facebook, and Threads — and download the videos you love directly
+to your phone.
+
+(same FEATURES / PRIVACY as Variant A, plus:)
 
 NOT AFFILIATED with YouTube, TikTok, Instagram, Bilibili, Facebook,
 or Threads. All trademarks belong to their respective owners.
@@ -119,9 +132,11 @@ URL: https://app.apppure.com/
 7. Submit. APKPure typically reviews within 24–72 hours for a new
    developer; later updates go through faster.
 
-**APKPure-specific gotcha:** they sometimes reject apps with the word
-"YouTube" in the title or description. If that happens, soften the
-wording to "trending short-video platforms" and resubmit.
+**APKPure-specific gotcha (pre-fixed):** they sometimes reject apps
+with brand names ("YouTube", "TikTok", …) in the title or description.
+Variant A above already avoids all brand names — submit that first.
+Only switch to Variant B if APKPure accepts A and you want better
+discoverability.
 
 ---
 
@@ -137,9 +152,9 @@ URL: https://www.apkmirror.com/apk-upload/
 4. Fill in the metadata (same as above). APKMirror is stricter about:
    - **Source URL / Official site:** `https://rainkidz.github.io/dropdesk/`
      (NOT a Play Store URL — we are not on Play).
-   - **Changelog:** paste the body of the GitHub release notes
-     (`gh release view v4.4.0-rc1 --repo rainkidz/dropdesk --json
-     body` gives you the markdown).
+    - **Changelog:** paste the body of the GitHub release notes
+      (`gh release view v4.5.0 --repo rainkidz/dropdesk --json
+      body` gives you the markdown).
 5. Upload a 512x512 PNG icon (`docs/landing/icon-512.png`, same as APKPure).
 6. Optionally upload screenshots.
 7. Tick the "I am the developer" checkbox. APKMirror cross-checks the
