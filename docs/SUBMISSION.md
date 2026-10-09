@@ -118,19 +118,27 @@ APKPure rejects it)
 
 ## 2. APKPure submission
 
-URL: https://app.apppure.com/
+URL: https://developer.apkpure.com/ (daftar → REGISTER NOW → verifikasi
+email. Alternatif: https://apkpure.com/submit-apk.)
 
-1. Click **Upload APK** in the sidebar.
-2. Drag `app-release.apk` (or click to browse). Wait for the SHA-256
-   and basic info to auto-populate.
-3. Fill the form using the metadata above. APKPure auto-detects the
-   version code, min SDK, and target SDK from the APK.
-4. Upload the icon: `docs/landing/icon-512.png` (512x512, generated
-   from `designs/icon.png`; same artwork as the in-app launcher).
-5. (Optional) Upload 3–5 phone screenshots (1080x2400 or similar).
+1. Login → klik menu ☰ → **Manage Apps** → **ADD APPLICATION**
+   (bukan CLAIM APPS — itu untuk app yang sudah ada di store).
+2. Isi **App Package Name** (`com.tubenime.app`) + **App Name**
+   (`TubeNime`), klik Post.
+3. Di halaman APP DETAILS isi: Application Type = App, Category
+   (lihat metadata di atas), App Icon 512x512
+   (`docs/landing/icon-512.png`), Content Rating, Privacy Policy URL
+   (`https://rainkidz.github.io/dropdesk/`).
+4. Section Edit Details: Short + Long Description (Varian A di atas),
+   Screenshots (480x800 atau 1080x2400), Banner 1024x500 (opsional),
+   lalu Save. Versi/kode/SDK terisi otomatis dari APK nanti.
+5. Klik **MANAGE VERSIONS** → **SELECT FILES** → upload
+   `app-release.apk` (maks 2GB) → isi What's New → Upload → tunggu
+   Verification Passed (refresh halaman bila perlu) → Upload lagi
+   untuk kirim ke review.
 6. Tick "I have the right to distribute this APK".
-7. Submit. APKPure typically reviews within 24–72 hours for a new
-   developer; later updates go through faster.
+7. Submit. Review 24–72 jam untuk developer baru; update berikutnya
+   lebih cepat. Status bisa dipantau di dashboard / email.
 
 **APKPure-specific gotcha (pre-fixed):** they sometimes reject apps
 with brand names ("YouTube", "TikTok", …) in the title or description.
