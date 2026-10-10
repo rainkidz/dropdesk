@@ -34,7 +34,7 @@ object RewardedAdManager {
      */
     val REWARDED_AD_UNIT_ID: String =
         if (BuildConfig.DEBUG) "ca-app-pub-3940256099942544/5224354917"
-        else "ca-app-pub-7452006143730401/9999999999" // TODO: replace dengan ID asli
+        else "ca-app-pub-7452006143730401/8745711445"
 
     private const val REWARD_DURATION_MS = 30L * 60 * 1000 // 30 menit
     private const val COOLDOWN_MS = 60L * 1000 // 1 menit antar reward

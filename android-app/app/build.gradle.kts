@@ -91,8 +91,8 @@ android {
         applicationId = "com.tubenime.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        versionName = "4.5.1"
+        versionCode = 12
+        versionName = "4.5.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -124,7 +124,7 @@ android {
     buildTypes {
         release {
             // Minify/shrink DIMATIKAN: R8 full-mode (default AGP 8+) merusak
-            // bridge Java-Python Chaquopy 15 (crash AssertionError di
+            // bridge Java-Python Chaquopy (crash AssertionError di
             // convert_json_object saat startup, hanya di build release).
             // Anti-mod tidak bergantung pada obfuscation (mengandalkan
             // SecurityGuard signature check + server-side license), jadi
@@ -179,7 +179,7 @@ if (!releaseSigningConfigured) {
 
 chaquopy {
     defaultConfig {
-        version = "3.11"
+        version = "3.13"
         pip {
             install("yt-dlp")
         }

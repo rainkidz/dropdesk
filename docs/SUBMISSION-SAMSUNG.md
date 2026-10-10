@@ -6,8 +6,10 @@ individual sellers, and big in Indonesia. Once the listing is live,
 link it in AdMob → app review runs → full ad serving (including the
 rewarded unit).
 
-Canonical release to submit: **v4.5.1 (code 11)** or newer from
+Canonical release to submit: **v4.5.2 (code 12)** or newer from
 https://github.com/rainkidz/dropdesk/releases/latest
+(Chaquopy 17 + Python 3.13 — first release with 16 KB page-size support,
+which Galaxy Store mandates.)
 
 ---
 

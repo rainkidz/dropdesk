@@ -27,9 +27,9 @@ Release page: https://github.com/rainkidz/dropdesk/releases/latest
 
 **Package name:** com.tubenime.app
 
-**Version:** 4.5.1  (versionName from BuildConfig)
+**Version:** 4.5.2  (versionName from BuildConfig)
 
-**Version code:** 11  (auto-increment per release)
+**Version code:** 12  (auto-increment per release)
 
 **Min Android:** 7.0 (API 24)
 

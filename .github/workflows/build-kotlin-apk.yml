@@ -47,6 +47,11 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
 
+      - name: Set up Python 3.13 (Chaquopy 17 buildPython must match app Python)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Grant execute permission for gradlew
         run: chmod +x android-app/gradlew
 
