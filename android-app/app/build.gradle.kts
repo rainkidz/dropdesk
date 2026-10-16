@@ -235,6 +235,13 @@ dependencies {
     // Google AdMob - for monetization (compatible with Kotlin 1.9)
     implementation("com.google.android.gms:play-services-ads:23.6.0")
 
+    // Unity Ads SDK — lapis 1 rewarded + interstitial (AdMob rewarded
+    // no-fill sebelum app ter-link ke store didukung). Banner tetap AdMob.
+    // Versi 4.12: API static klasik + metadata Kotlin 1.9 (SDK 4.19+
+    // butuh Kotlin 2.1, tidak kompatibel dengan toolchain proyek ini).
+    // Lihat UnityAdsProvider.kt untuk setup ID.
+    implementation("com.unity3d.ads:unity-ads:4.12.0")
+
     // Google Play Billing - premium subscriptions (compatible with compileSdk 35 / AGP 8.5)
     implementation("com.android.billingclient:billing:6.2.1")
 

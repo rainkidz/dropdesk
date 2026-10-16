@@ -105,6 +105,10 @@ object AdsManager {
         }
         MobileAds.initialize(context) {}
         preloadInterstitial(context.applicationContext)
+        // Unity lapis 1 (rewarded + interstitial). No-op bila Game ID
+        // belum diisi — aman untuk build sebelum akun Unity ada.
+        UnityAdsProvider.init(context.applicationContext)
+        UnityAdsProvider.preloadRewarded()
     }
 
     /** Tarik konfigurasi publik; swap IDs bila signature valid. */
@@ -123,6 +127,12 @@ object AdsManager {
 
     /** Muat interstitial berikutnya di background (no-op bila premium / sudah ada). */
     fun preloadInterstitial(context: Context) {
+        // Unity lapis 1: bila dikonfigurasi, interstitial lewat Unity saja
+        // (mencegah dua network menumpuk iklan di momen yang sama).
+        if (UnityAdsProvider.isConfigured()) {
+            UnityAdsProvider.preloadInterstitial()
+            return
+        }
         if (!adsEnabled()) return
         if (loading || interstitial != null) return
         loading = true
@@ -150,6 +160,17 @@ object AdsManager {
      */
     fun showInterstitialIfReady(activity: Activity): Boolean {
         if (!adsEnabled()) return false
+        // Unity lapis 1 (bila Game ID sudah diisi). Jeda 60 dtk tetap di sini.
+        if (UnityAdsProvider.isConfigured()) {
+            if (SystemClock.elapsedRealtime() - lastShownMs < INTERSTITIAL_MIN_INTERVAL_MS) {
+                return false
+            }
+            if (UnityAdsProvider.showInterstitialIfReady(activity)) {
+                lastShownMs = SystemClock.elapsedRealtime()
+                return true
+            }
+            return false
+        }
         val ad = interstitial ?: run {
             preloadInterstitial(activity)
             return false

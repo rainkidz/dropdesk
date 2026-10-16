@@ -63,6 +63,9 @@ object RewardedAdManager {
 
     /** Pre-load rewarded ad di background. Panggil dari Activity.onResume. */
     fun preload(context: Context) {
+        // Unity (bila dikonfigurasi) di-preload lewat providernya sendiri;
+        // AdMob flow di bawah tetap jalan sebagai fallback.
+        UnityAdsProvider.preloadRewarded()
         if (!AdsManager.adsEnabled()) return
         if (rewardedAd != null) return
         RewardedAd.load(
@@ -104,6 +107,25 @@ object RewardedAdManager {
             return
         }
         prefs(activity).edit().putLong(PREF_LAST_OFFER_MS, System.currentTimeMillis()).apply()
+        // Unity lapis 1 (bila Game ID sudah diisi) — AdMob no-fill untuk
+        // rewarded sebelum app ter-link ke store yang didukung.
+        if (UnityAdsProvider.isConfigured()) {
+            UnityAdsProvider.showRewarded(activity) { outcome ->
+                when (outcome) {
+                    UnityAdsProvider.RewardedOutcome.Earned -> {
+                        grantReward(activity)
+                        onResult(Outcome.Rewarded(REWARD_DURATION_MS))
+                    }
+                    UnityAdsProvider.RewardedOutcome.NotReady ->
+                        onResult(Outcome.NotReady)
+                    UnityAdsProvider.RewardedOutcome.FailedToShow ->
+                        onResult(Outcome.FailedToShow)
+                    UnityAdsProvider.RewardedOutcome.Dismissed ->
+                        onResult(Outcome.Dismissed)
+                }
+            }
+            return
+        }
         val existing = rewardedAd
         if (existing != null) {
             showRewardedAd(activity, existing, onResult)
@@ -127,8 +149,7 @@ object RewardedAdManager {
         }
     }
 
-    private fun showRewardedAd(activity: Activity, ad: RewardedAd, onResult: (Outcome) -> Unit) {
-        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+    private fun showRewardedAd(activity: Activity, ad: RewardedAd, onResult: (Outcome) -> Unit) {        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
                 rewardedAd = null
                 // onResult sudah dipanggil di onUserEarnedReward / di bawah
@@ -142,14 +163,23 @@ object RewardedAdManager {
         }
         ad.show(activity, OnUserEarnedRewardListener { reward ->
             Log.d(TAG, "user earned reward: ${reward.amount} ${reward.type}")
-            val untilMs = System.currentTimeMillis() + REWARD_DURATION_MS
-            prefs(activity).edit()
-                .putLong(PREF_LAST_REWARD_MS, System.currentTimeMillis())
-                .putLong("rewarded_until_ms", untilMs)
-                .apply()
-            PremiumManager.grantRewardedPremium(REWARD_DURATION_MS)
+            grantReward(activity)
             onResult(Outcome.Rewarded(REWARD_DURATION_MS))
         })
+    }
+
+    /**
+     * Catat reward 30 menit PRO. Dipakai bersama oleh alur AdMob
+     * (onUserEarnedReward) dan Unity (onRewarded) — satu-satunya tempat
+     * grant ditulis agar tidak ganda.
+     */
+    private fun grantReward(activity: Activity) {
+        val untilMs = System.currentTimeMillis() + REWARD_DURATION_MS
+        prefs(activity).edit()
+            .putLong(PREF_LAST_REWARD_MS, System.currentTimeMillis())
+            .putLong("rewarded_until_ms", untilMs)
+            .apply()
+        PremiumManager.grantRewardedPremium(REWARD_DURATION_MS)
     }
 
     /** Bilang PremiumManager berapa lama reward berlaku (untuk UI countdown). */
