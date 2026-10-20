@@ -91,8 +91,8 @@ android {
         applicationId = "com.tubenime.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 12
-        versionName = "4.5.2"
+        versionCode = 13
+        versionName = "4.5.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -181,7 +181,9 @@ chaquopy {
     defaultConfig {
         version = "3.13"
         pip {
-            install("yt-dlp")
+            // Pinned: this exact version is covered by the Android-client
+            // fallback in yt_utils.py; bump deliberately after re-testing.
+            install("yt-dlp==2026.8.19")
         }
     }
 }

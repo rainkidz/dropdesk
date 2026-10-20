@@ -64,7 +64,8 @@ class InspectEngine(private val context: Context) {
             if (h <= 0 || h in seenVideoHeights) return@forEach
             seenVideoHeights.add(h)
             val fmtLabel = "${h}p — $ext"
-            val selector = "bestvideo[height<=$h][ext=$ext]/bestvideo[height<=$h]"
+            val selector = fmt.formatIdForDl
+                ?: "bestvideo[height<=$h][ext=$ext]/bestvideo[height<=$h]"
             formats.add(FormatChoice(
                 id = "video_${fmt.itag}",
                 label = fmtLabel,

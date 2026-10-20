@@ -12,6 +12,58 @@ import os
 import sys
 import yt_dlp
 
+# yt-dlp's default player clients answer UNPLAYABLE ("This video is not
+# available") for some videos that DO play through the Android client.
+# Retry those with the Android client only; a working default attempt is
+# never overridden (so normal videos keep their full format list).
+_FALLBACK_EXTRACTOR_ARGS = {'youtube': {'player_client': ['android']}}
+_YOUTUBE_MARKERS = ('youtube.com', 'youtu.be', 'youtube-nocookie.com')
+
+
+def _is_youtube(url):
+    return any(marker in url for marker in _YOUTUBE_MARKERS)
+
+
+def _is_availability_error(exc):
+    msg = str(exc).lower()
+    if 'requested format is not available' in msg:
+        return False
+    return any(marker in msg for marker in (
+        'this video is not available',
+        'this video is unavailable',
+        'video unavailable',
+        'video is unavailable',
+    ))
+
+
+def _opts_with_fallback(opts):
+    retry = dict(opts)
+    retry['extractor_args'] = _FALLBACK_EXTRACTOR_ARGS
+    return retry
+
+
+def _extract_info(url, opts):
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            return ydl.extract_info(url, download=False)
+    except Exception as exc:
+        if not (_is_youtube(url) and _is_availability_error(exc)):
+            raise
+        with yt_dlp.YoutubeDL(_opts_with_fallback(opts)) as ydl:
+            return ydl.extract_info(url, download=False)
+
+
+def _download(url, opts):
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            ydl.download([url])
+    except Exception as exc:
+        if not (_is_youtube(url) and _is_availability_error(exc)):
+            raise
+        with yt_dlp.YoutubeDL(_opts_with_fallback(opts)) as ydl:
+            ydl.download([url])
+
+
 # Per-job progress registry — keyed by job_id, polled by Kotlin via get_progress(job_id)
 _jobs = {}
 _EMPTY_STATE = {
@@ -60,43 +112,54 @@ def get_video_info(url):
         'geo_bypass': True,
         'skip_download': True,
         'extract_flat': False,
+        # Explicit selector avoids yt-dlp's default-format merge check, which
+        # probes the ffmpeg binary via subprocess → SIGSEGV on Android.
+        'format': 'bestvideo*+bestaudio/best',
+        # Chaquopy cannot fork subprocesses: any JS-runtime probe would
+        # SIGSEGV inside _posixsubprocess. Python-side extraction only.
+        'js_runtimes': {},
     }
 
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
+        info = _extract_info(url, ydl_opts)
 
-            if info is None:
-                return json.dumps({"error": "No info found"})
+        if info is None:
+            return json.dumps({"error": "No info found"})
 
-            # Build clean format list
-            formats = []
-            for fmt in info.get('formats', []):
-                formats.append({
-                    'format_id': fmt.get('format_id', ''),
-                    'ext': fmt.get('ext', ''),
-                    'resolution': fmt.get('resolution', ''),
-                    'height': fmt.get('height', 0) or 0,
-                    'width': fmt.get('width', 0) or 0,
-                    'fps': fmt.get('fps', 0) or 0,
-                    'vcodec': fmt.get('vcodec', 'none'),
-                    'acodec': fmt.get('acodec', 'none'),
-                    'filesize': fmt.get('filesize', 0) or fmt.get('filesize_approx', 0) or 0,
-                    'tbr': fmt.get('tbr', 0) or 0,
-                    'abr': fmt.get('abr', 0) or 0,
-                    'format_note': fmt.get('format_note', ''),
-                    'url': fmt.get('url', ''),
-                })
+        # Build clean format list
+        formats = []
+        for fmt in info.get('formats', []):
+            formats.append({
+                'format_id': fmt.get('format_id', ''),
+                'ext': fmt.get('ext', ''),
+                'resolution': fmt.get('resolution', ''),
+                'height': fmt.get('height', 0) or 0,
+                'width': fmt.get('width', 0) or 0,
+                'fps': fmt.get('fps', 0) or 0,
+                'vcodec': fmt.get('vcodec', 'none'),
+                'acodec': fmt.get('acodec', 'none'),
+                'filesize': fmt.get('filesize', 0) or fmt.get('filesize_approx', 0) or 0,
+                'tbr': fmt.get('tbr', 0) or 0,
+                'abr': fmt.get('abr', 0) or 0,
+                'format_note': fmt.get('format_note', ''),
+                'protocol': fmt.get('protocol', ''),
+                'url': fmt.get('url', ''),
+            })
 
-            result = {
-                'title': info.get('title', 'Unknown'),
-                'duration': info.get('duration', 0) or 0,
-                'thumbnail': info.get('thumbnail', ''),
-                'uploader': info.get('uploader', ''),
-                'formats': formats,
-            }
+        formats.sort(key=lambda f: (
+            f['height'],
+            0 if 'm3u8' in f['protocol'] else 1,
+        ), reverse=True)
 
-            return json.dumps(result)
+        result = {
+            'title': info.get('title', 'Unknown'),
+            'duration': info.get('duration', 0) or 0,
+            'thumbnail': info.get('thumbnail', ''),
+            'uploader': info.get('uploader', ''),
+            'formats': formats,
+        }
+
+        return json.dumps(result)
 
     except Exception as e:
         return json.dumps({"error": str(e)})
@@ -146,6 +209,9 @@ def download_video(url, output_path, format_str, cookies_file="", job_id=""):
         'progress_hooks': [progress_hook],
         'noplaylist': True,
         'postprocessors': [],
+        'fixup': 'never',
+        'overwrites': True,
+        'js_runtimes': {},
     }
 
     # Use cookies for authenticated downloads (Facebook, Instagram, etc.)
@@ -154,8 +220,7 @@ def download_video(url, output_path, format_str, cookies_file="", job_id=""):
 
     try:
         st['phase'] = 'downloading'
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+        _download(url, ydl_opts)
         st['phase'] = 'done'
         st['percent'] = 100.0
         st['_done'] = True
@@ -209,6 +274,8 @@ def download_video_audio(url, output_path, video_format, audio_format="bestaudio
         'noplaylist': True,
         'merge_output_format': 'mp4',
         'postprocessors': [],
+        'overwrites': True,
+        'js_runtimes': {},
     }
 
     # Set ffmpeg location if available
@@ -221,8 +288,7 @@ def download_video_audio(url, output_path, video_format, audio_format="bestaudio
 
     try:
         st['phase'] = 'downloading'
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+        _download(url, ydl_opts)
         st['phase'] = 'done'
         st['percent'] = 100.0
         st['_done'] = True
@@ -277,6 +343,8 @@ def download_playlist(url, output_path, format_str, max_videos=50, cookies_file=
         'noplaylist': False,  # Allow playlist download
         'postprocessors': [],
         'playlistend': max_videos,
+        'fixup': 'never',
+        'js_runtimes': {},
     }
 
     if ffmpeg_location and os.path.isdir(ffmpeg_location):
@@ -288,8 +356,7 @@ def download_playlist(url, output_path, format_str, max_videos=50, cookies_file=
 
     try:
         st['phase'] = 'downloading'
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+        _download(url, ydl_opts)
         st['phase'] = 'done'
         st['percent'] = 100.0
         st['_done'] = True
